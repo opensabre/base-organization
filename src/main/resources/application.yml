@@ -2,7 +2,7 @@ spring:
   cloud:
     bus:
       trace:
-        enabled: true
+        enabled: false
   rabbitmq:
     host: ${RABBIT_MQ_HOST:localhost}
     port: ${RABBIT_MQ_PORT:5672}
@@ -16,19 +16,18 @@ spring:
         max-active: 300
     #password: ${REDIS_PASSWORD:123456}
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:${DATASOURCE_DBTYPE:mysql}://${DATASOURCE_HOST:localhost}:${DATASOURCE_PORT:3306}/sc_admin?characterEncoding=UTF-8&useUnicode=true&useSSL=false
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:${DATASOURCE_DBTYPE:mysql}://${DATASOURCE_HOST:localhost}:${DATASOURCE_PORT:3306}/os_base_organization?characterEncoding=UTF-8&useUnicode=true&useSSL=false
     username: ${DATASOURCE_USERNAME:root}
     password: ${DATASOURCE_PASSWORD:root123}
-  zipkin:
-    enabled: true
-    sender:
-      type: rabbit
+
   sleuth:
     sampler:
       probability: 1.0
   mvc:
     throw-exception-if-no-handler-found: true
+    pathmatch:
+      matching-strategy: ant_path_matcher
   servlet:
     multipart:
       max-request-size: "2MB"
@@ -41,21 +40,21 @@ spring:
 jetcache:
   statIntervalMinutes: 15
   areaInCacheName: false
-  hidePackages: com.springboot.cloud
+  hidePackages: io.github.opensabre
   local:
-    # 默认2小时本地缓存
+    # 默认5分钟本地缓存
     default:
-      type: caffeine
-      keyConvertor: fastjson
-      expireAfterWriteInMillis: 3600000
-      expireAfterAccessInMillis: 1800000
-    # 長時本地緩存，主要用于要求时效一般
-    longTime:
       type: caffeine
       keyConvertor: fastjson
       expireAfterWriteInMillis: 300000
       expireAfterAccessInMillis: 180000
-    # 短時本地緩存，主要用于要求时效较高的配置
+    # 長時本地緩存1小时，主要用于要求时效一般
+    longTime:
+      type: caffeine
+      keyConvertor: fastjson
+      expireAfterWriteInMillis: 3600000
+      expireAfterAccessInMillis: 1800000
+    # 短時本地緩存1分钟，主要用于要求时效较高的配置
     shortTime:
       type: caffeine
       keyConvertor: fastjson
@@ -64,43 +63,40 @@ jetcache:
   remote:
     # 默认2小时的远程缓存
     default:
-      type: redis
-      expireAfterWriteInMillis: 43200000
-      keyConvertor: fastjson
-      valueEncoder: kryo
-      valueDecoder: kryo
-      poolConfig:
-        minIdle: 5
-        maxIdle: 20
-        maxTotal: 50
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-    # 长时远程緩存，主要用于要求时效要求一般的集中式缓存
-    longTime:
-      type: redis
+      type: redis.lettuce
       expireAfterWriteInMillis: 7200000
       keyConvertor: fastjson
-      valueEncoder: kryo
-      valueDecoder: kryo
+      valueEncoder: java
+      valueDecoder: java
       poolConfig:
         minIdle: 5
         maxIdle: 20
         maxTotal: 50
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-    # 短時远程緩存，主要用于要求时效较高的集中式缓存
+      uri: redis://${REDIS_HOST:localhost}:${REDIS_PORT:6379}
+    # 长时远程緩存12小时，主要用于要求时效要求一般的集中式缓存
+    longTime:
+      type: redis.lettuce
+      expireAfterWriteInMillis: 43200000
+      keyConvertor: fastjson
+      valueEncoder: java
+      valueDecoder: java
+      poolConfig:
+        minIdle: 5
+        maxIdle: 20
+        maxTotal: 50
+      uri: redis://${REDIS_HOST:localhost}:${REDIS_PORT:6379}
+    # 短時远程緩存5分钟，主要用于要求时效较高的集中式缓存
     shortTime:
-      type: redis
+      type: redis.lettuce
       expireAfterWriteInMillis: 300000
       keyConvertor: fastjson
-      valueEncoder: kryo
-      valueDecoder: kryo
+      valueEncoder: java
+      valueDecoder: java
       poolConfig:
         minIdle: 5
         maxIdle: 20
         maxTotal: 50
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      uri: redis://${REDIS_HOST:localhost}:${REDIS_PORT:6379}
 
 management:
   endpoints:
@@ -110,11 +106,13 @@ management:
 
 logging:
   level:
-    com.springboot.cloud: debug
+    io.github.opensabre: debug
     java.sql.PreparedStatement: debug
-  path: logs/
+  logback:
+    rollingpolicy:
+      max-file-size: 1GB
   file:
-    max-size: 1GB
+    path: logs/
 
 mybatis-plus:
   configuration:
@@ -123,3 +121,7 @@ mybatis-plus:
     db-config:
       logic-delete-value: "Y" # 逻辑已删除值(默认为 Y)
       logic-not-delete-value: "N" # 逻辑未删除值(默认为 N)
+      table-prefix: base_org_
+springfox:
+  documentation:
+    auto-startup: false
