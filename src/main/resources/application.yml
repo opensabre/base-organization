@@ -26,8 +26,6 @@ spring:
       probability: 1.0
   mvc:
     throw-exception-if-no-handler-found: true
-    pathmatch:
-      matching-strategy: ant_path_matcher
   servlet:
     multipart:
       max-request-size: "2MB"
@@ -122,6 +120,3 @@ mybatis-plus:
       logic-delete-value: "Y" # 逻辑已删除值(默认为 Y)
       logic-not-delete-value: "N" # 逻辑未删除值(默认为 N)
       table-prefix: base_org_
-springfox:
-  documentation:
-    auto-startup: false

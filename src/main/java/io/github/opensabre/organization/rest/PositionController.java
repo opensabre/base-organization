@@ -5,7 +5,13 @@ import io.github.opensabre.organization.entity.form.PositionForm;
 import io.github.opensabre.organization.entity.param.PositionQueryParam;
 import io.github.opensabre.organization.entity.po.Position;
 import io.github.opensabre.organization.service.IPositionService;
-import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,15 +20,15 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/position")
-@Api("position")
+@Schema(name = "position")
 @Slf4j
 public class PositionController {
 
     @Autowired
     private IPositionService positionService;
 
-    @ApiOperation(value = "新增职位", notes = "新增一个职位")
-    @ApiImplicitParam(name = "positionForm", value = "新增职位form表单", required = true, dataType = "PositionForm")
+    @Operation(summary = "新增职位", description = "新增一个职位")
+    @Parameter(name = "positionForm", description = "新增职位form表单", required = true)
     @PostMapping
     public Result add(@Valid @RequestBody PositionForm positionForm) {
         log.debug("name:{}", positionForm);
@@ -30,17 +36,17 @@ public class PositionController {
         return Result.success(positionService.add(position));
     }
 
-    @ApiOperation(value = "删除职位", notes = "根据url的id来指定删除对象")
-    @ApiImplicitParam(paramType = "path", name = "id", value = "职位ID", required = true, dataType = "string")
+    @Operation(summary = "删除职位", description = "根据url的id来指定删除对象")
+    @Parameter( name = "id", description = "职位ID", required = true)
     @DeleteMapping(value = "/{id}")
     public Result delete(@PathVariable String id) {
         return Result.success(positionService.delete(id));
     }
 
-    @ApiOperation(value = "修改职位", notes = "修改指定职位信息")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "职位ID", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "positionForm", value = "职位实体", required = true, dataType = "PositionForm")
+    @Operation(summary = "修改职位", description = "修改指定职位信息")
+    @Parameters({
+            @Parameter(name = "id", description = "职位ID", required = true),
+            @Parameter(name = "positionForm", description = "职位实体", required = true)
     })
     @PutMapping(value = "/{id}")
     public Result update(@PathVariable String id, @Valid @RequestBody PositionForm positionForm) {
@@ -49,18 +55,18 @@ public class PositionController {
         return Result.success(positionService.update(position));
     }
 
-    @ApiOperation(value = "获取职位", notes = "获取指定职位信息")
-    @ApiImplicitParam(paramType = "path", name = "id", value = "职位ID", required = true, dataType = "string")
+    @Operation(summary = "获取职位", description = "获取指定职位信息")
+    @Parameter( name = "id", description = "职位ID", required = true)
     @GetMapping(value = "/{id}")
     public Result get(@PathVariable String id) {
         log.debug("get with id:{}", id);
         return Result.success(positionService.get(id));
     }
 
-    @ApiOperation(value = "查询职位", notes = "根据条件查询职位信息，简单查询")
-    @ApiImplicitParam(paramType = "query", name = "name", value = "职位名称", required = true, dataType = "string")
+    @Operation(summary = "查询职位", description = "根据条件查询职位信息，简单查询")
+    @Parameter( description = "职位名称", required = true)
     @ApiResponses(
-            @ApiResponse(code = 200, message = "处理成功", response = Result.class)
+            @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @GetMapping
     public Result query(@RequestParam String name) {
