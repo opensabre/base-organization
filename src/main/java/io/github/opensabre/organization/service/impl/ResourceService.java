@@ -31,16 +31,16 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ResourceService extends ServiceImpl<ResourceMapper, Resource> implements IResourceService {
 
-    @Autowired
+    @javax.annotation.Resource
     private IRoleResourceService roleResourceService;
 
-    @Autowired
+    @javax.annotation.Resource
     private IRoleService roleService;
 
-    @Autowired
+    @javax.annotation.Resource
     private IUserService userService;
 
-    @Autowired
+    @javax.annotation.Resource
     private EventSender eventSender;
 
     @Override

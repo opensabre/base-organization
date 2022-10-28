@@ -16,9 +16,9 @@ import io.github.opensabre.organization.service.IRoleService;
 import io.github.opensabre.organization.service.IUserRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -27,10 +27,10 @@ import java.util.Set;
 @Slf4j
 public class RoleService extends ServiceImpl<RoleMapper, Role> implements IRoleService {
 
-    @Autowired
+    @Resource
     private IUserRoleService userRoleService;
 
-    @Autowired
+    @Resource
     private IRoleResourceService roleResourceService;
 
     @Override

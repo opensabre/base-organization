@@ -9,15 +9,14 @@ import io.github.opensabre.organization.entity.po.User;
 import io.github.opensabre.organization.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 
 @RestController
@@ -26,7 +25,7 @@ import javax.validation.Valid;
 @Slf4j
 public class UserController {
 
-    @Autowired
+    @Resource
     private IUserService userService;
 
     @Operation(summary = "新增用户", description = "新增一个用户")

@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,7 +23,7 @@ import javax.validation.Valid;
 @Slf4j
 public class ResourceController {
 
-    @Autowired
+    @javax.annotation.Resource
     private IResourceService resourceService;
 
     @Operation(summary = "新增资源", description = "新增一个资源")

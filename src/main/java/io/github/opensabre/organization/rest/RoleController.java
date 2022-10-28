@@ -14,9 +14,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 
 @RestController
@@ -25,7 +25,7 @@ import javax.validation.Valid;
 @Slf4j
 public class RoleController {
 
-    @Autowired
+    @Resource
     private IRoleService roleService;
 
     @Operation(summary = "新增角色", description = "新增一个角色")

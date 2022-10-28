@@ -14,9 +14,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 
 @RestController
@@ -25,7 +25,7 @@ import javax.validation.Valid;
 @Slf4j
 public class GroupController {
 
-    @Autowired
+    @Resource
     private IGroupService groupService;
 
     @Operation(summary = "新增用户组", description = "新增一个用户组")

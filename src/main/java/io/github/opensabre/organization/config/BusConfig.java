@@ -18,9 +18,9 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class BusConfig {
 
-    public static final String QUEUE_NAME = "event-organization";
-    public static final String EXCHANGE_NAME = "spring-boot-exchange";
-    public static final String ROUTING_KEY = "organization-resource";
+    public static final String QUEUE_NAME = "queue-organization";
+    public static final String EXCHANGE_NAME = "exchange-opensabre";
+    public static final String ROUTING_KEY = "routing-organization";
 
     @Bean
     Queue queue() {

@@ -15,4 +15,10 @@ public class GlobalExceptionHandlerAdvice extends DefaultGlobalExceptionHandlerA
         log.error(ex.getMessage());
         return Result.fail(ex.getErrorType());
     }
+
+    @ExceptionHandler(value = {RoleNotFoundException.class})
+    public Result roleNotFound(RoleNotFoundException ex) {
+        log.error(ex.getMessage());
+        return Result.fail(ex.getErrorType());
+    }
 }

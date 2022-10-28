@@ -12,11 +12,11 @@ public enum OrganizationErrorType implements ErrorType {
     /**
      * 错误类型码
      */
-    private String code;
+    private final String code;
     /**
      * 错误类型描述信息
      */
-    private String mesg;
+    private final String mesg;
 
     OrganizationErrorType(String code, String mesg) {
         this.code = code;
