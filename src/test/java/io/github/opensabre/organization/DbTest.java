@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class DbTest {
 
     @Test
-    void userNotFound() {
+    void init() {
 
     }
 
