@@ -31,6 +31,12 @@ spring:
       max-file-size: "2MB"
   jackson:
     time-zone: GMT+8
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://127.0.0.1:8000
+          jwk-set-uri: http://127.0.0.1:8000/oauth2/jwks
 
 jetcache:
   statIntervalMinutes: 15

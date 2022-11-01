@@ -41,7 +41,19 @@
             <artifactId>opensabre-base-starter</artifactId>
             <version>${opensabre-base-starter.version}</version>
         </dependency>
-
+        <!--security资源服务-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+        </dependency>
         <!--测试框架-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -60,19 +72,15 @@
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
+            <!--springboot官方打包插件 可打包docker镜像-->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <!--测试案例-->
-            <plugin>
-                <!-- JUnit 5 requires Surefire version 2.22.0 or higher -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
             <!--docker镜像构建-->
             <plugin>
