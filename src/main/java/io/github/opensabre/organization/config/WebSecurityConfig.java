@@ -1,15 +1,20 @@
 package io.github.opensabre.organization.config;
 
+import io.github.opensabre.organization.service.IResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+
+import javax.annotation.Resource;
 
 @Slf4j
 @Configuration
@@ -17,10 +22,18 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
+    @Resource
+    IResourceService resourceService;
+
     @Bean
     public SecurityFilterChain httpSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
-        httpSecurity.authorizeRequests().anyRequest().authenticated()
+        initResource(httpSecurity);
+
+        httpSecurity.authorizeRequests()
+                .mvcMatchers("/user**").permitAll()
+                .mvcMatchers("/user*").hasAuthority("read")
+                .anyRequest().authenticated()
                 .and().cors()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -28,6 +41,13 @@ public class WebSecurityConfig {
                 .jwt()
                 .jwtAuthenticationConverter(jwtAuthenticationConverter());
         return httpSecurity.build();
+    }
+
+    private void initResource(HttpSecurity httpSecurity) throws Exception {
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = httpSecurity.authorizeRequests();
+        this.resourceService.getAll().forEach(resource -> {
+            registry.antMatchers(HttpMethod.valueOf(resource.getMethod()), resource.getUrl()).hasAuthority(resource.getCode());
+        });
     }
 
     /**

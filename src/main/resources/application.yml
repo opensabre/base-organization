@@ -35,8 +35,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://127.0.0.1:8000
-          jwk-set-uri: http://127.0.0.1:8000/oauth2/jwks
+          issuer-uri: http://localhost:8000
+          jwk-set-uri: http://localhost:8000/oauth2/jwks
 
 jetcache:
   statIntervalMinutes: 15

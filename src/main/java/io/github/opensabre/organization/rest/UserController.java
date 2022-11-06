@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -53,8 +55,8 @@ public class UserController {
 
     @Operation(summary = "获取用户", description = "获取指定用户信息")
     @GetMapping(value = "/{id}")
-    public Result get(@Parameter(name = "id", description = "用户ID", required = true) @PathVariable String id) {
-        log.debug("get with id:{}", id);
+    public Result get(@Parameter(name = "id", description = "用户ID", required = true) @PathVariable String id, @AuthenticationPrincipal Jwt principal) {
+        log.debug("get with id:{},{}", id, principal.getClaims());
         return Result.success(userService.get(id));
     }
 
