@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @Mapper
-@TableName("base_org_user")
 public interface UserMapper extends BaseMapper<User> {
 }
