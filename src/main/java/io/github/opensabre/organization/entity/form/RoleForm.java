@@ -4,10 +4,12 @@ import io.github.opensabre.common.web.entity.form.BaseForm;
 import io.github.opensabre.organization.entity.po.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Schema
 @Data
 public class RoleForm extends BaseForm<Role> {

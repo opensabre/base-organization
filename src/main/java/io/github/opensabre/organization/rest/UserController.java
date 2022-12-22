@@ -3,7 +3,6 @@ package io.github.opensabre.organization.rest;
 import io.github.opensabre.common.core.entity.vo.Result;
 import io.github.opensabre.organization.entity.form.UserForm;
 import io.github.opensabre.organization.entity.form.UserQueryForm;
-import io.github.opensabre.organization.entity.form.UserUpdateForm;
 import io.github.opensabre.organization.entity.param.UserQueryParam;
 import io.github.opensabre.organization.entity.po.User;
 import io.github.opensabre.organization.service.IUserService;
@@ -47,8 +46,8 @@ public class UserController {
     @Operation(summary = "修改用户", description = "修改指定用户信息")
     @PutMapping(value = "/{id}")
     public Result update(@Parameter(description = "用户ID", required = true) @PathVariable String id,
-                         @Parameter(description = "用户实体", required = true) @Valid @RequestBody UserUpdateForm userUpdateForm) {
-        User user = userUpdateForm.toPo(User.class);
+                         @Parameter(description = "用户实体", required = true) @Valid @RequestBody UserForm userForm) {
+        User user = userForm.toPo(User.class);
         user.setId(id);
         return Result.success(userService.update(user));
     }

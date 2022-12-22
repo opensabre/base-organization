@@ -3,7 +3,6 @@ package io.github.opensabre.organization.rest;
 import io.github.opensabre.common.core.entity.vo.Result;
 import io.github.opensabre.organization.entity.form.RoleForm;
 import io.github.opensabre.organization.entity.form.RoleQueryForm;
-import io.github.opensabre.organization.entity.form.RoleUpdateForm;
 import io.github.opensabre.organization.entity.param.RoleQueryParam;
 import io.github.opensabre.organization.entity.po.Role;
 import io.github.opensabre.organization.service.IRoleService;
@@ -45,8 +44,8 @@ public class RoleController {
     @Operation(summary = "修改角色", description = "修改指定角色信息")
     @PutMapping(value = "/{id}")
     public Result update(@Parameter(name = "id", description = "角色ID", required = true) @PathVariable String id,
-                         @Parameter(name = "roleForm", description = "角色实体", required = true) @Valid @RequestBody RoleUpdateForm roleUpdateForm) {
-        Role role = roleUpdateForm.toPo(id, Role.class);
+                         @Parameter(name = "roleForm", description = "角色实体", required = true) @Valid @RequestBody RoleForm roleForm) {
+        Role role = roleForm.toPo(id, Role.class);
         return Result.success(roleService.update(role));
     }
 

@@ -4,9 +4,11 @@ import io.github.opensabre.common.web.entity.form.BaseForm;
 import io.github.opensabre.organization.entity.po.Group;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotBlank;
 
+@EqualsAndHashCode(callSuper = true)
 @Schema
 @Data
 public class GroupForm extends BaseForm<Group> {

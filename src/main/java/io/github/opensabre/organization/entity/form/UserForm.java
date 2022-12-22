@@ -4,22 +4,24 @@ import io.github.opensabre.common.web.entity.form.BaseForm;
 import io.github.opensabre.organization.entity.po.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Schema
 @Data
 public class UserForm extends BaseForm<User> {
 
     @Schema(title = "用户账号")
-    @NotBlank(message = "用户名不能为空")
+    @NotBlank(message = "用户名不能为空", groups = Add.class)
     @Length(min = 3, max = 20, message = "用户名长度在3到20个字符")
     private String username;
 
     @Schema(title = "用户密码")
-    @NotBlank(message = "用户密码不能为空")
+    @NotBlank(message = "用户密码不能为空", groups = Add.class)
     @Length(min = 5, max = 20, message = "密码长度在5到20个字符")
     private String password;
 
@@ -48,4 +50,10 @@ public class UserForm extends BaseForm<User> {
 
     @Schema(title = "用户账号是否被锁定，true为未锁定")
     private Boolean accountNonLocked = true;
+
+    interface Add {
+    }
+
+    interface Update {
+    }
 }
