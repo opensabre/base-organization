@@ -80,7 +80,7 @@ public class RoleService extends ServiceImpl<RoleMapper, Role> implements IRoleS
 
     @Override
     public IPage<Role> query(Page page, RoleQueryParam roleQueryParam) {
-        QueryWrapper<Role> queryWrapper = roleQueryParam.build();
+        QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(StringUtils.isNotBlank(roleQueryParam.getName()), "name", roleQueryParam.getName());
         queryWrapper.eq(StringUtils.isNotBlank(roleQueryParam.getCode()), "code", roleQueryParam.getCode());
         return this.page(page, queryWrapper);

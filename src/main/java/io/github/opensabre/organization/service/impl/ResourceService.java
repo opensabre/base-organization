@@ -2,18 +2,16 @@ package io.github.opensabre.organization.service.impl;
 
 import com.alicp.jetcache.anno.CacheType;
 import com.alicp.jetcache.anno.Cached;
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.github.opensabre.organization.config.BusConfig;
 import io.github.opensabre.organization.dao.ResourceMapper;
 import io.github.opensabre.organization.entity.param.ResourceQueryParam;
 import io.github.opensabre.organization.entity.po.Resource;
 import io.github.opensabre.organization.entity.po.Role;
 import io.github.opensabre.organization.entity.po.RoleResource;
 import io.github.opensabre.organization.entity.po.User;
-import io.github.opensabre.organization.events.EventSender;
 import io.github.opensabre.organization.service.IResourceService;
 import io.github.opensabre.organization.service.IRoleResourceService;
 import io.github.opensabre.organization.service.IRoleService;
@@ -39,12 +37,12 @@ public class ResourceService extends ServiceImpl<ResourceMapper, Resource> imple
     @javax.annotation.Resource
     private IUserService userService;
 
-    @javax.annotation.Resource
-    private EventSender eventSender;
+//    @javax.annotation.Resource
+//    private EventSender eventSender;
 
     @Override
     public boolean add(Resource resource) {
-        eventSender.send(BusConfig.ROUTING_KEY, resource);
+//        eventSender.send(BusConfig.ROUTING_KEY, resource);
         return this.save(resource);
     }
 
@@ -67,8 +65,8 @@ public class ResourceService extends ServiceImpl<ResourceMapper, Resource> imple
     }
 
     @Override
-    public IPage<Resource> query(Page page, ResourceQueryParam resourceQueryParam) {
-        QueryWrapper<Resource> queryWrapper = resourceQueryParam.build();
+    public Page query(Page page, ResourceQueryParam resourceQueryParam) {
+        QueryWrapper<Resource> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(StringUtils.isNotBlank(resourceQueryParam.getName()), "name", resourceQueryParam.getName());
         queryWrapper.eq(StringUtils.isNotBlank(resourceQueryParam.getType()), "type", resourceQueryParam.getType());
         queryWrapper.eq(StringUtils.isNotBlank(resourceQueryParam.getUrl()), "url", resourceQueryParam.getUrl());
@@ -94,6 +92,6 @@ public class ResourceService extends ServiceImpl<ResourceMapper, Resource> imple
         //根据资源列表查询出所有资源对象
         Set<String> resourceIds = roleResources.stream().map(roleResource -> roleResource.getResourceId()).collect(Collectors.toSet());
         //根据resourceId列表查询出resource对象
-        return (List<Resource>) this.listByIds(resourceIds);
+        return this.listByIds(resourceIds);
     }
 }

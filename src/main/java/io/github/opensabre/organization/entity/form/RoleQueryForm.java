@@ -1,16 +1,18 @@
 package io.github.opensabre.organization.entity.form;
 
-import io.github.opensabre.common.web.entity.form.BaseQueryForm;
 import io.github.opensabre.organization.entity.param.RoleQueryParam;
+import io.github.opensabre.persistence.entity.form.BaseQueryForm;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Past;
 import java.util.Date;
 
-@Schema
 @Data
+@Schema
+@EqualsAndHashCode(callSuper = true)
 public class RoleQueryForm extends BaseQueryForm<RoleQueryParam> {
 
     @Schema(title = "角色编码")

@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.Objects;
@@ -103,7 +104,7 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
 
     @Override
     public IPage<UserVo> query(Page page, UserQueryParam userQueryParam) {
-        QueryWrapper<User> queryWrapper = userQueryParam.build();
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(StringUtils.isNotBlank(userQueryParam.getName()), "name", userQueryParam.getName());
         queryWrapper.eq(StringUtils.isNotBlank(userQueryParam.getUsername()), "username", userQueryParam.getUsername());
         queryWrapper.eq(StringUtils.isNotBlank(userQueryParam.getMobile()), "mobile", userQueryParam.getMobile());

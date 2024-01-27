@@ -2,12 +2,9 @@ package io.github.opensabre.organization.entity.po;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
-import io.github.opensabre.common.web.entity.po.BasePo;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.github.opensabre.organization.entity.vo.UserVo;
+import io.github.opensabre.persistence.entity.po.BasePo;
+import lombok.*;
 
 import java.util.Set;
 
@@ -15,7 +12,8 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends BasePo {
+@EqualsAndHashCode(callSuper = true)
+public class User extends BasePo<UserVo> {
     private String name;
     private String mobile;
     private String username;

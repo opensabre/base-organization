@@ -1,7 +1,7 @@
 package io.github.opensabre.organization.entity.form;
 
-import io.github.opensabre.common.web.entity.form.BaseQueryForm;
 import io.github.opensabre.organization.entity.param.GroupQueryParam;
+import io.github.opensabre.persistence.entity.form.BaseQueryForm;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;

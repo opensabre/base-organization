@@ -1,15 +1,16 @@
 package io.github.opensabre.organization.entity.param;
 
-import io.github.opensabre.common.web.entity.param.BaseParam;
-import io.github.opensabre.organization.entity.po.User;
+import io.github.opensabre.persistence.entity.param.BaseParam;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class UserQueryParam extends BaseParam<User> {
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+public class UserQueryParam extends BaseParam {
     private String name;
     private String mobile;
     private String username;

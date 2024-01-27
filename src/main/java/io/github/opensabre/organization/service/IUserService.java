@@ -37,7 +37,7 @@ public interface IUserService {
      *
      * @return
      */
-    IPage<UserVo> query(Page<User> page, UserQueryParam userQueryParam);
+    IPage<UserVo> query(Page page, UserQueryParam userQueryParam);
 
     /**
      * 更新用户信息

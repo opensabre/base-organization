@@ -1,15 +1,14 @@
 package io.github.opensabre.organization.entity.param;
 
-import io.github.opensabre.common.web.entity.param.BaseParam;
-import io.github.opensabre.organization.entity.po.Resource;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.github.opensabre.persistence.entity.param.BaseParam;
+import lombok.*;
 
 @Data
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
-public class ResourceQueryParam extends BaseParam<Resource> {
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+public class ResourceQueryParam extends BaseParam {
     private String name;
     private String code;
     private String type;

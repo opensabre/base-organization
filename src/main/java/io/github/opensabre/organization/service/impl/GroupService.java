@@ -43,7 +43,7 @@ public class GroupService extends ServiceImpl<GroupMapper, Group> implements IGr
 
     @Override
     public List<Group> query(GroupQueryParam groupQueryParam) {
-        QueryWrapper<Group> queryWrapper = groupQueryParam.build();
+        QueryWrapper<Group> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("name", groupQueryParam.getName());
         return this.list(queryWrapper);
     }

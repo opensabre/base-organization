@@ -1,7 +1,6 @@
 package io.github.opensabre.organization.entity.param;
 
-import io.github.opensabre.common.web.entity.param.BaseParam;
-import io.github.opensabre.organization.entity.po.Menu;
+import io.github.opensabre.persistence.entity.param.BaseParam;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +8,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MenuQueryParam extends BaseParam<Menu> {
+public class MenuQueryParam extends BaseParam {
     private String name;
 }

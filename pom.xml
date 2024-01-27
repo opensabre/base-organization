@@ -5,6 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>base-organization</artifactId>
+    <groupId>io.github.opensabre</groupId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -25,27 +26,40 @@
         <!--  编译   -->
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <opensabre-base-starter.version>0.0.3</opensabre-base-starter.version>
+        <opensabre-base-starter.version>0.0.7</opensabre-base-starter.version>
     </properties>
 
-    <parent>
-        <artifactId>opensabre-base-dependencies</artifactId>
-        <groupId>io.github.opensabre</groupId>
-        <version>0.0.3</version>
-    </parent>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.github.opensabre</groupId>
+                <artifactId>opensabre-base-dependencies</artifactId>
+                <version>${opensabre-base-starter.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- opensabre starter -->
         <dependency>
             <groupId>io.github.opensabre</groupId>
-            <artifactId>opensabre-base-starter</artifactId>
-            <version>${opensabre-base-starter.version}</version>
+            <artifactId>opensabre-starter-boot</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.opensabre</groupId>
+            <artifactId>opensabre-starter-persistence</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.opensabre</groupId>
+            <artifactId>opensabre-starter-cache</artifactId>
         </dependency>
         <!--security资源服务-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>-->
+<!--        </dependency>-->
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.boot</groupId>-->
 <!--            <artifactId>spring-boot-starter-oauth2-client</artifactId>-->
@@ -56,19 +70,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--opensabre测试组件-->
-        <dependency>
-            <groupId>io.github.opensabre</groupId>
-            <artifactId>common-test</artifactId>
-            <scope>test</scope>
-        </dependency>
         <!--test数据库-->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>

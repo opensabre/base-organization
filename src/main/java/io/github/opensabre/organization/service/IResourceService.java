@@ -1,6 +1,5 @@
 package io.github.opensabre.organization.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.github.opensabre.organization.entity.param.ResourceQueryParam;
 import io.github.opensabre.organization.entity.po.Resource;
@@ -29,7 +28,7 @@ public interface IResourceService {
      *
      * @return
      */
-    IPage<Resource> query(Page page, ResourceQueryParam resourceQueryParam);
+    Page query(Page page, ResourceQueryParam resourceQueryParam);
 
     /**
      * 查询所有资源

@@ -1,15 +1,14 @@
 package io.github.opensabre.organization.entity.po;
 
-import io.github.opensabre.common.web.entity.po.BasePo;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
+import io.github.opensabre.persistence.entity.po.BasePo;
+import lombok.*;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class Resource extends BasePo {
     private String code;
     private String type;
@@ -18,3 +17,5 @@ public class Resource extends BasePo {
     private String name;
     private String description;
 }
+
+

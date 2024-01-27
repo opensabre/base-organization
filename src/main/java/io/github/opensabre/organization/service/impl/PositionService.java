@@ -44,7 +44,7 @@ public class PositionService extends ServiceImpl<PositionMapper, Position> imple
 
     @Override
     public List<Position> query(PositionQueryParam positionQueryParam) {
-        QueryWrapper<Position> queryWrapper = positionQueryParam.build();
+        QueryWrapper<Position> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(StringUtils.isNotBlank(positionQueryParam.getName()), "name", positionQueryParam.getName());
         return this.list(queryWrapper);
     }

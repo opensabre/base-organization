@@ -1,8 +1,7 @@
 package io.github.opensabre.organization.entity.po;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
-import io.github.opensabre.common.web.entity.po.BasePo;
+import io.github.opensabre.persistence.entity.po.BasePo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
