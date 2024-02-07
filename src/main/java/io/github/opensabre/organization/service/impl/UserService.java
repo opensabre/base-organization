@@ -19,7 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.Objects;
@@ -27,6 +26,10 @@ import java.util.Objects;
 @Service
 @Slf4j
 public class UserService extends ServiceImpl<UserMapper, User> implements IUserService {
+    /**
+     * cache prefix key
+     */
+    private static final String CACHE_PREFIX_KEY = "user:";
 
     @Resource
     private IUserRoleService userRoleService;
@@ -49,7 +52,7 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
 
     @Override
     @Transactional
-    @CacheInvalidate(name = "user::", key = "#id")
+    @CacheInvalidate(name = CACHE_PREFIX_KEY, key = "#id")
     public boolean delete(String id) {
         //删除用户
         this.removeById(id);
@@ -59,7 +62,7 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
 
     @Override
     @Transactional
-    @CacheInvalidate(name = "user::", key = "#user.id")
+    @CacheInvalidate(name = CACHE_PREFIX_KEY, key = "#user.id")
     public boolean update(User user) {
         //密码不为空，表示重新设置了密码，保存密码
         if (StringUtils.isNotBlank(user.getPassword()))
@@ -72,7 +75,7 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
     }
 
     @Override
-    @Cached(name = "user::", key = "#id", cacheType = CacheType.BOTH)
+    @Cached(name = CACHE_PREFIX_KEY, key = "#id", cacheType = CacheType.BOTH)
     public UserVo get(String id) {
         //根据id查询用户
         User user = this.getById(id);
@@ -86,7 +89,7 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
     }
 
     @Override
-    @Cached(name = "user::", key = "#uniqueId", cacheType = CacheType.BOTH)
+    @Cached(name = CACHE_PREFIX_KEY, key = "#uniqueId", cacheType = CacheType.BOTH)
     public User getByUniqueId(String uniqueId) {
         //根据用户名或手机号查询用户信息
         User user = this.getOne(new QueryWrapper<User>()
