@@ -6,8 +6,8 @@
 //import org.springframework.amqp.support.converter.MessageConverter;
 //import org.springframework.stereotype.Component;
 //
-//import javax.annotation.PostConstruct;
-//import javax.annotation.Resource;
+//import jakarta.annotation.PostConstruct;
+//import jakarta.annotation.Resource;
 //
 //@Component
 //@Slf4j

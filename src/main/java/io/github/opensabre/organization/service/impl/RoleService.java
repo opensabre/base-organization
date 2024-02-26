@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -75,7 +75,7 @@ public class RoleService extends ServiceImpl<RoleMapper, Role> implements IRoleS
     @Cached(name = "role4user::", key = "#userId", cacheType = CacheType.BOTH)
     public List<Role> query(String userId) {
         Set<String> roleIds = userRoleService.queryByUserId(userId);
-        return (List<Role>) this.listByIds(roleIds);
+        return this.listByIds(roleIds);
     }
 
     @Override

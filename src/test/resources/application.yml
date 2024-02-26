@@ -2,29 +2,11 @@ server:
   port: 9002
 
 spring:
-  cloud:
-    bus:
-      trace:
-        enabled: true
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:os_base_organization;MODE=mysql;INIT=RUNSCRIPT FROM 'classpath:db/os-base-org-ddl.sql'
     username: ${DATASOURCE_USERNAME:root}
     password: ${DATASOURCE_PASSWORD:root123}
-  sleuth:
-    sampler:
-      probability: 1.0
-  mvc:
-    throw-exception-if-no-handler-found: true
-  servlet:
-    multipart:
-      max-request-size: "2MB"
-      max-file-size: "2MB"
-  jackson:
-    time-zone: GMT+8
-  devtools:
-    livereload:
-      enabled: true
 
 management:
   endpoints:
@@ -32,21 +14,7 @@ management:
       exposure:
         include: '*'
 
-logging:
-  level:
-    io.github.opensabre: debug
-    java.sql.PreparedStatement: debug
-  logback:
-    rollingpolicy:
-      max-file-size: 1GB
-  file:
-    path: logs/
-
 mybatis-plus:
-  configuration:
-    map-underscore-to-camel-case: true
   global-config:
     db-config:
-      logic-delete-value: "Y" # 逻辑已删除值(默认为 Y)
-      logic-not-delete-value: "N" # 逻辑未删除值(默认为 N)
       table-prefix: base_org_

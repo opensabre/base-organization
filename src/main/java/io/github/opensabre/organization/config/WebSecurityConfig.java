@@ -16,7 +16,7 @@
 //import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 //import org.springframework.security.web.SecurityFilterChain;
 //
-//import javax.annotation.Resource;
+//import jakarta.annotation.Resource;
 //
 //@Slf4j
 //@Configuration

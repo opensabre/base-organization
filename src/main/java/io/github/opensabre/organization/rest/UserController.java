@@ -17,8 +17,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/user")
@@ -64,7 +64,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @GetMapping
-    public User query(@Parameter(description = "用户唯一标识", required = true) @RequestParam String uniqueId) {
+    public User query(@Parameter(description = "用户唯一标识", required = true) @RequestParam("uniqueId") String uniqueId) {
         log.debug("query with username or mobile:{}", uniqueId);
         return userService.getByUniqueId(uniqueId);
     }

@@ -28,13 +28,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ResourceService extends ServiceImpl<ResourceMapper, Resource> implements IResourceService {
 
-    @javax.annotation.Resource
+    @jakarta.annotation.Resource
     private IRoleResourceService roleResourceService;
 
-    @javax.annotation.Resource
+    @jakarta.annotation.Resource
     private IRoleService roleService;
 
-    @javax.annotation.Resource
+    @jakarta.annotation.Resource
     private IUserService userService;
 
 //    @javax.annotation.Resource
