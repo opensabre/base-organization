@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RoleResourceService extends ServiceImpl<RoleResourceMapper, RoleResource> implements IRoleResourceService {
 
+    private final String CACHE_PREFIX_KEY = "resource4role:";
+
     @Override
     @Transactional
     public boolean saveBatch(String roleId, Set<String> resourceIds) {
@@ -39,7 +41,7 @@ public class RoleResourceService extends ServiceImpl<RoleResourceMapper, RoleRes
     }
 
     @Override
-    @Cached(area = "shortTime", name = "resource4role::", key = "#roleId", cacheType = CacheType.BOTH)
+    @Cached(area = "shortTime", name = CACHE_PREFIX_KEY, key = "#roleId", cacheType = CacheType.BOTH)
     public Set<String> queryByRoleId(String roleId) {
         QueryWrapper<RoleResource> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("role_id", roleId);

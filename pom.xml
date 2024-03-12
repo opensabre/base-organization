@@ -85,6 +85,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!--支持MVC参数如@RequestParam注解无须加value，默认为变量名-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -93,7 +94,26 @@
                     <parameters>true</parameters>
                 </configuration>
             </plugin>
-            <!--docker镜像构建-->
+            <!-- git commit信息生成 -->
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <!-- *NOTE*: 默认是initialize阶段执行，可以修改为其他阶段 -->
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <injectIntoSysProperties>true</injectIntoSysProperties>
+                </configuration>
+            </plugin>
+            <!-- docker镜像构建 -->
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>dockerfile-maven-plugin</artifactId>

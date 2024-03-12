@@ -23,6 +23,15 @@ opensabre:
     log:
       enabled: false # 日志脱敏开关，默认关闭
       rules: mobile,idCard,phone,email
+  rest:
+    swagger:
+      version: v0.0.1
+      title: Opensabre Organization API
+      description: Opensabre Organization REST API
+      licenseUrl: https://github.com/opensabre/base-organization
+      licenseName: Apache 2.0
+      wikiUrl: https://opensabre.github.io/docs
+      wikiDocumentation: Opensabre Organization Wiki Documentation
 
 management:
   endpoints:

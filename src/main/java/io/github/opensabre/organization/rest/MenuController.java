@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/menu")
-@Schema(name = "menu")
+@Schema(name = "菜单")
 @Slf4j
 public class MenuController {
 

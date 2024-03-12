@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/resource")
-@Schema(name = "resource")
+@Schema(name = "资源")
 @Slf4j
 public class ResourceController {
 

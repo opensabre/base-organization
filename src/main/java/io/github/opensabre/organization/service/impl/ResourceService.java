@@ -16,6 +16,7 @@ import io.github.opensabre.organization.service.IResourceService;
 import io.github.opensabre.organization.service.IRoleResourceService;
 import io.github.opensabre.organization.service.IRoleService;
 import io.github.opensabre.organization.service.IUserService;
+import io.github.opensabre.persistence.entity.po.BasePo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,8 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class ResourceService extends ServiceImpl<ResourceMapper, Resource> implements IResourceService {
+
+    private final String CACHE_PREFIX_KEY = "resource:";
 
     @jakarta.annotation.Resource
     private IRoleResourceService roleResourceService;
@@ -47,19 +50,19 @@ public class ResourceService extends ServiceImpl<ResourceMapper, Resource> imple
     }
 
     @Override
-    @Cached(name = "resource::", key = "#id", cacheType = CacheType.BOTH)
+    @Cached(name = CACHE_PREFIX_KEY, key = "#id", cacheType = CacheType.BOTH)
     public boolean delete(String id) {
         return this.removeById(id);
     }
 
     @Override
-    @Cached(name = "resource::", key = "#resource.id", cacheType = CacheType.BOTH)
+    @Cached(name = CACHE_PREFIX_KEY, key = "#resource.id", cacheType = CacheType.BOTH)
     public boolean update(Resource resource) {
         return this.updateById(resource);
     }
 
     @Override
-    @Cached(name = "resource::", key = "#id", cacheType = CacheType.BOTH)
+    @Cached(name = CACHE_PREFIX_KEY, key = "#id", cacheType = CacheType.BOTH)
     public Resource get(String id) {
         return this.getById(id);
     }
@@ -86,11 +89,11 @@ public class ResourceService extends ServiceImpl<ResourceMapper, Resource> imple
         User user = userService.getByUniqueId(username);
         List<Role> roles = roleService.query(user.getId());
         //提取用户所拥有角色id列表
-        Set<String> roleIds = roles.stream().map(role -> role.getId()).collect(Collectors.toSet());
+        Set<String> roleIds = roles.stream().map(BasePo::getId).collect(Collectors.toSet());
         //根据角色列表查询到角色的资源的关联关系
         List<RoleResource> roleResources = roleResourceService.queryByRoleIds(roleIds);
         //根据资源列表查询出所有资源对象
-        Set<String> resourceIds = roleResources.stream().map(roleResource -> roleResource.getResourceId()).collect(Collectors.toSet());
+        Set<String> resourceIds = roleResources.stream().map(RoleResource::getResourceId).collect(Collectors.toSet());
         //根据resourceId列表查询出resource对象
         return this.listByIds(resourceIds);
     }

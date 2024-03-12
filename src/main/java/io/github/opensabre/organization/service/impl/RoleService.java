@@ -27,6 +27,7 @@ import java.util.Set;
 @Slf4j
 public class RoleService extends ServiceImpl<RoleMapper, Role> implements IRoleService {
 
+    private final String CACHE_PREFIX_KEY = "role:";
     @Resource
     private IUserRoleService userRoleService;
 
@@ -41,14 +42,14 @@ public class RoleService extends ServiceImpl<RoleMapper, Role> implements IRoleS
     }
 
     @Override
-    @CacheInvalidate(name = "role::", key = "#id")
+    @CacheInvalidate(name = CACHE_PREFIX_KEY, key = "#id")
     public boolean delete(String id) {
         roleResourceService.removeByRoleId(id);
         return this.removeById(id);
     }
 
     @Override
-    @CacheInvalidate(name = "role::", key = "#role.id")
+    @CacheInvalidate(name = CACHE_PREFIX_KEY, key = "#role.id")
     public boolean update(Role role) {
         boolean isSuccess = this.updateById(role);
         roleResourceService.saveBatch(role.getId(), role.getResourceIds());
@@ -56,7 +57,7 @@ public class RoleService extends ServiceImpl<RoleMapper, Role> implements IRoleS
     }
 
     @Override
-    @Cached(name = "role::", key = "#id", cacheType = CacheType.BOTH)
+    @Cached(name = CACHE_PREFIX_KEY, key = "#id", cacheType = CacheType.BOTH)
     public Role get(String id) {
         Role role = this.getById(id);
         if (Objects.isNull(role)) {

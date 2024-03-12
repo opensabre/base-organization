@@ -18,6 +18,7 @@ import java.util.List;
 @Service
 @Slf4j
 public class PositionService extends ServiceImpl<PositionMapper, Position> implements IPositionService {
+    private final String CACHE_PREFIX_KEY = "group:";
 
     @Override
     public boolean add(Position position) {
@@ -25,19 +26,19 @@ public class PositionService extends ServiceImpl<PositionMapper, Position> imple
     }
 
     @Override
-    @CacheInvalidate(name = "position::", key = "#id")
+    @CacheInvalidate(name = CACHE_PREFIX_KEY, key = "#id")
     public boolean delete(String id) {
         return this.removeById(id);
     }
 
     @Override
-    @CacheInvalidate(name = "position::", key = "#position.id")
+    @CacheInvalidate(name = CACHE_PREFIX_KEY, key = "#position.id")
     public boolean update(Position position) {
         return this.updateById(position);
     }
 
     @Override
-    @Cached(name = "position::", key = "#id", cacheType = CacheType.BOTH)
+    @Cached(name = CACHE_PREFIX_KEY, key = "#id", cacheType = CacheType.BOTH)
     public Position get(String id) {
         return this.getById(id);
     }

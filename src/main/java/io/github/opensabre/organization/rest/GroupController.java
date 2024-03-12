@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/group")
-@Tag(name = "group")
+@Tag(name = "用户组")
 @Slf4j
 public class GroupController {
 

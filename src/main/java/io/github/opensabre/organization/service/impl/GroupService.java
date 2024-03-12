@@ -18,25 +18,27 @@ import java.util.List;
 @Slf4j
 public class GroupService extends ServiceImpl<GroupMapper, Group> implements IGroupService {
 
+    private final String CACHE_PREFIX_KEY = "group:";
+
     @Override
     public boolean add(Group group) {
         return this.save(group);
     }
 
     @Override
-    @CacheInvalidate(name = "group::", key = "#id")
+    @CacheInvalidate(name = CACHE_PREFIX_KEY, key = "#id")
     public boolean delete(String id) {
         return this.removeById(id);
     }
 
     @Override
-    @CacheInvalidate(name = "group::", key = "#group.id")
+    @CacheInvalidate(name = CACHE_PREFIX_KEY, key = "#group.id")
     public boolean update(Group group) {
         return this.updateById(group);
     }
 
     @Override
-    @Cached(name = "group::", key = "#id", cacheType = CacheType.BOTH)
+    @Cached(name = CACHE_PREFIX_KEY, key = "#id", cacheType = CacheType.BOTH)
     public Group get(String id) {
         return this.getById(id);
     }

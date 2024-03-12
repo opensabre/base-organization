@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/position")
-@Schema(name = "position")
+@Schema(name = "岗位")
 @Slf4j
 public class PositionController {
 

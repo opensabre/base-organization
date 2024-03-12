@@ -18,25 +18,27 @@ import java.util.List;
 @Slf4j
 public class MenuService extends ServiceImpl<MenuMapper, Menu> implements IMenuService {
 
+    private final String CACHE_PREFIX_KEY = "menu:";
+
     @Override
     public boolean add(Menu menu) {
         return this.save(menu);
     }
 
     @Override
-    @CacheInvalidate(name = "menu::", key = "#id")
+    @CacheInvalidate(name = CACHE_PREFIX_KEY, key = "#id")
     public boolean delete(String id) {
         return this.removeById(id);
     }
 
     @Override
-    @CacheInvalidate(name = "menu::", key = "#menu.id")
+    @CacheInvalidate(name = CACHE_PREFIX_KEY, key = "#menu.id")
     public boolean update(Menu menu) {
         return this.updateById(menu);
     }
 
     @Override
-    @Cached(name = "menu::", key = "#id", cacheType = CacheType.BOTH)
+    @Cached(name = CACHE_PREFIX_KEY, key = "#id", cacheType = CacheType.BOTH)
     public Menu get(String id) {
         return this.getById(id);
     }

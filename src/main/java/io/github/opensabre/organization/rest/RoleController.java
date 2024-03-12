@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/role")
-@Schema(name = "role")
+@Schema(name = "角色")
 @Slf4j
 public class RoleController {
 
