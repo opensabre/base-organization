@@ -73,7 +73,7 @@ public class RoleService extends ServiceImpl<RoleMapper, Role> implements IRoleS
     }
 
     @Override
-    @Cached(name = "role4user::", key = "#userId", cacheType = CacheType.BOTH)
+    @Cached(name = "role4user:", key = "#userId", cacheType = CacheType.BOTH)
     public List<Role> query(String userId) {
         Set<String> roleIds = userRoleService.queryByUserId(userId);
         return this.listByIds(roleIds);
