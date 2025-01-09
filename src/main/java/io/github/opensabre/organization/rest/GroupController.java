@@ -18,12 +18,16 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+
 import java.util.List;
 
+@Tag(name = "用户组")
+@ApiResponses(
+        @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
+)
+@Slf4j
 @RestController
 @RequestMapping("/group")
-@Tag(name = "用户组")
-@Slf4j
 public class GroupController {
 
     @Resource
@@ -37,12 +41,18 @@ public class GroupController {
     }
 
     @Operation(summary = "删除用户组", description = "根据url的id来指定删除对象")
+    @ApiResponses(
+            @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
+    )
     @DeleteMapping(value = "/{id}")
     public boolean delete(@Parameter(description = "用户组ID", required = true) @PathVariable String id) {
         return groupService.delete(id);
     }
 
     @Operation(summary = "修改用户组", description = "修改指定用户组信息")
+    @ApiResponses(
+            @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
+    )
     @PutMapping(value = "/{id}")
     public boolean update(@Parameter(description = "用户组ID", required = true) @PathVariable String id,
                           @Parameter(description = "用户组实体", required = true) @Valid @RequestBody GroupForm groupForm) {
@@ -52,6 +62,9 @@ public class GroupController {
     }
 
     @Operation(summary = "获取用户组", description = "获取指定用户组信息")
+    @ApiResponses(
+            @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
+    )
     @GetMapping(value = "/{id}")
     public Group get(@Parameter(description = "用户组ID", required = true) @PathVariable String id) {
         log.debug("get with id:{}", id);
@@ -79,6 +92,9 @@ public class GroupController {
     }
 
     @Operation(summary = "根据父id查询用户组", description = "根据父id查询用户组列表")
+    @ApiResponses(
+            @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
+    )
     @GetMapping(value = "/parent/{id}")
     public List<Group> search(@Parameter(description = "用户组父ID", required = true) @PathVariable String id) {
         log.debug("query with parent id:{}", id);

@@ -14,15 +14,19 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+@Schema(name = "用户")
+@ApiResponses(
+        @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
+)
+@Slf4j
 @RestController
 @RequestMapping("/user")
-@Schema(name = "用户")
-@Slf4j
 public class UserController {
 
     @Resource
@@ -51,17 +55,14 @@ public class UserController {
         return userService.update(user);
     }
 
-    @Operation(summary = "获取用户", description = "获取指定用户信息")
+    @Operation(summary = "获取用户", description = "根据用户ID获取指定用户信息", security = @SecurityRequirement(name = "Authorization"))
     @GetMapping(value = "/{id}")
     public UserVo get(@Parameter(name = "id", description = "用户ID", required = true) @PathVariable String id) {
-        log.debug("get with id:{}", id);
+        log.info("get with id:{}", id);
         return userService.get(id);
     }
 
     @Operation(summary = "获取用户", description = "根据用户唯一标识（username or mobile）获取用户信息")
-    @ApiResponses(
-            @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
-    )
     @GetMapping
     public User query(@Parameter(description = "用户唯一标识", required = true) @RequestParam("uniqueId") String uniqueId) {
         log.debug("query with username or mobile:{}", uniqueId);
@@ -69,9 +70,6 @@ public class UserController {
     }
 
     @Operation(summary = "搜索用户", description = "根据条件查询用户信息")
-    @ApiResponses(
-            @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
-    )
     @PostMapping(value = "/conditions")
     public IPage<UserVo> search(@Parameter(description = "用户查询参数", required = true) @Valid @RequestBody UserQueryForm userQueryForm) {
         log.debug("search with userQueryForm:{}", userQueryForm);
