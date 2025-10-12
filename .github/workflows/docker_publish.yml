@@ -1,0 +1,29 @@
+name: Build and Push with Jib
+
+on:
+  push:
+    branches: [ master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY: 'ccr.ccs.tencentyun.com' # 替换为你的腾讯云注册表地址
+      NAMESPACE: ${{ secrets.TENCENT_CLOUD_NAMESPACE }}
+      IMAGE_NAME: 'base-organization'     # 替换为你的镜像名称
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17' # 或你项目使用的JDK版本
+          distribution: 'temurin'
+
+      - name: Build and Push with Jib
+        run: mvn compile jib:build -Dtencent.cloud.secret.id=${{ secrets.TENCENT_CLOUD_SECRET_ID }} -Dtencent.cloud.secret.key=${{ secrets.TENCENT_CLOUD_SECRET_KEY }} -Dtencent.cloud.namespace=${{ secrets.TENCENT_CLOUD_NAMESPACE }}

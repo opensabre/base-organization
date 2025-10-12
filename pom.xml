@@ -4,6 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <artifactId>opensabre-base-dependencies</artifactId>
+        <groupId>io.github.opensabre</groupId>
+        <version>0.1.1</version>
+    </parent>
+
     <artifactId>base-organization</artifactId>
     <version>0.0.1</version>
     <packaging>jar</packaging>
@@ -12,6 +18,15 @@
     <url>https://github.com/opensabre/base-organization</url>
     <description>Demo Organization project for Spring Boot</description>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!--  编译   -->
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <native-build-tools-plugin.version>0.9.28</native-build-tools-plugin.version>
+    </properties>
+
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
@@ -19,26 +34,17 @@
         </license>
     </licenses>
 
-    <parent>
-        <artifactId>opensabre-base-dependencies</artifactId>
-        <groupId>io.github.opensabre</groupId>
-        <version>0.1.0</version>
-    </parent>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <!--  编译   -->
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
-        <opensabre-base-starter.version>0.1.0</opensabre-base-starter.version>
-    </properties>
-
     <dependencies>
         <!-- opensabre starter -->
         <dependency>
             <groupId>io.github.opensabre</groupId>
             <artifactId>opensabre-starter-persistence</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.ulisesbocchio</groupId>
+                    <artifactId>jasypt-spring-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.github.opensabre</groupId>
@@ -72,6 +78,19 @@
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.graalvm.buildtools</groupId>
+                    <artifactId>native-maven-plugin</artifactId>
+                    <version>${native-build-tools-plugin.version}</version>
+                    <configuration>
+                        <skipNativeTests>true</skipNativeTests>
+                    </configuration>
+                    <extensions>true</extensions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <!--springboot官方打包插件 可打包docker镜像-->
             <plugin>
@@ -107,9 +126,47 @@
             </plugin>
             <!-- docker镜像构建 -->
             <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>dockerfile-maven-plugin</artifactId>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                    </plugin>
+<!--                    <plugin>-->
+<!--                        <groupId>org.graalvm.buildtools</groupId>-->
+<!--                        <artifactId>native-maven-plugin</artifactId>-->
+<!--                        <version>0.10.3</version>-->
+<!--                        <configuration>-->
+<!--                            &lt;!&ndash; imageName用于设置生成的二进制文件名称 &ndash;&gt;-->
+<!--                            <imageName>${project.artifactId}</imageName>-->
+<!--                            &lt;!&ndash; mainClass用于指定main方法类路径 &ndash;&gt;-->
+<!--                            <mainClass>io.github.opensabre.organization.OrganizationApplication</mainClass>-->
+<!--                            <buildArgs>-->
+<!--                                &#45;&#45;no-fallback-->
+<!--                            </buildArgs>-->
+<!--                            <skipNativeTests>true</skipNativeTests>-->
+<!--                            <verbose>true</verbose>-->
+<!--                        </configuration>-->
+<!--                        <executions>-->
+<!--                            <execution>-->
+<!--                                <id>build-native</id>-->
+<!--                                <goals>-->
+<!--                                    <goal>compile-no-fork</goal>-->
+<!--                                </goals>-->
+<!--                                <phase>package</phase>-->
+<!--                            </execution>-->
+<!--                        </executions>-->
+<!--                    </plugin>-->
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
