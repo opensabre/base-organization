@@ -128,6 +128,12 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
+                <configuration>
+                    <!-- 基础镜像 -->
+                    <from>
+                        <image>eclipse-temurin:21-jre-alpine</image>
+                    </from>
+                </configuration>
             </plugin>
         </plugins>
     </build>
