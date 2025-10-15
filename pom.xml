@@ -7,7 +7,7 @@
     <parent>
         <artifactId>opensabre-base-dependencies</artifactId>
         <groupId>io.github.opensabre</groupId>
-        <version>0.1.1</version>
+        <version>0.1.2</version>
     </parent>
 
     <artifactId>base-organization</artifactId>
@@ -131,19 +131,8 @@
                 <configuration>
                     <!-- 基础镜像 -->
                     <from>
-                        <image>eclipse-temurin:21-jre-alpine</image>
+                        <image>docker.1ms.run/eclipse-temurin:21-jre-alpine</image>
                     </from>
-                    <to>
-                        <image>${REGISTRY_URL}/${project.artifactId}:${project.version}</image>
-                        <auth>
-                            <username>${secret.id}</username>
-                            <password>${secret.key}</password>
-                        </auth>
-                        <tags>
-                            <tag>latest</tag>
-                            <tag>${project.version}</tag>
-                        </tags>
-                    </to>
                 </configuration>
             </plugin>
         </plugins>

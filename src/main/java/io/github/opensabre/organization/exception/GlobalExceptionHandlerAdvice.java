@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandlerAdvice extends DefaultGlobalExceptionHandlerAdvice {
 
     @ExceptionHandler(value = {UserNotFoundException.class})
-    public Result userNotFound(UserNotFoundException ex) {
+    public Result<?> userNotFound(UserNotFoundException ex) {
         log.warn(ex.getMessage());
         return Result.fail(ex.getErrorType());
     }
 
     @ExceptionHandler(value = {RoleNotFoundException.class})
-    public Result roleNotFound(RoleNotFoundException ex) {
+    public Result<?> roleNotFound(RoleNotFoundException ex) {
         log.warn(ex.getMessage());
         return Result.fail(ex.getErrorType());
     }
