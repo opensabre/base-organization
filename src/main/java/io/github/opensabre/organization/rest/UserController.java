@@ -1,6 +1,8 @@
 package io.github.opensabre.organization.rest;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.github.opensabre.boot.annotations.OperationType;
+import io.github.opensabre.boot.annotations.Audit;
 import io.github.opensabre.common.core.entity.vo.Result;
 import io.github.opensabre.organization.entity.form.UserForm;
 import io.github.opensabre.organization.entity.form.UserQueryForm;
@@ -32,6 +34,7 @@ public class UserController {
     @Resource
     private IUserService userService;
 
+    @Audit(operationType = OperationType.CREATE, description = "新增用户", module = "USER", response = true, key = "#userForm.username")
     @Operation(summary = "新增用户", description = "新增一个用户")
     @PostMapping
     public boolean add(@Parameter(name = "userForm", description = "新增用户form表单", required = true) @Valid @RequestBody UserForm userForm) {
@@ -40,12 +43,14 @@ public class UserController {
         return userService.add(user);
     }
 
+    @Audit(operationType = OperationType.DELETE, description = "删除用户", module = "USER", response = true, key = "#id")
     @Operation(summary = "删除用户", description = "根据url的id来指定删除对象，逻辑删除")
     @DeleteMapping(value = "/{id}")
     public boolean delete(@Parameter(name = "id", description = "用户ID", required = true) @PathVariable String id) {
         return userService.delete(id);
     }
 
+    @Audit(operationType = OperationType.UPDATE, description = "修改用户信息", module = "USER", response = true, key="#userForm.username")
     @Operation(summary = "修改用户", description = "修改指定用户信息")
     @PutMapping(value = "/{id}")
     public boolean update(@Parameter(description = "用户ID", required = true) @PathVariable String id,
@@ -62,6 +67,7 @@ public class UserController {
         return userService.get(id);
     }
 
+    @Audit(operationType = OperationType.QUERY, description = "通过用户唯一键", module = "USER", response = true, key="#uniqueId")
     @Operation(summary = "获取用户", description = "根据用户唯一标识（username or mobile）获取用户信息")
     @GetMapping
     public User query(@Parameter(description = "用户唯一标识", required = true) @RequestParam("uniqueId") String uniqueId) {
