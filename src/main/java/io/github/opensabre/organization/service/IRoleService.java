@@ -11,10 +11,18 @@ public interface IRoleService {
     /**
      * 获取角色
      *
-     * @param id
-     * @return
+     * @param id 唯一ID
+     * @return Role对象
      */
     Role get(String id);
+
+    /**
+     * 通过角色code获取角色
+     *
+     * @param code 角色code
+     * @return Role对象
+     */
+    Role getByCode(String code);
 
     /**
      * 获取所有角色

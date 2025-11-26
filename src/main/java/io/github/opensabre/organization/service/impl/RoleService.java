@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -65,6 +66,14 @@ public class RoleService extends ServiceImpl<RoleMapper, Role> implements IRoleS
         }
         role.setResourceIds(roleResourceService.queryByRoleId(id));
         return role;
+    }
+
+    @Cached(name = CACHE_PREFIX_KEY, key = "#code", cacheType = CacheType.BOTH)
+    @Override
+    public Role getByCode(String code) {
+        QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("code", code);
+        return this.getOne(queryWrapper);
     }
 
     @Override

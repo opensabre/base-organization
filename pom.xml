@@ -16,7 +16,7 @@
 
     <name>base-organization</name>
     <url>https://github.com/opensabre/base-organization</url>
-    <description>Demo Organization project for Spring Boot</description>
+    <description>Organization project for Spring Boot</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -5,15 +5,24 @@ import io.github.opensabre.organization.entity.param.ResourceQueryParam;
 import io.github.opensabre.organization.entity.po.Resource;
 
 import java.util.List;
+import java.util.Set;
 
 public interface IResourceService {
     /**
      * 获取资源
      *
-     * @param id
-     * @return
+     * @param id 唯一ID
+     * @return Resource
      */
     Resource get(String id);
+
+    /**
+     * 获取资源
+     *
+     * @param ids 唯一ID集合
+     * @return List<Resource> 资源集合
+     */
+    List<Resource> fetch(Set<String> ids);
 
     /**
      * 新增资源
@@ -43,6 +52,13 @@ public interface IResourceService {
      * @return
      */
     List<Resource> query(String username);
+
+    /**
+     * 根据角色code查询角色拥有的资源
+     *
+     * @return List<Resource>
+     */
+    List<Resource> queryByRole(String roleCode);
 
     /**
      * 更新资源信息

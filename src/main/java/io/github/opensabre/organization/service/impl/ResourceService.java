@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ResourceService extends ServiceImpl<ResourceMapper, Resource> implements IResourceService {
 
-    private final String CACHE_PREFIX_KEY = "resource:";
+    private static final String CACHE_PREFIX_KEY = "resource:";
 
     @jakarta.annotation.Resource
     private IRoleResourceService roleResourceService;
@@ -68,7 +68,12 @@ public class ResourceService extends ServiceImpl<ResourceMapper, Resource> imple
     }
 
     @Override
-    public Page query(Page page, ResourceQueryParam resourceQueryParam) {
+    public List<Resource> fetch(Set<String> ids) {
+        return this.listByIds(ids);
+    }
+
+    @Override
+    public Page<?> query(Page page, ResourceQueryParam resourceQueryParam) {
         QueryWrapper<Resource> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(StringUtils.isNotBlank(resourceQueryParam.getName()), "name", resourceQueryParam.getName());
         queryWrapper.eq(StringUtils.isNotBlank(resourceQueryParam.getType()), "type", resourceQueryParam.getType());
@@ -83,7 +88,7 @@ public class ResourceService extends ServiceImpl<ResourceMapper, Resource> imple
     }
 
     @Override
-    @Cached(name = "resource4user::", key = "#username", cacheType = CacheType.BOTH)
+    @Cached(name = "resource4user:", key = "#username", cacheType = CacheType.BOTH)
     public List<Resource> query(String username) {
         //根据用户名查询到用户所拥有的角色
         User user = userService.getByUniqueId(username);
@@ -96,5 +101,13 @@ public class ResourceService extends ServiceImpl<ResourceMapper, Resource> imple
         Set<String> resourceIds = roleResources.stream().map(RoleResource::getResourceId).collect(Collectors.toSet());
         //根据resourceId列表查询出resource对象
         return this.listByIds(resourceIds);
+    }
+
+    @Cached(name = "resource4role:", key = "#roleCode", cacheType = CacheType.BOTH)
+    @Override
+    public List<Resource> queryByRole(String roleCode) {
+        Role role = roleService.getByCode(roleCode);
+        Set<String> ids = roleResourceService.queryByRoleId(role.getId());
+        return this.fetch(ids);
     }
 }

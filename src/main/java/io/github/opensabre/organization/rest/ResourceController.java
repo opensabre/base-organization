@@ -86,4 +86,14 @@ public class ResourceController {
         log.debug("query with name:{}", resourceQueryForm);
         return resourceService.query(resourceQueryForm.getPage(), resourceQueryForm.toParam(ResourceQueryParam.class));
     }
+
+
+    @Operation(summary = "根据角色code查询其下拥有的所有资源", description = "根据角色code称查询其下拥有的所有资源")
+    @ApiResponses(
+            @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
+    )
+    @GetMapping(value = "/role/{roleCode}")
+    public List<Resource> queryByRole(@Parameter(name = "roleCode", description = "角色名", required = true) @PathVariable String roleCode) {
+        return resourceService.queryByRole(roleCode);
+    }
 }

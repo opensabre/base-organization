@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Service
 @Slf4j
+@Service
 public class RoleResourceService extends ServiceImpl<RoleResourceMapper, RoleResource> implements IRoleResourceService {
 
-    private final String CACHE_PREFIX_KEY = "resource4role:";
+    private static final String CACHE_PREFIX_KEY = "resource4role:";
 
     @Override
     @Transactional
