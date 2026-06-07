@@ -7,7 +7,7 @@
     <parent>
         <artifactId>opensabre-base-dependencies</artifactId>
         <groupId>io.github.opensabre</groupId>
-        <version>0.2.0</version>
+        <version>0.3.0</version>
     </parent>
 
     <artifactId>base-organization</artifactId>
@@ -53,6 +53,10 @@
         <dependency>
             <groupId>io.github.opensabre</groupId>
             <artifactId>opensabre-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.opensabre</groupId>
+            <artifactId>opensabre-starter-webmvc</artifactId>
         </dependency>
         <!--security资源服务-->
 <!--        <dependency>-->

@@ -1,6 +1,5 @@
 package io.github.opensabre.organization.entity.po;
 
-import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import io.github.opensabre.persistence.entity.po.BasePo;
 import lombok.*;
 

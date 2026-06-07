@@ -1,14 +1,14 @@
 package io.github.opensabre.organization.exception;
 
 import io.github.opensabre.common.core.entity.vo.Result;
-import io.github.opensabre.common.web.exception.DefaultGlobalExceptionHandlerAdvice;
+import io.github.opensabre.webmvc.exception.DefaultWebMvcExceptionHandlerAdvice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandlerAdvice extends DefaultGlobalExceptionHandlerAdvice {
+public class GlobalExceptionHandlerAdvice extends DefaultWebMvcExceptionHandlerAdvice {
 
     @ExceptionHandler(value = {UserNotFoundException.class})
     public Result<?> userNotFound(UserNotFoundException ex) {

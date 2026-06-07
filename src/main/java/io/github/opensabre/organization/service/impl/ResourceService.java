@@ -2,7 +2,6 @@ package io.github.opensabre.organization.service.impl;
 
 import com.alicp.jetcache.anno.CacheType;
 import com.alicp.jetcache.anno.Cached;
-import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
