@@ -2,6 +2,7 @@ package io.github.opensabre.organization.service;
 
 import io.github.opensabre.organization.entity.param.MenuQueryParam;
 import io.github.opensabre.organization.entity.po.Menu;
+import io.github.opensabre.organization.entity.vo.MenuVo;
 
 import java.util.List;
 
@@ -35,6 +36,14 @@ public interface IMenuService {
      * @return
      */
     List<Menu> queryByParentId(String id);
+
+    /**
+     * 根据用户id查询授权菜单树
+     *
+     * @param userId 用户id
+     * @return 授权菜单树
+     */
+    List<MenuVo> queryByUserId(String userId);
 
     /**
      * 更新菜单信息

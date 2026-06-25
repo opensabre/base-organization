@@ -7,6 +7,8 @@ spring:
     url: jdbc:h2:mem:os_base_organization;MODE=mysql;INIT=RUNSCRIPT FROM 'classpath:db/os-base-org-ddl.sql'
     username: ${DATASOURCE_USERNAME:root}
     password: ${DATASOURCE_PASSWORD:root123}
+    hikari:
+      maximum-pool-size: 1
 
 management:
   endpoints:

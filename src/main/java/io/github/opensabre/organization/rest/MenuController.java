@@ -5,6 +5,7 @@ import io.github.opensabre.organization.entity.form.MenuForm;
 import io.github.opensabre.organization.entity.form.MenuQueryForm;
 import io.github.opensabre.organization.entity.param.MenuQueryParam;
 import io.github.opensabre.organization.entity.po.Menu;
+import io.github.opensabre.organization.entity.vo.MenuVo;
 import io.github.opensabre.organization.service.IMenuService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -84,5 +85,12 @@ public class MenuController {
     public List<Menu> search(@Parameter(description = "菜单父ID", required = true) @PathVariable String id) {
         log.debug("query with parent id:{}", id);
         return menuService.queryByParentId(id);
+    }
+
+    @Operation(summary = "根据用户id查询菜单", description = "根据用户拥有的角色查询授权菜单树")
+    @GetMapping(value = "/user/{userId}")
+    public List<MenuVo> queryByUserId(@Parameter(description = "用户ID", required = true) @PathVariable String userId) {
+        log.debug("query with user id:{}", userId);
+        return menuService.queryByUserId(userId);
     }
 }
