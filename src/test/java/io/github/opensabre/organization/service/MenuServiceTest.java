@@ -19,7 +19,9 @@ class MenuServiceTest {
     void queryByUserIdShouldReturnAuthorizedMenuTree() {
         List<MenuVo> menus = menuService.queryByUserId("101");
 
-        assertThat(menus).extracting(MenuVo::getId).containsExactly("101");
+        assertThat(menus).extracting(MenuVo::getId).containsExactly("101", "108", "109");
         assertThat(menus.get(0).getChildren()).extracting(MenuVo::getId).containsExactly("102", "103", "104", "105", "106", "107");
+        assertThat(menus.get(1).getChildren()).extracting(MenuVo::getId).containsExactly("110");
+        assertThat(menus.get(2).getChildren()).extracting(MenuVo::getId).containsExactly("111");
     }
 }
