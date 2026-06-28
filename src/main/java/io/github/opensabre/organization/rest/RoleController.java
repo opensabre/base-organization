@@ -7,6 +7,7 @@ import io.github.opensabre.organization.entity.form.RoleQueryForm;
 import io.github.opensabre.organization.entity.param.RoleQueryParam;
 import io.github.opensabre.organization.entity.po.Role;
 import io.github.opensabre.organization.service.IRoleMenuService;
+import io.github.opensabre.organization.service.IRoleResourceService;
 import io.github.opensabre.organization.service.IRoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,6 +34,9 @@ public class RoleController {
 
     @Resource
     private IRoleMenuService roleMenuService;
+
+    @Resource
+    private IRoleResourceService roleResourceService;
 
     @Operation(summary = "新增角色", description = "新增一个角色")
     @PostMapping
@@ -75,6 +79,19 @@ public class RoleController {
     public boolean updateRoleMenus(@Parameter(name = "id", description = "角色ID", required = true) @PathVariable String id,
                                    @Parameter(name = "menuIds", description = "菜单ID集合", required = true) @RequestBody Set<String> menuIds) {
         return roleMenuService.saveBatch(id, menuIds);
+    }
+
+    @Operation(summary = "获取角色资源ID", description = "根据角色ID获取角色拥有的资源ID集合")
+    @GetMapping(value = "/{id}/resourceIds")
+    public Set<String> getRoleResourceIds(@Parameter(name = "id", description = "角色ID", required = true) @PathVariable String id) {
+        return roleResourceService.queryByRoleId(id);
+    }
+
+    @Operation(summary = "分配角色资源", description = "保存角色功能资源授权关系")
+    @PutMapping(value = "/{id}/resources")
+    public boolean updateRoleResources(@Parameter(name = "id", description = "角色ID", required = true) @PathVariable String id,
+                                       @Parameter(name = "resourceIds", description = "资源ID集合", required = true) @RequestBody Set<String> resourceIds) {
+        return roleResourceService.saveBatch(id, resourceIds);
     }
 
     @Operation(summary = "获取所有角色", description = "获取所有角色")

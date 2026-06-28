@@ -1,5 +1,6 @@
 package io.github.opensabre.organization.service.impl;
 
+import com.alicp.jetcache.anno.CacheInvalidate;
 import com.alicp.jetcache.anno.CacheType;
 import com.alicp.jetcache.anno.Cached;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -24,16 +25,18 @@ public class RoleResourceService extends ServiceImpl<RoleResourceMapper, RoleRes
 
     @Override
     @Transactional
+    @CacheInvalidate(area = "shortTime", name = CACHE_PREFIX_KEY, key = "#roleId")
     public boolean saveBatch(String roleId, Set<String> resourceIds) {
-        if (CollectionUtils.isEmpty(resourceIds))
-            return false;
         removeByRoleId(roleId);
+        if (CollectionUtils.isEmpty(resourceIds))
+            return true;
         Set<RoleResource> userRoles = resourceIds.stream().map(resourceId -> new RoleResource(roleId, resourceId)).collect(Collectors.toSet());
         return saveBatch(userRoles);
     }
 
     @Override
     @Transactional
+    @CacheInvalidate(area = "shortTime", name = CACHE_PREFIX_KEY, key = "#roleId")
     public boolean removeByRoleId(String roleId) {
         QueryWrapper<RoleResource> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(RoleResource::getRoleId, roleId);

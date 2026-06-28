@@ -20,6 +20,6 @@ class MenuServiceTest {
         List<MenuVo> menus = menuService.queryByUserId("101");
 
         assertThat(menus).extracting(MenuVo::getId).containsExactly("101");
-        assertThat(menus.get(0).getChildren()).extracting(MenuVo::getId).containsExactly("102", "103", "104", "105");
+        assertThat(menus.get(0).getChildren()).extracting(MenuVo::getId).containsExactly("102", "103", "104", "105", "106", "107");
     }
 }
