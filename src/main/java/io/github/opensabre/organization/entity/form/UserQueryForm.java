@@ -22,6 +22,9 @@ public class UserQueryForm extends BaseQueryForm<UserQueryParam> {
     @Schema(title = "手机号")
     private String mobile;
 
+    @Schema(title = "用户组ID")
+    private String groupId;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Past(message = "查询开始时间必须小于当前日期")
     @Schema(title = "查询开始时间")

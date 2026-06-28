@@ -111,6 +111,9 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
         queryWrapper.eq(StringUtils.isNotBlank(userQueryParam.getName()), "name", userQueryParam.getName());
         queryWrapper.eq(StringUtils.isNotBlank(userQueryParam.getUsername()), "username", userQueryParam.getUsername());
         queryWrapper.eq(StringUtils.isNotBlank(userQueryParam.getMobile()), "mobile", userQueryParam.getMobile());
+        queryWrapper.apply(StringUtils.isNotBlank(userQueryParam.getGroupId()),
+                "id in (select user_id from base_org_user_group where group_id = {0})",
+                userQueryParam.getGroupId());
         // 分页查询用户
         IPage<User> iPageUser = this.page(page, queryWrapper);
         // 转换成VO返回

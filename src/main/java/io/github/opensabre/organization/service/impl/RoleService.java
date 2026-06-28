@@ -11,6 +11,7 @@ import io.github.opensabre.organization.dao.RoleMapper;
 import io.github.opensabre.organization.entity.param.RoleQueryParam;
 import io.github.opensabre.organization.entity.po.Role;
 import io.github.opensabre.organization.exception.RoleNotFoundException;
+import io.github.opensabre.organization.service.IRoleMenuService;
 import io.github.opensabre.organization.service.IRoleResourceService;
 import io.github.opensabre.organization.service.IRoleService;
 import io.github.opensabre.organization.service.IUserRoleService;
@@ -35,6 +36,9 @@ public class RoleService extends ServiceImpl<RoleMapper, Role> implements IRoleS
     @Resource
     private IRoleResourceService roleResourceService;
 
+    @Resource
+    private IRoleMenuService roleMenuService;
+
     @Override
     public boolean add(Role role) {
         boolean isSuccess = this.save(role);
@@ -46,6 +50,7 @@ public class RoleService extends ServiceImpl<RoleMapper, Role> implements IRoleS
     @CacheInvalidate(name = CACHE_PREFIX_KEY, key = "#id")
     public boolean delete(String id) {
         roleResourceService.removeByRoleId(id);
+        roleMenuService.removeByRoleId(id);
         return this.removeById(id);
     }
 

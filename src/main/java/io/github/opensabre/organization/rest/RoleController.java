@@ -6,6 +6,7 @@ import io.github.opensabre.organization.entity.form.RoleForm;
 import io.github.opensabre.organization.entity.form.RoleQueryForm;
 import io.github.opensabre.organization.entity.param.RoleQueryParam;
 import io.github.opensabre.organization.entity.po.Role;
+import io.github.opensabre.organization.service.IRoleMenuService;
 import io.github.opensabre.organization.service.IRoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/role")
@@ -28,6 +30,9 @@ public class RoleController {
 
     @Resource
     private IRoleService roleService;
+
+    @Resource
+    private IRoleMenuService roleMenuService;
 
     @Operation(summary = "新增角色", description = "新增一个角色")
     @PostMapping
@@ -57,6 +62,19 @@ public class RoleController {
     public Role get(@Parameter(name = "id", description = "角色ID", required = true) @PathVariable String id) {
         log.debug("get with id:{}", id);
         return roleService.get(id);
+    }
+
+    @Operation(summary = "获取角色菜单ID", description = "根据角色ID获取角色拥有的菜单ID集合")
+    @GetMapping(value = "/{id}/menuIds")
+    public Set<String> getRoleMenuIds(@Parameter(name = "id", description = "角色ID", required = true) @PathVariable String id) {
+        return roleMenuService.queryByRoleId(id);
+    }
+
+    @Operation(summary = "分配角色菜单", description = "保存角色菜单授权关系")
+    @PutMapping(value = "/{id}/menus")
+    public boolean updateRoleMenus(@Parameter(name = "id", description = "角色ID", required = true) @PathVariable String id,
+                                   @Parameter(name = "menuIds", description = "菜单ID集合", required = true) @RequestBody Set<String> menuIds) {
+        return roleMenuService.saveBatch(id, menuIds);
     }
 
     @Operation(summary = "获取所有角色", description = "获取所有角色")

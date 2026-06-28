@@ -278,7 +278,9 @@ VALUES (101, -1, '总公司', '总公司', now(), now(), 'system', 'system'),
 INSERT INTO base_org_menu (id, parent_id, type, href, icon, name, description, order_num, created_time, updated_time, created_by, updated_by)
 VALUES (101, -1, 'MENU', '/admin', 'setting', '系统管理', '系统设置管理', 0, now(), now(), 'system', 'system'),
        (102, 101, 'MENU', '/admin/users', 'fa-user', '用户管理', '用户新增，修改，查看，删除', 10, now(), now(), 'system', 'system'),
-       (103, 101, 'MENU', '/admin/menus', 'category', '菜单管理', '菜单新增，修改，删除', 20, now(), now(), 'system', 'system');
+       (103, 101, 'MENU', '/admin/menus', 'category', '菜单管理', '菜单新增，修改，删除', 20, now(), now(), 'system', 'system'),
+       (104, 101, 'MENU', '/admin/roles', 'user-filled', '角色管理', '角色新增，修改，删除和菜单授权', 30, now(), now(), 'system', 'system'),
+       (105, 101, 'MENU', '/admin/groups', 'office-building', '组织管理', '组织新增，修改，查看，删除', 40, now(), now(), 'system', 'system');
 
 INSERT INTO base_org_user_group (id, user_id, group_id, created_time, updated_time, created_by, updated_by)
 VALUES (101, 101, 101, now(), now(), 'system', 'system'),
@@ -291,8 +293,12 @@ INSERT INTO base_org_role_menu (id, role_id, menu_id, created_time, updated_time
 VALUES (101, 101, 101, now(), now(), 'system', 'system'),
        (102, 101, 102, now(), now(), 'system', 'system'),
        (103, 101, 103, now(), now(), 'system', 'system'),
-       (104, 102, 101, now(), now(), 'system', 'system'),
-       (105, 102, 102, now(), now(), 'system', 'system'),
-       (106, 103, 101, now(), now(), 'system', 'system'),
-       (107, 103, 102, now(), now(), 'system', 'system'),
-       (108, 103, 103, now(), now(), 'system', 'system');
+       (104, 101, 104, now(), now(), 'system', 'system'),
+       (105, 101, 105, now(), now(), 'system', 'system'),
+       (106, 102, 101, now(), now(), 'system', 'system'),
+       (107, 102, 102, now(), now(), 'system', 'system'),
+       (108, 103, 101, now(), now(), 'system', 'system'),
+       (109, 103, 102, now(), now(), 'system', 'system'),
+       (110, 103, 103, now(), now(), 'system', 'system'),
+       (111, 103, 104, now(), now(), 'system', 'system'),
+       (112, 103, 105, now(), now(), 'system', 'system');

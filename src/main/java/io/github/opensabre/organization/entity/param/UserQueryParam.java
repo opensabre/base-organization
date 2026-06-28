@@ -14,4 +14,5 @@ public class UserQueryParam extends BaseParam {
     private String name;
     private String mobile;
     private String username;
+    private String groupId;
 }
