@@ -276,17 +276,17 @@ VALUES (101, -1, '总公司', '总公司', now(), now(), 'system', 'system'),
        (107, 101, '北京分公司', '北京分公司', now(), now(), 'system', 'system');
 -- 菜单
 INSERT INTO base_org_menu (id, parent_id, type, href, icon, name, description, order_num, created_time, updated_time, created_by, updated_by)
-VALUES (101, -1, 'MENU', '/admin', 'setting', '系统管理', '系统设置管理', 0, now(), now(), 'system', 'system'),
+VALUES (101, -1, 'MENU', '/admin', 'setting', '基础管理', '用户，角色，菜单，组织等基础数据管理', 0, now(), now(), 'system', 'system'),
        (102, 101, 'MENU', '/admin/users', 'fa-user', '用户管理', '用户新增，修改，查看，删除', 10, now(), now(), 'system', 'system'),
        (103, 101, 'MENU', '/admin/menus', 'category', '菜单管理', '菜单新增，修改，删除', 20, now(), now(), 'system', 'system'),
        (104, 101, 'MENU', '/admin/roles', 'user-filled', '角色管理', '角色新增，修改，删除和菜单授权', 30, now(), now(), 'system', 'system'),
        (105, 101, 'MENU', '/admin/groups', 'office-building', '组织管理', '组织新增，修改，查看，删除', 40, now(), now(), 'system', 'system'),
        (106, 101, 'MENU', '/admin/resources', 'connection', '资源管理', '功能资源新增，修改，查看，删除', 50, now(), now(), 'system', 'system'),
        (107, 101, 'MENU', '/admin/positions', 'postcard', '岗位管理', '岗位新增，修改，查看，删除', 60, now(), now(), 'system', 'system'),
-       (108, -1, 'MENU', '/auth', 'lock', '授权管理', '授权服务客户端管理', 70, now(), now(), 'system', 'system'),
-       (109, -1, 'MENU', '/security', 'document', '系统安全', '审计与安全运维', 80, now(), now(), 'system', 'system'),
+       (108, -1, 'MENU', '/auth', 'lock', '认证鉴权', '认证鉴权服务管理', 70, now(), now(), 'system', 'system'),
+       (109, -1, 'MENU', '/sysadmin', 'document', '系统管理', '审计与系统运维管理', 80, now(), now(), 'system', 'system'),
        (110, 108, 'MENU', '/auth/client', 'key', '客户端管理', 'OAuth2客户端新增，修改，删除', 10, now(), now(), 'system', 'system'),
-       (111, 109, 'MENU', '/security/audit-log', 'notebook', '审计日志', '审计日志查询，清理', 10, now(), now(), 'system', 'system');
+       (111, 109, 'MENU', '/sysadmin/audit-log', 'notebook', '审计日志', '审计日志查询，清理', 10, now(), now(), 'system', 'system');
 
 INSERT INTO base_org_user_group (id, user_id, group_id, created_time, updated_time, created_by, updated_by)
 VALUES (101, 101, 101, now(), now(), 'system', 'system'),
