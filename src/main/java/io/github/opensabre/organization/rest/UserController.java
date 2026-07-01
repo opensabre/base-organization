@@ -1,8 +1,8 @@
 package io.github.opensabre.organization.rest;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import io.github.opensabre.boot.annotations.OperationType;
-import io.github.opensabre.boot.annotations.Audit;
+import io.github.opensabre.governance.audit.annotations.Audit;
+import io.github.opensabre.governance.audit.annotations.OperationType;
 import io.github.opensabre.common.core.entity.vo.Result;
 import io.github.opensabre.organization.entity.form.UserForm;
 import io.github.opensabre.organization.entity.form.UserQueryForm;
