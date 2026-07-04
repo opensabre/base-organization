@@ -19,12 +19,17 @@ public class User extends BasePo<UserVo> {
     private String username;
     private String password;
     private String description;
+    private String gender;
     private Boolean enabled;
     private Boolean accountNonExpired;
     private Boolean credentialsNonExpired;
     private Boolean accountNonLocked;
     @TableField(exist = false)
     private Set<String> roleIds;
+    @TableField(exist = false)
+    private String groupId;
+    @TableField(exist = false)
+    private String groupName;
     @TableLogic
     private String deleted = "N";
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
@@ -45,7 +46,8 @@ public class GroupController {
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @DeleteMapping(value = "/{id}")
-    public boolean delete(@Parameter(description = "用户组ID", required = true) @PathVariable String id) {
+    public boolean delete(@Parameter(description = "用户组ID", required = true)
+                          @NotBlank(message = "用户组ID不能为空") @PathVariable String id) {
         return groupService.delete(id);
     }
 
@@ -54,7 +56,8 @@ public class GroupController {
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @PutMapping(value = "/{id}")
-    public boolean update(@Parameter(description = "用户组ID", required = true) @PathVariable String id,
+    public boolean update(@Parameter(description = "用户组ID", required = true)
+                          @NotBlank(message = "用户组ID不能为空") @PathVariable String id,
                           @Parameter(description = "用户组实体", required = true) @Valid @RequestBody GroupForm groupForm) {
         Group group = groupForm.toPo(Group.class);
         group.setId(id);
@@ -66,7 +69,8 @@ public class GroupController {
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @GetMapping(value = "/{id}")
-    public Group get(@Parameter(description = "用户组ID", required = true) @PathVariable String id) {
+    public Group get(@Parameter(description = "用户组ID", required = true)
+                     @NotBlank(message = "用户组ID不能为空") @PathVariable String id) {
         log.debug("get with id:{}", id);
         return groupService.get(id);
     }
@@ -76,7 +80,8 @@ public class GroupController {
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @GetMapping
-    public List<Group> query(@Parameter(description = "用户组名称", required = true) @RequestParam String name) {
+    public List<Group> query(@Parameter(description = "用户组名称", required = true)
+                             @NotBlank(message = "用户组名称不能为空") @RequestParam String name) {
         log.debug("query with name:{}", name);
         return groupService.query(new GroupQueryParam(name));
     }
@@ -96,7 +101,8 @@ public class GroupController {
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @GetMapping(value = "/parent/{id}")
-    public List<Group> search(@Parameter(description = "用户组父ID", required = true) @PathVariable String id) {
+    public List<Group> search(@Parameter(description = "用户组父ID", required = true)
+                              @NotBlank(message = "用户组父ID不能为空") @PathVariable String id) {
         log.debug("query with parent id:{}", id);
         return groupService.queryByParentId(id);
     }

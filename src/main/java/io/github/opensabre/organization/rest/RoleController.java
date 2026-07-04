@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.Set;
 
@@ -48,13 +50,15 @@ public class RoleController {
 
     @Operation(summary = "删除角色", description = "根据url的id来指定删除对象")
     @DeleteMapping(value = "/{id}")
-    public boolean delete(@Parameter(name = "id", description = "角色ID", required = true) @PathVariable String id) {
+    public boolean delete(@Parameter(name = "id", description = "角色ID", required = true)
+                          @NotBlank(message = "角色ID不能为空") @PathVariable String id) {
         return roleService.delete(id);
     }
 
     @Operation(summary = "修改角色", description = "修改指定角色信息")
     @PutMapping(value = "/{id}")
-    public boolean update(@Parameter(name = "id", description = "角色ID", required = true) @PathVariable String id,
+    public boolean update(@Parameter(name = "id", description = "角色ID", required = true)
+                          @NotBlank(message = "角色ID不能为空") @PathVariable String id,
                           @Parameter(name = "roleForm", description = "角色实体", required = true) @Valid @RequestBody RoleForm roleForm) {
         Role role = roleForm.toPo(Role.class);
         role.setId(id);
@@ -63,34 +67,41 @@ public class RoleController {
 
     @Operation(summary = "获取角色", description = "获取指定角色信息")
     @GetMapping(value = "/{id}")
-    public Role get(@Parameter(name = "id", description = "角色ID", required = true) @PathVariable String id) {
+    public Role get(@Parameter(name = "id", description = "角色ID", required = true)
+                    @NotBlank(message = "角色ID不能为空") @PathVariable String id) {
         log.debug("get with id:{}", id);
         return roleService.get(id);
     }
 
     @Operation(summary = "获取角色菜单ID", description = "根据角色ID获取角色拥有的菜单ID集合")
     @GetMapping(value = "/{id}/menuIds")
-    public Set<String> getRoleMenuIds(@Parameter(name = "id", description = "角色ID", required = true) @PathVariable String id) {
+    public Set<String> getRoleMenuIds(@Parameter(name = "id", description = "角色ID", required = true)
+                                      @NotBlank(message = "角色ID不能为空") @PathVariable String id) {
         return roleMenuService.queryByRoleId(id);
     }
 
     @Operation(summary = "分配角色菜单", description = "保存角色菜单授权关系")
     @PutMapping(value = "/{id}/menus")
-    public boolean updateRoleMenus(@Parameter(name = "id", description = "角色ID", required = true) @PathVariable String id,
-                                   @Parameter(name = "menuIds", description = "菜单ID集合", required = true) @RequestBody Set<String> menuIds) {
+    public boolean updateRoleMenus(@Parameter(name = "id", description = "角色ID", required = true)
+                                   @NotBlank(message = "角色ID不能为空") @PathVariable String id,
+                                   @Parameter(name = "menuIds", description = "菜单ID集合", required = true)
+                                   @NotEmpty(message = "菜单ID集合不能为空") @RequestBody Set<String> menuIds) {
         return roleMenuService.saveBatch(id, menuIds);
     }
 
     @Operation(summary = "获取角色资源ID", description = "根据角色ID获取角色拥有的资源ID集合")
     @GetMapping(value = "/{id}/resourceIds")
-    public Set<String> getRoleResourceIds(@Parameter(name = "id", description = "角色ID", required = true) @PathVariable String id) {
+    public Set<String> getRoleResourceIds(@Parameter(name = "id", description = "角色ID", required = true)
+                                          @NotBlank(message = "角色ID不能为空") @PathVariable String id) {
         return roleResourceService.queryByRoleId(id);
     }
 
     @Operation(summary = "分配角色资源", description = "保存角色功能资源授权关系")
     @PutMapping(value = "/{id}/resources")
-    public boolean updateRoleResources(@Parameter(name = "id", description = "角色ID", required = true) @PathVariable String id,
-                                       @Parameter(name = "resourceIds", description = "资源ID集合", required = true) @RequestBody Set<String> resourceIds) {
+    public boolean updateRoleResources(@Parameter(name = "id", description = "角色ID", required = true)
+                                       @NotBlank(message = "角色ID不能为空") @PathVariable String id,
+                                       @Parameter(name = "resourceIds", description = "资源ID集合", required = true)
+                                       @NotEmpty(message = "资源ID集合不能为空") @RequestBody Set<String> resourceIds) {
         return roleResourceService.saveBatch(id, resourceIds);
     }
 
@@ -105,7 +116,8 @@ public class RoleController {
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @GetMapping(value = "/user/{userId}")
-    public List<Role> query(@Parameter(name = "userId", description = "用户id", required = true) @PathVariable String userId) {
+    public List<Role> query(@Parameter(name = "userId", description = "用户id", required = true)
+                            @NotBlank(message = "用户ID不能为空") @PathVariable String userId) {
         log.debug("query with userId:{}", userId);
         return roleService.query(userId);
     }

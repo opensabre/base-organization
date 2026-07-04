@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.Length;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.groups.Default;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -36,8 +37,14 @@ public class UserForm extends BaseForm<User> {
     @Schema(title = "用户描述")
     private String description;
 
+    @Schema(title = "用户性别")
+    private String gender;
+
     @Schema(title = "用户拥有的角色id列表")
     private Set<String> roleIds;
+
+    @Schema(title = "用户所属组织id")
+    private String groupId;
 
     @Schema(title = "用户状态，true为可用")
     private Boolean enabled = true;
@@ -51,9 +58,9 @@ public class UserForm extends BaseForm<User> {
     @Schema(title = "用户账号是否被锁定，true为未锁定")
     private Boolean accountNonLocked = true;
 
-    interface Add {
+    public interface Add extends Default {
     }
 
-    interface Update {
+    public interface Update extends Default {
     }
 }

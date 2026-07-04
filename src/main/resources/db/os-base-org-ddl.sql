@@ -99,6 +99,7 @@ CREATE TABLE base_org_user
     name                    VARCHAR(200) COMMENT '用户姓名',
     mobile                  VARCHAR(20) COMMENT '用户手机',
     description             VARCHAR(500) COMMENT '简介',
+    gender                  VARCHAR(20) COMMENT '性别',
     deleted                 VARCHAR(1)   NOT NULL DEFAULT 'N' COMMENT '是否已删除Y：已删除，N：未删除',
     enabled                 BOOLEAN COMMENT '是否有效用户',
     account_non_expired     BOOLEAN COMMENT '账号是否未过期',
@@ -176,12 +177,12 @@ CREATE TABLE base_org_role_resource
 -- DML准备初始化数据
 
 -- 用户
-INSERT INTO base_org_user (id, username, password, deleted, enabled, account_non_expired, credentials_non_expired, account_non_locked, name, mobile, created_time, updated_time, created_by, updated_by)
+INSERT INTO base_org_user (id, username, password, deleted, enabled, account_non_expired, credentials_non_expired, account_non_locked, name, mobile, gender, created_time, updated_time, created_by, updated_by)
 VALUES
 (101, 'admin', '$2a$10$vYA9wKn/hVGOtwQw2eHiceeIGNBdfLYpDmbzHgBSVmOfHXPH4iYdS', 'N', true, true, true, true,
- '超级管理员', '', now(), now(), 'system', 'system'),
+ '超级管理员', '', 'M', now(), now(), 'system', 'system'),
 (102, 'zhoutaoo', '$2a$10$vYA9wKn/hVGOtwQw2eHiceeIGNBdfLYpDmbzHgBSVmOfHXPH4iYdS', 'N', true, true, true, true,
- '周涛', 15619841000, now(), now(), 'system', 'system');
+ '周涛', 15619841000, 'M', now(), now(), 'system', 'system');
 -- 角色
 INSERT INTO base_org_role (id, code, name, description, created_time, updated_time, created_by, updated_by)
 VALUES (101, 'ADMIN', '超级管理员', '公司IT总负责人', now(), now(), 'system', 'system'),
@@ -286,7 +287,9 @@ VALUES (101, -1, 'MENU', '/admin', 'setting', '基础管理', '用户，角色�
        (108, -1, 'MENU', '/auth', 'lock', '认证鉴权', '认证鉴权服务管理', 70, now(), now(), 'system', 'system'),
        (109, -1, 'MENU', '/sysadmin', 'document', '系统管理', '审计与系统运维管理', 80, now(), now(), 'system', 'system'),
        (110, 108, 'MENU', '/auth/client', 'key', '客户端管理', 'OAuth2客户端新增，修改，删除', 10, now(), now(), 'system', 'system'),
-       (111, 109, 'MENU', '/sysadmin/audit-log', 'notebook', '审计日志', '审计日志查询，清理', 10, now(), now(), 'system', 'system');
+       (111, 109, 'MENU', '/sysadmin/audit-log', 'notebook', '审计日志', '审计日志查询，清理', 10, now(), now(), 'system', 'system'),
+       (112, 109, 'MENU', '/sysadmin/dicts', 'dict', '字典管理', '{"routeName":"Dict","component":"system/dict/index","visible":1}', 20, now(), now(), 'system', 'system'),
+       (113, 109, 'MENU', '/sysadmin/dict-items', 'dict', '字典项', '{"routeName":"DictItem","component":"system/dict/dict-item","visible":0}', 30, now(), now(), 'system', 'system');
 
 INSERT INTO base_org_user_group (id, user_id, group_id, created_time, updated_time, created_by, updated_by)
 VALUES (101, 101, 101, now(), now(), 'system', 'system'),
@@ -319,4 +322,8 @@ VALUES (101, 101, 101, now(), now(), 'system', 'system'),
        (121, 103, 108, now(), now(), 'system', 'system'),
        (122, 103, 109, now(), now(), 'system', 'system'),
        (123, 103, 110, now(), now(), 'system', 'system'),
-       (124, 103, 111, now(), now(), 'system', 'system');
+       (124, 103, 111, now(), now(), 'system', 'system'),
+       (125, 101, 112, now(), now(), 'system', 'system'),
+       (126, 101, 113, now(), now(), 'system', 'system'),
+       (127, 103, 112, now(), now(), 'system', 'system'),
+       (128, 103, 113, now(), now(), 'system', 'system');

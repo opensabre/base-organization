@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 @RestController
@@ -40,7 +41,7 @@ public class PositionController {
     @Operation(summary = "删除职位", description = "根据url的id来指定删除对象")
     @Parameter(name = "id", description = "职位ID", required = true)
     @DeleteMapping(value = "/{id}")
-    public boolean delete(@PathVariable String id) {
+    public boolean delete(@NotBlank(message = "职位ID不能为空") @PathVariable String id) {
         return positionService.delete(id);
     }
 
@@ -50,7 +51,8 @@ public class PositionController {
             @Parameter(name = "positionForm", description = "职位实体", required = true)
     })
     @PutMapping(value = "/{id}")
-    public boolean update(@PathVariable String id, @Valid @RequestBody PositionForm positionForm) {
+    public boolean update(@NotBlank(message = "职位ID不能为空") @PathVariable String id,
+                          @Valid @RequestBody PositionForm positionForm) {
         Position position = positionForm.toPo(Position.class);
         position.setId(id);
         return positionService.update(position);
@@ -59,7 +61,7 @@ public class PositionController {
     @Operation(summary = "获取职位", description = "获取指定职位信息")
     @Parameter(name = "id", description = "职位ID", required = true)
     @GetMapping(value = "/{id}")
-    public Position get(@PathVariable String id) {
+    public Position get(@NotBlank(message = "职位ID不能为空") @PathVariable String id) {
         log.debug("get with id:{}", id);
         return positionService.get(id);
     }
@@ -70,7 +72,7 @@ public class PositionController {
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @GetMapping
-    public List<Position> query(@RequestParam String name) {
+    public List<Position> query(@NotBlank(message = "职位名称不能为空") @RequestParam String name) {
         log.debug("query with name:{}", name);
         return positionService.query(new PositionQueryParam(name));
     }

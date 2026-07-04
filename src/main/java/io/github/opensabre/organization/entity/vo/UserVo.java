@@ -21,8 +21,11 @@ public class UserVo extends BaseVo {
     private String mobile;
     private String username;
     private String description;
+    private String gender;
     private String deleted;
     private Set<String> roleIds;
+    private String groupId;
+    private String groupName;
     private String createdBy;
     private String updatedBy;
     private Date createdTime;

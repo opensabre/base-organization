@@ -25,6 +25,11 @@ class UserServiceTest {
         IPage<UserVo> page = userService.query(new Page<>(1, 10), queryParam);
 
         assertThat(page.getRecords()).extracting(UserVo::getId).containsExactlyInAnyOrder("101", "102");
+        assertThat(page.getRecords()).allSatisfy(user -> {
+            assertThat(user.getGroupId()).isEqualTo("101");
+            assertThat(user.getGroupName()).isEqualTo("总公司");
+        });
+        assertThat(page.getRecords()).extracting(UserVo::getGender).containsOnly("M");
         assertThat(page.getTotal()).isEqualTo(2);
     }
 }

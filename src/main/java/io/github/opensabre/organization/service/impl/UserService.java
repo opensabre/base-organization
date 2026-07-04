@@ -5,11 +5,16 @@ import com.alicp.jetcache.anno.CacheType;
 import com.alicp.jetcache.anno.Cached;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.github.opensabre.organization.dao.GroupMapper;
+import io.github.opensabre.organization.dao.UserGroupMapper;
 import io.github.opensabre.organization.dao.UserMapper;
 import io.github.opensabre.organization.entity.param.UserQueryParam;
+import io.github.opensabre.organization.entity.po.Group;
 import io.github.opensabre.organization.entity.po.User;
+import io.github.opensabre.organization.entity.po.UserGroup;
 import io.github.opensabre.organization.entity.vo.UserVo;
 import io.github.opensabre.organization.exception.UserNotFoundException;
 import io.github.opensabre.organization.service.IUserRoleService;
@@ -21,7 +26,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.Resource;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -33,6 +44,12 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
 
     @Resource
     private IUserRoleService userRoleService;
+
+    @Resource
+    private UserGroupMapper userGroupMapper;
+
+    @Resource
+    private GroupMapper groupMapper;
 
     @Resource
     PasswordEncoder passwordEncoder;
@@ -47,6 +64,8 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
         boolean result = this.save(user);
         //保存用户与角色的关系
         userRoleService.saveBatch(user.getId(), user.getRoleIds());
+        //保存用户与组织的关系
+        saveUserGroup(user.getId(), user.getGroupId());
         return result;
     }
 
@@ -57,7 +76,9 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
         //删除用户
         this.removeById(id);
         //删除用户与角色的关系
-        return userRoleService.removeByUserId(id);
+        boolean roleRemoved = userRoleService.removeByUserId(id);
+        removeUserGroup(id);
+        return roleRemoved;
     }
 
     @Override
@@ -71,6 +92,8 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
         boolean isSuccess = this.updateById(user);
         //保存用户与角色关系
         userRoleService.saveBatch(user.getId(), user.getRoleIds());
+        //保存用户与组织关系
+        saveUserGroup(user.getId(), user.getGroupId());
         return isSuccess;
     }
 
@@ -85,7 +108,9 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
         }
         //查询用户与角色关系信息
         user.setRoleIds(userRoleService.queryByUserId(id));
-        return new UserVo(user);
+        UserVo userVo = new UserVo(user);
+        fillGroup(Collections.singletonList(userVo));
+        return userVo;
     }
 
     @Override
@@ -117,6 +142,52 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
         // 分页查询用户
         IPage<User> iPageUser = this.page(page, queryWrapper);
         // 转换成VO返回
-        return iPageUser.convert(UserVo::new);
+        IPage<UserVo> userVoPage = iPageUser.convert(UserVo::new);
+        fillGroup(userVoPage.getRecords());
+        return userVoPage;
+    }
+
+    private void saveUserGroup(String userId, String groupId) {
+        removeUserGroup(userId);
+        if (StringUtils.isBlank(groupId)) {
+            return;
+        }
+        userGroupMapper.insert(UserGroup.builder().userId(userId).groupId(groupId).build());
+    }
+
+    private void removeUserGroup(String userId) {
+        QueryWrapper<UserGroup> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(UserGroup::getUserId, userId);
+        userGroupMapper.delete(queryWrapper);
+    }
+
+    private void fillGroup(List<UserVo> users) {
+        if (CollectionUtils.isEmpty(users)) {
+            return;
+        }
+        Set<String> userIds = users.stream().map(UserVo::getId).collect(Collectors.toSet());
+        QueryWrapper<UserGroup> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().in(UserGroup::getUserId, userIds);
+        List<UserGroup> userGroups = userGroupMapper.selectList(queryWrapper);
+        if (CollectionUtils.isEmpty(userGroups)) {
+            return;
+        }
+        Set<String> groupIds = userGroups.stream().map(UserGroup::getGroupId).collect(Collectors.toSet());
+        Map<String, Group> groupMap = groupMapper.selectBatchIds(groupIds)
+                .stream()
+                .collect(Collectors.toMap(Group::getId, Function.identity()));
+        Map<String, UserGroup> userGroupMap = userGroups.stream()
+                .collect(Collectors.toMap(UserGroup::getUserId, Function.identity(), (first, ignored) -> first));
+        users.forEach(user -> {
+            UserGroup userGroup = userGroupMap.get(user.getId());
+            if (Objects.isNull(userGroup)) {
+                return;
+            }
+            user.setGroupId(userGroup.getGroupId());
+            Group group = groupMap.get(userGroup.getGroupId());
+            if (Objects.nonNull(group)) {
+                user.setGroupName(group.getName());
+            }
+        });
     }
 }

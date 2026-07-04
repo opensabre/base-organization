@@ -19,7 +19,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Schema(name = "用户")
@@ -37,7 +39,8 @@ public class UserController {
     @Audit(operationType = OperationType.CREATE, description = "新增用户", module = "USER", response = true, key = "#userForm.username")
     @Operation(summary = "新增用户", description = "新增一个用户")
     @PostMapping
-    public boolean add(@Parameter(name = "userForm", description = "新增用户form表单", required = true) @Valid @RequestBody UserForm userForm) {
+    public boolean add(@Parameter(name = "userForm", description = "新增用户form表单", required = true)
+                       @Validated(UserForm.Add.class) @RequestBody UserForm userForm) {
         log.debug("name:{}", userForm);
         User user = userForm.toPo(User.class);
         return userService.add(user);
@@ -46,15 +49,18 @@ public class UserController {
     @Audit(operationType = OperationType.DELETE, description = "删除用户", module = "USER", response = true, key = "#id")
     @Operation(summary = "删除用户", description = "根据url的id来指定删除对象，逻辑删除")
     @DeleteMapping(value = "/{id}")
-    public boolean delete(@Parameter(name = "id", description = "用户ID", required = true) @PathVariable String id) {
+    public boolean delete(@Parameter(name = "id", description = "用户ID", required = true)
+                          @NotBlank(message = "用户ID不能为空") @PathVariable String id) {
         return userService.delete(id);
     }
 
     @Audit(operationType = OperationType.UPDATE, description = "修改用户信息", module = "USER", response = true, key="#userForm.username")
     @Operation(summary = "修改用户", description = "修改指定用户信息")
     @PutMapping(value = "/{id}")
-    public boolean update(@Parameter(description = "用户ID", required = true) @PathVariable String id,
-                          @Parameter(description = "用户实体", required = true) @Valid @RequestBody UserForm userForm) {
+    public boolean update(@Parameter(description = "用户ID", required = true)
+                          @NotBlank(message = "用户ID不能为空") @PathVariable String id,
+                          @Parameter(description = "用户实体", required = true)
+                          @Validated(UserForm.Update.class) @RequestBody UserForm userForm) {
         User user = userForm.toPo(User.class);
         user.setId(id);
         return userService.update(user);
@@ -62,7 +68,8 @@ public class UserController {
 
     @Operation(summary = "获取用户", description = "根据用户ID获取指定用户信息", security = @SecurityRequirement(name = "Authorization"))
     @GetMapping(value = "/{id}")
-    public UserVo get(@Parameter(name = "id", description = "用户ID", required = true) @PathVariable String id) {
+    public UserVo get(@Parameter(name = "id", description = "用户ID", required = true)
+                      @NotBlank(message = "用户ID不能为空") @PathVariable String id) {
         log.info("get with id:{}", id);
         return userService.get(id);
     }
@@ -70,7 +77,8 @@ public class UserController {
     @Audit(operationType = OperationType.QUERY, description = "通过用户唯一键", module = "USER", response = true, key="#uniqueId")
     @Operation(summary = "获取用户", description = "根据用户唯一标识（username or mobile）获取用户信息")
     @GetMapping
-    public User query(@Parameter(description = "用户唯一标识", required = true) @RequestParam("uniqueId") String uniqueId) {
+    public User query(@Parameter(description = "用户唯一标识", required = true)
+                      @NotBlank(message = "用户唯一标识不能为空") @RequestParam("uniqueId") String uniqueId) {
         log.debug("query with username or mobile:{}", uniqueId);
         return userService.getByUniqueId(uniqueId);
     }

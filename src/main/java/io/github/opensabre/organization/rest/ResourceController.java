@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 @RestController
@@ -38,13 +39,15 @@ public class ResourceController {
 
     @Operation(summary = "删除资源", description = "根据url的id来指定删除对象")
     @DeleteMapping(value = "/{id}")
-    public boolean delete(@Parameter(name = "id", description = "资源ID", required = true) @PathVariable String id) {
+    public boolean delete(@Parameter(name = "id", description = "资源ID", required = true)
+                          @NotBlank(message = "资源ID不能为空") @PathVariable String id) {
         return resourceService.delete(id);
     }
 
     @Operation(summary = "修改资源", description = "修改指定资源信息")
     @PutMapping(value = "/{id}")
-    public boolean update(@Parameter(name = "id", description = "资源ID", required = true) @PathVariable String id,
+    public boolean update(@Parameter(name = "id", description = "资源ID", required = true)
+                          @NotBlank(message = "资源ID不能为空") @PathVariable String id,
                           @Parameter(name = "resourceForm", description = "资源实体", required = true) @Valid @RequestBody ResourceForm resourceForm) {
         Resource resource = resourceForm.toPo(Resource.class);
         resource.setId(id);
@@ -53,7 +56,8 @@ public class ResourceController {
 
     @Operation(summary = "获取资源", description = "获取指定资源信息")
     @GetMapping(value = "/{id}")
-    public Resource get(@Parameter(name = "id", description = "资源ID", required = true) @PathVariable String id) {
+    public Resource get(@Parameter(name = "id", description = "资源ID", required = true)
+                        @NotBlank(message = "资源ID不能为空") @PathVariable String id) {
         log.debug("get with id:{}", id);
         return resourceService.get(id);
     }
@@ -63,7 +67,8 @@ public class ResourceController {
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @GetMapping(value = "/user/{username}")
-    public List<Resource> queryByUsername(@Parameter(name = "userId", description = "用户id", required = true) @PathVariable String username) {
+    public List<Resource> queryByUsername(@Parameter(name = "userId", description = "用户id", required = true)
+                                          @NotBlank(message = "用户名不能为空") @PathVariable String username) {
         log.debug("query with username:{}", username);
         return resourceService.query(username);
     }
@@ -93,7 +98,8 @@ public class ResourceController {
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @GetMapping(value = "/role/{roleCode}")
-    public List<Resource> queryByRole(@Parameter(name = "roleCode", description = "角色名", required = true) @PathVariable String roleCode) {
+    public List<Resource> queryByRole(@Parameter(name = "roleCode", description = "角色名", required = true)
+                                      @NotBlank(message = "角色编码不能为空") @PathVariable String roleCode) {
         return resourceService.queryByRole(roleCode);
     }
 }
