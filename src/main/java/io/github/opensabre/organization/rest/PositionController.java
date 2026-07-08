@@ -72,7 +72,7 @@ public class PositionController {
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @GetMapping
-    public List<Position> query(@NotBlank(message = "职位名称不能为空") @RequestParam String name) {
+    public List<Position> query(@RequestParam(required = false) String name) {
         log.debug("query with name:{}", name);
         return positionService.query(new PositionQueryParam(name));
     }

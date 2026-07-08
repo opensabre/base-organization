@@ -4,6 +4,7 @@ import io.github.opensabre.organization.service.IPositionService;
 import io.github.opensabre.organization.service.IRoleMenuService;
 import io.github.opensabre.organization.service.IRoleResourceService;
 import io.github.opensabre.organization.service.IRoleService;
+import io.github.opensabre.organization.entity.param.PositionQueryParam;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -12,7 +13,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,16 +51,19 @@ class ControllerValidationTest {
     }
 
     @Test
-    void simpleQueryShouldRejectBlankNameBeforeCallingService() throws Exception {
+    void simpleQueryShouldAllowMissingNameToLoadAllPositions() throws Exception {
         IPositionService positionService = mock(IPositionService.class);
+        when(positionService.query(any(PositionQueryParam.class))).thenReturn(java.util.List.of());
         PositionController positionController = new PositionController();
         ReflectionTestUtils.setField(positionController, "positionService", positionService);
 
         mockMvc(positionController)
-                .perform(get("/position").param("name", " "))
-                .andExpect(status().isBadRequest());
+                .perform(get("/position"))
+                .andExpect(status().isOk());
 
-        verifyNoInteractions(positionService);
+        org.mockito.ArgumentCaptor<PositionQueryParam> captor = org.mockito.ArgumentCaptor.forClass(PositionQueryParam.class);
+        verify(positionService).query(captor.capture());
+        assertThat(captor.getValue().getName()).isNull();
     }
 
     private static MockMvc roleMockMvc(IRoleMenuService roleMenuService, IRoleResourceService roleResourceService) {
