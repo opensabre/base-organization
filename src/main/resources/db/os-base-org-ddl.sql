@@ -278,18 +278,20 @@ VALUES (101, -1, '总公司', '总公司', now(), now(), 'system', 'system'),
 -- 菜单
 INSERT INTO base_org_menu (id, parent_id, type, href, icon, name, description, order_num, created_time, updated_time, created_by, updated_by)
 VALUES (101, -1, 'MENU', '/admin', 'setting', '基础管理', '用户，角色，菜单，组织等基础数据管理', 0, now(), now(), 'system', 'system'),
-       (102, 101, 'MENU', '/admin/users', 'fa-user', '用户管理', '用户新增，修改，查看，删除', 10, now(), now(), 'system', 'system'),
-       (103, 101, 'MENU', '/admin/menus', 'category', '菜单管理', '菜单新增，修改，删除', 20, now(), now(), 'system', 'system'),
-       (104, 101, 'MENU', '/admin/roles', 'user-filled', '角色管理', '角色新增，修改，删除和菜单授权', 30, now(), now(), 'system', 'system'),
-       (105, 101, 'MENU', '/admin/groups', 'office-building', '组织管理', '组织新增，修改，查看，删除', 40, now(), now(), 'system', 'system'),
-       (106, 101, 'MENU', '/admin/resources', 'connection', '资源管理', '功能资源新增，修改，查看，删除', 50, now(), now(), 'system', 'system'),
-       (107, 101, 'MENU', '/admin/positions', 'postcard', '岗位管理', '岗位新增，修改，查看，删除', 60, now(), now(), 'system', 'system'),
-       (108, -1, 'MENU', '/auth', 'lock', '认证鉴权', '认证鉴权服务管理', 70, now(), now(), 'system', 'system'),
+       (102, 101, 'MENU', '/admin/users', 'user', '用户管理', '用户新增，修改，查看，删除', 10, now(), now(), 'system', 'system'),
+       (103, 101, 'MENU', '/admin/menus', 'menu', '菜单管理', '菜单新增，修改，删除', 20, now(), now(), 'system', 'system'),
+       (104, 101, 'MENU', '/admin/roles', 'role', '角色管理', '角色新增，修改，删除和菜单授权', 30, now(), now(), 'system', 'system'),
+       (105, 101, 'MENU', '/admin/groups', 'tree', '组织管理', '组织新增，修改，查看，删除', 40, now(), now(), 'system', 'system'),
+       (106, 101, 'MENU', '/admin/resources', 'api', '资源管理', '功能资源新增，修改，查看，删除', 50, now(), now(), 'system', 'system'),
+       (107, 101, 'MENU', '/admin/positions', 'project', '岗位管理', '岗位新增，修改，查看，删除', 60, now(), now(), 'system', 'system'),
+       (108, -1, 'MENU', '/auth', 'client', '认证鉴权', '认证鉴权服务管理', 70, now(), now(), 'system', 'system'),
        (109, -1, 'MENU', '/sysadmin', 'document', '系统管理', '审计与系统运维管理', 80, now(), now(), 'system', 'system'),
-       (110, 108, 'MENU', '/auth/client', 'key', '客户端管理', 'OAuth2客户端新增，修改，删除', 10, now(), now(), 'system', 'system'),
-       (111, 109, 'MENU', '/sysadmin/audit-log', 'notebook', '审计日志', '审计日志查询，清理', 10, now(), now(), 'system', 'system'),
+       (110, 108, 'MENU', '/auth/client', 'client', '客户端管理', 'OAuth2客户端新增，修改，删除', 10, now(), now(), 'system', 'system'),
+       (111, 109, 'MENU', '/sysadmin/audit-log', 'document', '审计日志', '审计日志查询，清理', 10, now(), now(), 'system', 'system'),
        (112, 109, 'MENU', '/sysadmin/dicts', 'dict', '字典管理', '{"routeName":"Dict","component":"system/dict/index","visible":1}', 20, now(), now(), 'system', 'system'),
-       (113, 109, 'MENU', '/sysadmin/dict-items', 'dict', '字典项', '{"routeName":"DictItem","component":"system/dict/dict-item","visible":0}', 30, now(), now(), 'system', 'system');
+       (113, 109, 'MENU', '/sysadmin/dict-items', 'dict', '字典项', '{"routeName":"DictItem","component":"system/dict/dict-item","visible":0}', 30, now(), now(), 'system', 'system'),
+       (114, 109, 'MENU', '/sysadmin/captcha-scenes', 'captcha', '验证码管理', '{"routeName":"CaptchaScenes","component":"sysadmin/captcha-scenes/index","visible":1}', 40, now(), now(), 'system', 'system'),
+       (115, 109, 'MENU', '/sysadmin/notification', 'bell', '通知管理', '{"routeName":"NotificationAdmin","component":"sysadmin/notification/index","visible":1}', 50, now(), now(), 'system', 'system');
 
 INSERT INTO base_org_user_group (id, user_id, group_id, created_time, updated_time, created_by, updated_by)
 VALUES (101, 101, 101, now(), now(), 'system', 'system'),
@@ -326,4 +328,8 @@ VALUES (101, 101, 101, now(), now(), 'system', 'system'),
        (125, 101, 112, now(), now(), 'system', 'system'),
        (126, 101, 113, now(), now(), 'system', 'system'),
        (127, 103, 112, now(), now(), 'system', 'system'),
-       (128, 103, 113, now(), now(), 'system', 'system');
+       (128, 103, 113, now(), now(), 'system', 'system'),
+       (129, 101, 114, now(), now(), 'system', 'system'),
+       (130, 101, 115, now(), now(), 'system', 'system'),
+       (131, 103, 114, now(), now(), 'system', 'system'),
+       (132, 103, 115, now(), now(), 'system', 'system');
