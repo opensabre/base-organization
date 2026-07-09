@@ -2,6 +2,8 @@ package io.github.opensabre.organization.rest;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.github.opensabre.common.core.entity.vo.Result;
+import io.github.opensabre.governance.audit.annotations.Audit;
+import io.github.opensabre.governance.audit.annotations.OperationType;
 import io.github.opensabre.organization.entity.form.RoleForm;
 import io.github.opensabre.organization.entity.form.RoleQueryForm;
 import io.github.opensabre.organization.entity.param.RoleQueryParam;
@@ -41,6 +43,7 @@ public class RoleController {
     private IRoleResourceService roleResourceService;
 
     @Operation(summary = "新增角色", description = "新增一个角色")
+    @Audit(operationType = OperationType.CREATE, description = "新增角色", module = "ROLE", response = true, key = "#roleForm.name")
     @PostMapping
     public boolean add(@Parameter(name = "roleForm", description = "新增角色form表单", required = true) @Valid @RequestBody RoleForm roleForm) {
         log.debug("name:{}", roleForm);
@@ -49,6 +52,7 @@ public class RoleController {
     }
 
     @Operation(summary = "删除角色", description = "根据url的id来指定删除对象")
+    @Audit(operationType = OperationType.DELETE, description = "删除角色", module = "ROLE", response = true, key = "#id")
     @DeleteMapping(value = "/{id}")
     public boolean delete(@Parameter(name = "id", description = "角色ID", required = true)
                           @NotBlank(message = "角色ID不能为空") @PathVariable String id) {
@@ -56,6 +60,7 @@ public class RoleController {
     }
 
     @Operation(summary = "修改角色", description = "修改指定角色信息")
+    @Audit(operationType = OperationType.UPDATE, description = "修改角色信息", module = "ROLE", response = true, key = "#id")
     @PutMapping(value = "/{id}")
     public boolean update(@Parameter(name = "id", description = "角色ID", required = true)
                           @NotBlank(message = "角色ID不能为空") @PathVariable String id,
@@ -81,6 +86,7 @@ public class RoleController {
     }
 
     @Operation(summary = "分配角色菜单", description = "保存角色菜单授权关系")
+    @Audit(operationType = OperationType.UPDATE, description = "分配角色菜单", module = "ROLE", response = true, key = "#id")
     @PutMapping(value = "/{id}/menus")
     public boolean updateRoleMenus(@Parameter(name = "id", description = "角色ID", required = true)
                                    @NotBlank(message = "角色ID不能为空") @PathVariable String id,
@@ -97,6 +103,7 @@ public class RoleController {
     }
 
     @Operation(summary = "分配角色资源", description = "保存角色功能资源授权关系")
+    @Audit(operationType = OperationType.UPDATE, description = "分配角色资源", module = "ROLE", response = true, key = "#id")
     @PutMapping(value = "/{id}/resources")
     public boolean updateRoleResources(@Parameter(name = "id", description = "角色ID", required = true)
                                        @NotBlank(message = "角色ID不能为空") @PathVariable String id,

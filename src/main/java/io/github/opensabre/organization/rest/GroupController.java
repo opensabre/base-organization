@@ -1,6 +1,8 @@
 package io.github.opensabre.organization.rest;
 
 import io.github.opensabre.common.core.entity.vo.Result;
+import io.github.opensabre.governance.audit.annotations.Audit;
+import io.github.opensabre.governance.audit.annotations.OperationType;
 import io.github.opensabre.organization.entity.form.GroupForm;
 import io.github.opensabre.organization.entity.form.GroupQueryForm;
 import io.github.opensabre.organization.entity.param.GroupQueryParam;
@@ -35,6 +37,7 @@ public class GroupController {
     private IGroupService groupService;
 
     @Operation(summary = "新增用户组", description = "新增一个用户组")
+    @Audit(operationType = OperationType.CREATE, description = "新增组织", module = "GROUP", response = true, key = "#groupForm.name")
     @PostMapping
     public boolean add(@Parameter(description = "新增用户组form表单", required = true) @Valid @RequestBody GroupForm groupForm) {
         log.debug("name:{}", groupForm);
@@ -42,6 +45,7 @@ public class GroupController {
     }
 
     @Operation(summary = "删除用户组", description = "根据url的id来指定删除对象")
+    @Audit(operationType = OperationType.DELETE, description = "删除组织", module = "GROUP", response = true, key = "#id")
     @ApiResponses(
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
@@ -52,6 +56,7 @@ public class GroupController {
     }
 
     @Operation(summary = "修改用户组", description = "修改指定用户组信息")
+    @Audit(operationType = OperationType.UPDATE, description = "修改组织信息", module = "GROUP", response = true, key = "#id")
     @ApiResponses(
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )

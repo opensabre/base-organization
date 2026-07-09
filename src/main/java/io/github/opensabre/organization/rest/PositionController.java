@@ -1,6 +1,8 @@
 package io.github.opensabre.organization.rest;
 
 import io.github.opensabre.common.core.entity.vo.Result;
+import io.github.opensabre.governance.audit.annotations.Audit;
+import io.github.opensabre.governance.audit.annotations.OperationType;
 import io.github.opensabre.organization.entity.form.PositionForm;
 import io.github.opensabre.organization.entity.param.PositionQueryParam;
 import io.github.opensabre.organization.entity.po.Position;
@@ -30,6 +32,7 @@ public class PositionController {
     private IPositionService positionService;
 
     @Operation(summary = "新增职位", description = "新增一个职位")
+    @Audit(operationType = OperationType.CREATE, description = "新增岗位", module = "POSITION", response = true, key = "#positionForm.name")
     @Parameter(name = "positionForm", description = "新增职位form表单", required = true)
     @PostMapping
     public boolean add(@Valid @RequestBody PositionForm positionForm) {
@@ -39,6 +42,7 @@ public class PositionController {
     }
 
     @Operation(summary = "删除职位", description = "根据url的id来指定删除对象")
+    @Audit(operationType = OperationType.DELETE, description = "删除岗位", module = "POSITION", response = true, key = "#id")
     @Parameter(name = "id", description = "职位ID", required = true)
     @DeleteMapping(value = "/{id}")
     public boolean delete(@NotBlank(message = "职位ID不能为空") @PathVariable String id) {
@@ -46,6 +50,7 @@ public class PositionController {
     }
 
     @Operation(summary = "修改职位", description = "修改指定职位信息")
+    @Audit(operationType = OperationType.UPDATE, description = "修改岗位信息", module = "POSITION", response = true, key = "#id")
     @Parameters({
             @Parameter(name = "id", description = "职位ID", required = true),
             @Parameter(name = "positionForm", description = "职位实体", required = true)
