@@ -284,14 +284,15 @@ VALUES (101, -1, 'MENU', '/admin', 'setting', '基础管理', '用户，角色�
        (105, 101, 'MENU', '/admin/groups', 'tree', '组织管理', '组织新增，修改，查看，删除', 40, now(), now(), 'system', 'system'),
        (106, 101, 'MENU', '/admin/resources', 'api', '资源管理', '功能资源新增，修改，查看，删除', 50, now(), now(), 'system', 'system'),
        (107, 101, 'MENU', '/admin/positions', 'project', '岗位管理', '岗位新增，修改，查看，删除', 60, now(), now(), 'system', 'system'),
-       (108, -1, 'MENU', '/auth', 'client', '认证鉴权', '认证鉴权服务管理', 70, now(), now(), 'system', 'system'),
+       (108, -1, 'MENU', '/auth', 'client', '安全认证', '安全认证服务管理', 70, now(), now(), 'system', 'system'),
        (109, -1, 'MENU', '/sysadmin', 'document', '系统管理', '审计与系统运维管理', 80, now(), now(), 'system', 'system'),
        (110, 108, 'MENU', '/auth/client', 'client', '客户端管理', 'OAuth2客户端新增，修改，删除', 10, now(), now(), 'system', 'system'),
        (111, 109, 'MENU', '/sysadmin/audit-log', 'document', '审计日志', '审计日志查询，清理', 10, now(), now(), 'system', 'system'),
        (112, 109, 'MENU', '/sysadmin/dicts', 'dict', '字典管理', '{"routeName":"Dict","component":"system/dict/index","visible":1}', 20, now(), now(), 'system', 'system'),
        (113, 109, 'MENU', '/sysadmin/dict-items', 'dict', '字典项', '{"routeName":"DictItem","component":"system/dict/dict-item","visible":0}', 30, now(), now(), 'system', 'system'),
        (114, 109, 'MENU', '/sysadmin/captcha-scenes', 'captcha', '验证码管理', '{"routeName":"CaptchaScenes","component":"sysadmin/captcha-scenes/index","visible":1}', 40, now(), now(), 'system', 'system'),
-       (115, 109, 'MENU', '/sysadmin/notification', 'bell', '通知管理', '{"routeName":"NotificationAdmin","component":"sysadmin/notification/index","visible":1}', 50, now(), now(), 'system', 'system');
+       (115, 109, 'MENU', '/sysadmin/notification', 'bell', '通知管理', '{"routeName":"NotificationAdmin","component":"sysadmin/notification/index","visible":1}', 50, now(), now(), 'system', 'system'),
+       (116, 108, 'MENU', '/auth/online-user', 'el-icon-User', '在线用户', '{"routeName":"OnlineUser","component":"security/online-user/index","visible":1}', 20, now(), now(), 'system', 'system');
 
 INSERT INTO base_org_user_group (id, user_id, group_id, created_time, updated_time, created_by, updated_by)
 VALUES (101, 101, 101, now(), now(), 'system', 'system'),
@@ -332,4 +333,6 @@ VALUES (101, 101, 101, now(), now(), 'system', 'system'),
        (129, 101, 114, now(), now(), 'system', 'system'),
        (130, 101, 115, now(), now(), 'system', 'system'),
        (131, 103, 114, now(), now(), 'system', 'system'),
-       (132, 103, 115, now(), now(), 'system', 'system');
+       (132, 103, 115, now(), now(), 'system', 'system'),
+       (133, 101, 116, now(), now(), 'system', 'system'),
+       (134, 103, 116, now(), now(), 'system', 'system');
