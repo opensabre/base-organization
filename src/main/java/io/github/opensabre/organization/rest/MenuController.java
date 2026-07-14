@@ -1,6 +1,8 @@
 package io.github.opensabre.organization.rest;
 
 import io.github.opensabre.common.core.entity.vo.Result;
+import io.github.opensabre.governance.audit.annotations.Audit;
+import io.github.opensabre.governance.audit.annotations.OperationType;
 import io.github.opensabre.organization.entity.form.MenuForm;
 import io.github.opensabre.organization.entity.form.MenuQueryForm;
 import io.github.opensabre.organization.entity.param.MenuQueryParam;
@@ -32,6 +34,7 @@ public class MenuController {
 
     @Operation(summary = "新增菜单", description = "新增一个菜单")
     @PostMapping
+    @Audit(operationType = OperationType.CREATE, description = "新增菜单", module = "MENU", response = true, key = "#menuForm.name")
     public boolean add(@Parameter(description = "新增菜单form表单", required = true) @Valid @RequestBody MenuForm menuForm) {
         log.debug("name:{}", menuForm);
         Menu menu = menuForm.toPo(Menu.class);
@@ -40,6 +43,7 @@ public class MenuController {
 
     @Operation(summary = "删除菜单", description = "根据url的id来指定删除对象")
     @DeleteMapping(value = "/{id}")
+    @Audit(operationType = OperationType.DELETE, description = "删除菜单", module = "MENU", response = true, key = "#id")
     public boolean delete(@Parameter(description = "菜单ID", required = true)
                           @NotBlank(message = "菜单ID不能为空") @PathVariable String id) {
         return menuService.delete(id);
@@ -47,6 +51,7 @@ public class MenuController {
 
     @Operation(summary = "修改菜单", description = "修改指定菜单信息")
     @PutMapping(value = "/{id}")
+    @Audit(operationType = OperationType.UPDATE, description = "修改菜单", module = "MENU", response = true, key = "#id")
     public boolean update(@Parameter(description = "菜单ID", required = true)
                           @NotBlank(message = "菜单ID不能为空") @PathVariable String id,
                           @Parameter(description = "菜单实体", required = true) @Valid @RequestBody MenuForm menuForm) {

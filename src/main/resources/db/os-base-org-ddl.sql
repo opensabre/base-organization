@@ -292,7 +292,10 @@ VALUES (101, -1, 'MENU', '/admin', 'setting', '基础管理', '用户，角色�
        (113, 109, 'MENU', '/sysadmin/dict-items', 'dict', '字典项', '{"routeName":"DictItem","component":"system/dict/dict-item","visible":0}', 30, now(), now(), 'system', 'system'),
        (114, 109, 'MENU', '/sysadmin/captcha-scenes', 'captcha', '验证码管理', '{"routeName":"CaptchaScenes","component":"sysadmin/captcha-scenes/index","visible":1}', 40, now(), now(), 'system', 'system'),
        (115, 109, 'MENU', '/sysadmin/notification', 'bell', '通知管理', '{"routeName":"NotificationAdmin","component":"sysadmin/notification/index","visible":1}', 50, now(), now(), 'system', 'system'),
-       (116, 108, 'MENU', '/auth/online-user', 'el-icon-User', '在线用户', '{"routeName":"OnlineUser","component":"security/online-user/index","visible":1}', 20, now(), now(), 'system', 'system');
+       (119, 109, 'MENU', '/sysadmin/ratelimit-scenes', 'timer', '限次场景', '{"routeName":"RateLimitScenes","component":"sysadmin/ratelimit-scenes/index","visible":1}', 55, now(), now(), 'system', 'system'),
+       (116, 108, 'MENU', '/auth/online-user', 'el-icon-User', '在线用户', '{"routeName":"OnlineUser","component":"security/online-user/index","visible":1}', 20, now(), now(), 'system', 'system'),
+       (117, -1, 'MENU', '/development', 'code', '研发管理', '研发工具与接口文档', 90, now(), now(), 'system', 'system'),
+       (118, 117, 'MENU', '/development/api-docs', 'document', 'API文档', '{"iframeUrl":"/doc.html","visible":1}', 10, now(), now(), 'system', 'system');
 
 INSERT INTO base_org_user_group (id, user_id, group_id, created_time, updated_time, created_by, updated_by)
 VALUES (101, 101, 101, now(), now(), 'system', 'system'),
@@ -335,4 +338,10 @@ VALUES (101, 101, 101, now(), now(), 'system', 'system'),
        (131, 103, 114, now(), now(), 'system', 'system'),
        (132, 103, 115, now(), now(), 'system', 'system'),
        (133, 101, 116, now(), now(), 'system', 'system'),
-       (134, 103, 116, now(), now(), 'system', 'system');
+       (134, 103, 116, now(), now(), 'system', 'system'),
+       (135, 101, 117, now(), now(), 'system', 'system'),
+       (136, 101, 118, now(), now(), 'system', 'system'),
+       (137, 103, 117, now(), now(), 'system', 'system'),
+       (138, 103, 118, now(), now(), 'system', 'system'),
+       (139, 101, 119, now(), now(), 'system', 'system'),
+       (140, 103, 119, now(), now(), 'system', 'system');
