@@ -2,6 +2,19 @@ USE os_base_organization;
 SET NAMES utf8mb4;
 
 -- BUTTON 菜单只决定管理台操作可见性；API 访问权限仍由 base_org_resource 管理。
+-- 当前用户接口属于后端 API 授权资源，与下方 BUTTON 菜单权限分离。
+INSERT INTO base_org_resource (id, name, code, type, url, method, description, created_time, updated_time, created_by, updated_by)
+VALUES (322, '获取当前登录用户', 'user_manager:current', 'user', '/user/current', 'GET', '获取当前认证用户信息', now(), now(), 'system', 'system')
+ON DUPLICATE KEY UPDATE name = VALUES(name), type = VALUES(type), url = VALUES(url), method = VALUES(method),
+                        description = VALUES(description), updated_time = VALUES(updated_time), updated_by = VALUES(updated_by);
+
+INSERT INTO base_org_role_resource (id, role_id, resource_id, created_time, updated_time, created_by, updated_by)
+VALUES (517, 101, 322, now(), now(), 'system', 'system'),
+       (518, 102, 322, now(), now(), 'system', 'system'),
+       (519, 103, 322, now(), now(), 'system', 'system')
+ON DUPLICATE KEY UPDATE role_id = VALUES(role_id), resource_id = VALUES(resource_id),
+                        updated_time = VALUES(updated_time), updated_by = VALUES(updated_by);
+
 INSERT INTO base_org_menu (id, parent_id, type, href, icon, name, description, order_num, created_time, updated_time, created_by, updated_by)
 VALUES
  (122, 109, 'MENU', '/sysadmin/configs', 'setting', '系统配置', '{"routeName":"Config","component":"system/config/index","visible":1}', 70, now(), now(), 'system', 'system'),

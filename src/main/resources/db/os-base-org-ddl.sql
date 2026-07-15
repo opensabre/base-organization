@@ -220,7 +220,8 @@ VALUES (101, '新增用户', 'user_manager:btn_add', 'user', '/user', 'POST', '�
        (315, '删除网关路由', 'resource_manager:adel', 'resource', '/resource/{id}', 'DELETE', '删除资源', now(), now(), 'system', 'system'),
        (316, '查看网关路由', 'resource_manager:view', 'resource', '/resource/{id}', 'GET', '查看资源', now(), now(), 'system', 'system'),
        (317, '搜索网关路由', 'resource_manager:query', 'resource', '/resource/conditions', 'POST', '搜索资源', now(), now(), 'system', 'system'),
-       (318, '全局加载路由', 'resource_manager:all', 'resource', '/resource/all', 'GET', '查询全部资源', now(), now(), 'system', 'system');
+       (318, '全局加载路由', 'resource_manager:all', 'resource', '/resource/all', 'GET', '查询全部资源', now(), now(), 'system', 'system'),
+       (322, '获取当前登录用户', 'user_manager:current', 'user', '/user/current', 'GET', '获取当前认证用户信息', now(), now(), 'system', 'system');
 
 -- 用户关系授权
 INSERT INTO base_org_user_role (id, user_id, role_id, created_time, updated_time, created_by, updated_by)
@@ -259,7 +260,10 @@ VALUES (101, 101, 101, now(), now(), 'system', 'system'),
        (503, 101, 315, now(), now(), 'system', 'system'),
        (504, 101, 316, now(), now(), 'system', 'system'),
        (505, 101, 317, now(), now(), 'system', 'system'),
-       (506, 101, 318, now(), now(), 'system', 'system');
+       (506, 101, 318, now(), now(), 'system', 'system'),
+       (517, 101, 322, now(), now(), 'system', 'system'),
+       (518, 102, 322, now(), now(), 'system', 'system'),
+       (519, 103, 322, now(), now(), 'system', 'system');
 
 -- 岗位
 INSERT INTO base_org_position (id, name, description, created_time, updated_time, created_by, updated_by)
