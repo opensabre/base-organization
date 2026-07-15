@@ -294,6 +294,7 @@ VALUES (101, -1, 'MENU', '/admin', 'setting', '基础管理', '用户，角色�
        (115, 109, 'MENU', '/sysadmin/notification', 'bell', '通知管理', '{"routeName":"NotificationAdmin","component":"sysadmin/notification/index","visible":1}', 50, now(), now(), 'system', 'system'),
        (119, 109, 'MENU', '/sysadmin/ratelimit-scenes', 'timer', '限次场景', '{"routeName":"RateLimitScenes","component":"sysadmin/ratelimit-scenes/index","visible":1}', 55, now(), now(), 'system', 'system'),
        (120, 109, 'MENU', '/sysadmin/gateway-routes', 'api', '网关路由', '{"routeName":"GatewayRoute","component":"system/gateway-route/index","visible":1}', 60, now(), now(), 'system', 'system'),
+       (121, 109, 'MENU', '/sysadmin/internal-messages', 'bell', '站内信管理', '{"routeName":"InternalMessage","component":"system/notice/index","visible":1}', 65, now(), now(), 'system', 'system'),
        (116, 108, 'MENU', '/auth/online-user', 'el-icon-User', '在线用户', '{"routeName":"OnlineUser","component":"security/online-user/index","visible":1}', 20, now(), now(), 'system', 'system'),
        (117, -1, 'MENU', '/development', 'code', '研发管理', '研发工具与接口文档', 90, now(), now(), 'system', 'system'),
        (118, 117, 'MENU', '/development/api-docs', 'document', 'API文档', '{"iframeUrl":"/doc.html","visible":1}', 10, now(), now(), 'system', 'system');
@@ -347,4 +348,6 @@ VALUES (101, 101, 101, now(), now(), 'system', 'system'),
        (139, 101, 119, now(), now(), 'system', 'system'),
        (140, 103, 119, now(), now(), 'system', 'system'),
        (141, 101, 120, now(), now(), 'system', 'system'),
-       (146, 103, 120, now(), now(), 'system', 'system');
+       (146, 103, 120, now(), now(), 'system', 'system'),
+       (147, 101, 121, now(), now(), 'system', 'system'),
+       (148, 103, 121, now(), now(), 'system', 'system');
