@@ -38,7 +38,7 @@ VALUES
 ON DUPLICATE KEY UPDATE parent_id=VALUES(parent_id), type=VALUES(type), name=VALUES(name), description=VALUES(description), order_num=VALUES(order_num), updated_time=VALUES(updated_time), updated_by=VALUES(updated_by);
 
 INSERT INTO base_org_role_menu (id, role_id, menu_id, created_time, updated_time, created_by, updated_by)
-SELECT 1000 + m.id, r.id, m.id, now(), now(), 'system', 'system'
+SELECT 100000 + CAST(r.id AS UNSIGNED) * 1000 + m.id, r.id, m.id, now(), now(), 'system', 'system'
 FROM base_org_menu m JOIN base_org_role r ON r.id IN (101, 103)
 WHERE m.id IN (122, 123) OR m.id BETWEEN 130 AND 158
 ON DUPLICATE KEY UPDATE updated_time=VALUES(updated_time), updated_by=VALUES(updated_by);
