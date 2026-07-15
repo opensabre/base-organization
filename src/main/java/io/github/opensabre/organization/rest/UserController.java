@@ -1,6 +1,7 @@
 package io.github.opensabre.organization.rest;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.github.opensabre.common.core.util.UserContextHolder;
 import io.github.opensabre.governance.audit.annotations.Audit;
 import io.github.opensabre.governance.audit.annotations.OperationType;
 import io.github.opensabre.common.core.entity.vo.Result;
@@ -9,6 +10,7 @@ import io.github.opensabre.organization.entity.form.UserQueryForm;
 import io.github.opensabre.organization.entity.param.UserQueryParam;
 import io.github.opensabre.organization.entity.po.User;
 import io.github.opensabre.organization.entity.vo.UserVo;
+import io.github.opensabre.organization.exception.UserNotFoundException;
 import io.github.opensabre.organization.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,6 +23,7 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,6 +75,25 @@ public class UserController {
                       @NotBlank(message = "用户ID不能为空") @PathVariable String id) {
         log.info("get with id:{}", id);
         return userService.get(id);
+    }
+
+    /**
+     * 获取当前已认证用户。
+     *
+     * 网关会将认证用户名写入用户上下文；管理台据此取得真实用户 ID，
+     * 再加载该用户的角色菜单，不能使用固定用户 ID。
+     *
+     * @return 当前用户信息
+     */
+    @Operation(summary = "获取当前用户", description = "根据网关注入的当前用户名获取用户信息", security = @SecurityRequirement(name = "Authorization"))
+    @GetMapping(value = "/current")
+    public UserVo current() {
+        String username = UserContextHolder.getInstance().getUsername();
+        if (StringUtils.isBlank(username)) {
+            throw new UserNotFoundException("current username is missing");
+        }
+        User user = userService.getByUniqueId(username);
+        return userService.get(user.getId());
     }
 
     @Audit(operationType = OperationType.QUERY, description = "通过用户唯一键", module = "USER", response = true, key="#uniqueId")
