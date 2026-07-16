@@ -67,7 +67,7 @@ class UserControllerTest {
     }
 
     @Test
-    void currentShouldResolveTheGatewayAuthenticatedUser() throws Exception {
+    void currentShouldResolveTheJwtSubject() throws Exception {
         IUserService userService = mock(IUserService.class);
         User user = new User();
         user.setId("200");
@@ -76,7 +76,7 @@ class UserControllerTest {
         MockMvc mockMvc = mockMvc(userService);
 
         mockMvc.perform(get("/user/current")
-                        .header("x-client-token-user", "{\"user_name\":\"tester\"}"))
+                        .header("Authorization", "Bearer eyJhbGciOiJub25lIn0.eyJzdWIiOiJ0ZXN0ZXIifQ."))
                 .andExpect(status().isOk());
 
         verify(userService).getByUniqueId("tester");

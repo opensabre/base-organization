@@ -3,7 +3,6 @@ package io.github.opensabre.organization.rest;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.opensabre.common.core.util.UserContextHolder;
 import io.github.opensabre.governance.audit.annotations.Audit;
 import io.github.opensabre.governance.audit.annotations.OperationType;
 import io.github.opensabre.common.core.entity.vo.Result;
@@ -30,6 +29,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 @Schema(name = "用户")
 @ApiResponses(
         @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
@@ -39,8 +41,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class UserController {
 
-    private static final String GATEWAY_USER_HEADER = "x-client-token-user";
-    private static final String GATEWAY_USERNAME_FIELD = "user_name";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String GATEWAY_TOKEN_HEADER = "x-client-token";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -88,12 +90,12 @@ public class UserController {
     /**
      * 获取当前已认证用户。
      *
-     * 优先从网关传递的用户 Header 读取认证用户名，兼容已有用户上下文和 JWT。
+     * 临时直接解析网关转发的 JWT subject。
      * 管理台据此取得真实用户 ID，再加载该用户的角色菜单，不能使用固定用户 ID。
      *
      * @return 当前用户信息
      */
-    @Operation(summary = "获取当前用户", description = "根据网关注入的当前用户名获取用户信息", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "获取当前用户", description = "根据请求 JWT subject 获取用户信息", security = @SecurityRequirement(name = "Authorization"))
     @GetMapping(value = "/current")
     public UserVo current(HttpServletRequest request) {
         String username = resolveCurrentUsername(request);
@@ -107,27 +109,29 @@ public class UserController {
     /**
      * 解析当前用户名。
      *
-     * UserInterceptor 尚未注册时，用户上下文为空；因此先直接解析网关可信 Header，
-     * 再回退到已有用户上下文，保证拦截器是否注册都能识别当前用户。
+     * Framework 0.5 发布前，UserContextHolder 在当前链路中不可用。
+     * 网关已完成 JWT 校验，此处只从 Authorization 或 x-client-token Header 的 JWT payload
+     * 读取 subject；不接受请求体或查询参数提供的用户名。
      *
      * @param request 当前请求
      * @return 当前用户名；无法解析时为空字符串
      */
     private String resolveCurrentUsername(HttpServletRequest request) {
-        String userHeader = request.getHeader(GATEWAY_USER_HEADER);
-        if (StringUtils.isNotBlank(userHeader)) {
-            try {
-                JsonNode user = objectMapper.readTree(userHeader);
-                String username = user.path(GATEWAY_USERNAME_FIELD).asText();
-                if (StringUtils.isNotBlank(username)) {
-                    return username;
-                }
-            } catch (Exception e) {
-                log.warn("Cannot parse gateway user header", e);
-            }
+        String authorization = StringUtils.defaultIfBlank(
+                request.getHeader(AUTHORIZATION_HEADER), request.getHeader(GATEWAY_TOKEN_HEADER));
+        String token = StringUtils.removeStartIgnoreCase(StringUtils.trimToEmpty(authorization), "Bearer ");
+        String[] tokenParts = token.split("\\.");
+        if (tokenParts.length < 2) {
+            return StringUtils.EMPTY;
         }
-
-        return UserContextHolder.getInstance().getUsername();
+        try {
+            String payload = new String(Base64.getUrlDecoder().decode(tokenParts[1]), StandardCharsets.UTF_8);
+            JsonNode claims = objectMapper.readTree(payload);
+            return claims.path("sub").asText(StringUtils.EMPTY);
+        } catch (IllegalArgumentException | java.io.IOException e) {
+            log.warn("Cannot parse current-user JWT payload");
+            return StringUtils.EMPTY;
+        }
     }
 
     @Audit(operationType = OperationType.QUERY, description = "通过用户唯一键", module = "USER", response = true, key="#uniqueId")
