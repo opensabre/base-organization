@@ -1,6 +1,8 @@
 package io.github.opensabre.organization.rest;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.opensabre.common.core.util.UserContextHolder;
 import io.github.opensabre.governance.audit.annotations.Audit;
 import io.github.opensabre.governance.audit.annotations.OperationType;
@@ -12,6 +14,8 @@ import io.github.opensabre.organization.entity.po.User;
 import io.github.opensabre.organization.entity.vo.UserVo;
 import io.github.opensabre.organization.exception.UserNotFoundException;
 import io.github.opensabre.organization.service.IUserService;
+import io.github.opensabre.webmvc.interceptor.DefaultUsernameResolver;
+import io.github.opensabre.webmvc.interceptor.UserInterceptor;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,6 +24,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +40,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+    private static final DefaultUsernameResolver USERNAME_RESOLVER = new DefaultUsernameResolver();
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Resource
     private IUserService userService;
@@ -80,20 +89,47 @@ public class UserController {
     /**
      * 获取当前已认证用户。
      *
-     * 网关会将认证用户名写入用户上下文；管理台据此取得真实用户 ID，
-     * 再加载该用户的角色菜单，不能使用固定用户 ID。
+     * 优先从网关传递的用户 Header 读取认证用户名，兼容已有用户上下文和 JWT。
+     * 管理台据此取得真实用户 ID，再加载该用户的角色菜单，不能使用固定用户 ID。
      *
      * @return 当前用户信息
      */
     @Operation(summary = "获取当前用户", description = "根据网关注入的当前用户名获取用户信息", security = @SecurityRequirement(name = "Authorization"))
     @GetMapping(value = "/current")
-    public UserVo current() {
-        String username = UserContextHolder.getInstance().getUsername();
+    public UserVo current(HttpServletRequest request) {
+        String username = resolveCurrentUsername(request);
         if (StringUtils.isBlank(username)) {
             throw new UserNotFoundException("current username is missing");
         }
         User user = userService.getByUniqueId(username);
         return userService.get(user.getId());
+    }
+
+    /**
+     * 解析当前用户名。
+     *
+     * UserInterceptor 尚未注册时，用户上下文为空；因此先直接解析网关可信 Header，
+     * 再回退到用户上下文和 JWT 解析，保证三种部署方式均能识别当前用户。
+     *
+     * @param request 当前请求
+     * @return 当前用户名；无法解析时为空字符串
+     */
+    private String resolveCurrentUsername(HttpServletRequest request) {
+        String userHeader = request.getHeader(UserInterceptor.X_CLIENT_TOKEN_USER);
+        if (StringUtils.isNotBlank(userHeader)) {
+            try {
+                JsonNode user = objectMapper.readTree(userHeader);
+                String username = user.path(UserInterceptor.USERNAME_KEY).asText();
+                if (StringUtils.isNotBlank(username)) {
+                    return username;
+                }
+            } catch (Exception e) {
+                log.warn("Cannot parse gateway user header", e);
+            }
+        }
+
+        String username = UserContextHolder.getInstance().getUsername();
+        return StringUtils.defaultIfBlank(username, USERNAME_RESOLVER.resolve(request));
     }
 
     @Audit(operationType = OperationType.QUERY, description = "通过用户唯一键", module = "USER", response = true, key="#uniqueId")
