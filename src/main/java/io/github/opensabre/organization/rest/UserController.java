@@ -14,7 +14,6 @@ import io.github.opensabre.organization.entity.po.User;
 import io.github.opensabre.organization.entity.vo.UserVo;
 import io.github.opensabre.organization.exception.UserNotFoundException;
 import io.github.opensabre.organization.service.IUserService;
-import io.github.opensabre.webmvc.interceptor.UserInterceptor;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -39,6 +38,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+    private static final String GATEWAY_USER_HEADER = "x-client-token-user";
+    private static final String GATEWAY_USERNAME_FIELD = "user_name";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -112,11 +114,11 @@ public class UserController {
      * @return 当前用户名；无法解析时为空字符串
      */
     private String resolveCurrentUsername(HttpServletRequest request) {
-        String userHeader = request.getHeader(UserInterceptor.X_CLIENT_TOKEN_USER);
+        String userHeader = request.getHeader(GATEWAY_USER_HEADER);
         if (StringUtils.isNotBlank(userHeader)) {
             try {
                 JsonNode user = objectMapper.readTree(userHeader);
-                String username = user.path(UserInterceptor.USERNAME_KEY).asText();
+                String username = user.path(GATEWAY_USERNAME_FIELD).asText();
                 if (StringUtils.isNotBlank(username)) {
                     return username;
                 }
