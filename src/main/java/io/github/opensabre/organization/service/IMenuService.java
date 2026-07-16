@@ -38,6 +38,13 @@ public interface IMenuService {
     List<Menu> queryByParentId(String id);
 
     /**
+     * 查询完整菜单树，用于管理台的菜单选择器。
+     *
+     * @return 完整菜单树
+     */
+    List<MenuVo> queryTree();
+
+    /**
      * 根据用户id查询授权菜单树
      *
      * @param userId 用户id
