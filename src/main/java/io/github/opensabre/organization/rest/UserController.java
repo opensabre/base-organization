@@ -14,7 +14,6 @@ import io.github.opensabre.organization.entity.po.User;
 import io.github.opensabre.organization.entity.vo.UserVo;
 import io.github.opensabre.organization.exception.UserNotFoundException;
 import io.github.opensabre.organization.service.IUserService;
-import io.github.opensabre.webmvc.interceptor.DefaultUsernameResolver;
 import io.github.opensabre.webmvc.interceptor.UserInterceptor;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,8 +39,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-
-    private static final DefaultUsernameResolver USERNAME_RESOLVER = new DefaultUsernameResolver();
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -109,7 +106,7 @@ public class UserController {
      * 解析当前用户名。
      *
      * UserInterceptor 尚未注册时，用户上下文为空；因此先直接解析网关可信 Header，
-     * 再回退到用户上下文和 JWT 解析，保证三种部署方式均能识别当前用户。
+     * 再回退到已有用户上下文，保证拦截器是否注册都能识别当前用户。
      *
      * @param request 当前请求
      * @return 当前用户名；无法解析时为空字符串
@@ -128,8 +125,7 @@ public class UserController {
             }
         }
 
-        String username = UserContextHolder.getInstance().getUsername();
-        return StringUtils.defaultIfBlank(username, USERNAME_RESOLVER.resolve(request));
+        return UserContextHolder.getInstance().getUsername();
     }
 
     @Audit(operationType = OperationType.QUERY, description = "通过用户唯一键", module = "USER", response = true, key="#uniqueId")
