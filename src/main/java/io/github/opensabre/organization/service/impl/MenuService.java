@@ -77,6 +77,11 @@ public class MenuService extends ServiceImpl<MenuMapper, Menu> implements IMenuS
     }
 
     @Override
+    public List<MenuVo> queryTree() {
+        return buildMenuTree(this.list());
+    }
+
+    @Override
     public List<MenuVo> queryByUserId(String userId) {
         Set<String> roleIds = userRoleService.queryByUserId(userId);
         List<RoleMenu> roleMenus = roleMenuService.queryByRoleIds(roleIds);

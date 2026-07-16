@@ -98,6 +98,12 @@ public class MenuController {
         return menuService.queryByParentId(id);
     }
 
+    @Operation(summary = "查询完整菜单树", description = "一次返回管理台菜单选择器所需的完整树")
+    @GetMapping(value = "/tree")
+    public List<MenuVo> queryTree() {
+        return menuService.queryTree();
+    }
+
     @Operation(summary = "根据用户id查询菜单", description = "根据用户拥有的角色查询授权菜单树")
     @GetMapping(value = "/user/{userId}")
     public List<MenuVo> queryByUserId(@Parameter(description = "用户ID", required = true)
