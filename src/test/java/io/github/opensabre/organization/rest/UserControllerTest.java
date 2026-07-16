@@ -1,6 +1,5 @@
 package io.github.opensabre.organization.rest;
 
-import io.github.opensabre.common.core.util.UserContextHolder;
 import io.github.opensabre.organization.entity.po.User;
 import io.github.opensabre.organization.entity.vo.UserVo;
 import io.github.opensabre.organization.service.IUserService;
@@ -76,13 +75,9 @@ class UserControllerTest {
         when(userService.get("200")).thenReturn(new UserVo(user));
         MockMvc mockMvc = mockMvc(userService);
 
-        UserContextHolder.getInstance().setContext(java.util.Map.of("user_name", "tester"));
-        try {
-            mockMvc.perform(get("/user/current"))
-                    .andExpect(status().isOk());
-        } finally {
-            UserContextHolder.getInstance().clear();
-        }
+        mockMvc.perform(get("/user/current")
+                        .header("x-client-token-user", "{\"user_name\":\"tester\"}"))
+                .andExpect(status().isOk());
 
         verify(userService).getByUniqueId("tester");
         verify(userService).get("200");
