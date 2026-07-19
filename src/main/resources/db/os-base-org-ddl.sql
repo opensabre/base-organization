@@ -221,7 +221,8 @@ VALUES (101, '新增用户', 'user_manager:btn_add', 'user', '/user', 'POST', '�
        (316, '查看网关路由', 'resource_manager:view', 'resource', '/resource/{id}', 'GET', '查看资源', now(), now(), 'system', 'system'),
        (317, '搜索网关路由', 'resource_manager:query', 'resource', '/resource/conditions', 'POST', '搜索资源', now(), now(), 'system', 'system'),
        (318, '全局加载路由', 'resource_manager:all', 'resource', '/resource/all', 'GET', '查询全部资源', now(), now(), 'system', 'system'),
-       (322, '获取当前登录用户', 'user_manager:current', 'user', '/user/current', 'GET', '获取当前认证用户信息', now(), now(), 'system', 'system');
+       (322, '获取当前登录用户', 'user_manager:current', 'user', '/user/current', 'GET', '获取当前认证用户信息', now(), now(), 'system', 'system'),
+       (323, '发布网关 OAuth2 认证方式', 'gateway:oauth2-client:update', 'gateway', '/gateway/routes/oauth2-clients', 'PUT', '更新并发布网关 OAuth2/OIDC 登录认证方式', now(), now(), 'system', 'system');
 
 -- 用户关系授权
 INSERT INTO base_org_user_role (id, user_id, role_id, created_time, updated_time, created_by, updated_by)
@@ -263,7 +264,9 @@ VALUES (101, 101, 101, now(), now(), 'system', 'system'),
        (506, 101, 318, now(), now(), 'system', 'system'),
        (517, 101, 322, now(), now(), 'system', 'system'),
        (518, 102, 322, now(), now(), 'system', 'system'),
-       (519, 103, 322, now(), now(), 'system', 'system');
+       (519, 103, 322, now(), now(), 'system', 'system'),
+       (520, 101, 323, now(), now(), 'system', 'system'),
+       (521, 103, 323, now(), now(), 'system', 'system');
 
 -- 岗位
 INSERT INTO base_org_position (id, name, description, created_time, updated_time, created_by, updated_by)
@@ -367,9 +370,9 @@ VALUES (122, 109, 'MENU', '/sysadmin/configs', 'setting', '系统配置', '{"rou
        (143,116,'BUTTON','','','强制下线','{"perm":"security:online-user:kickout"}',1,now(),now(),'system','system'), (144,120,'BUTTON','','','新增网关路由','{"perm":"gateway:route:create"}',1,now(),now(),'system','system'), (145,120,'BUTTON','','','修改网关路由','{"perm":"gateway:route:update"}',2,now(),now(),'system','system'), (146,120,'BUTTON','','','删除网关路由','{"perm":"gateway:route:delete"}',3,now(),now(),'system','system'),
        (147,121,'BUTTON','','','创建站内信','{"perm":"sys:internal-message:create"}',1,now(),now(),'system','system'), (148,121,'BUTTON','','','修改站内信','{"perm":"sys:internal-message:update"}',2,now(),now(),'system','system'), (149,121,'BUTTON','','','删除站内信','{"perm":"sys:internal-message:delete"}',3,now(),now(),'system','system'), (150,121,'BUTTON','','','发布站内信','{"perm":"sys:internal-message:publish"}',4,now(),now(),'system','system'), (151,121,'BUTTON','','','撤回站内信','{"perm":"sys:internal-message:revoke"}',5,now(),now(),'system','system'),
        (152,122,'BUTTON','','','新增系统配置','{"perm":"sys:config:create"}',1,now(),now(),'system','system'), (153,122,'BUTTON','','','修改系统配置','{"perm":"sys:config:update"}',2,now(),now(),'system','system'), (154,122,'BUTTON','','','删除系统配置','{"perm":"sys:config:delete"}',3,now(),now(),'system','system'), (155,122,'BUTTON','','','刷新系统配置缓存','{"perm":"sys:config:refresh"}',4,now(),now(),'system','system'),
-       (156,123,'BUTTON','','','新增租户','{"perm":"sys:tenant:create"}',1,now(),now(),'system','system'), (157,123,'BUTTON','','','修改租户','{"perm":"sys:tenant:update"}',2,now(),now(),'system','system'), (158,123,'BUTTON','','','删除租户','{"perm":"sys:tenant:delete"}',3,now(),now(),'system','system');
+       (156,123,'BUTTON','','','新增租户','{"perm":"sys:tenant:create"}',1,now(),now(),'system','system'), (157,123,'BUTTON','','','修改租户','{"perm":"sys:tenant:update"}',2,now(),now(),'system','system'), (158,123,'BUTTON','','','删除租户','{"perm":"sys:tenant:delete"}',3,now(),now(),'system','system'), (159,120,'BUTTON','','','发布 OAuth2 认证方式','{"perm":"gateway:oauth2-client:update"}',4,now(),now(),'system','system');
 
 INSERT INTO base_org_role_menu (id, role_id, menu_id, created_time, updated_time, created_by, updated_by)
 SELECT 100000 + r.id * 1000 + m.id, r.id, m.id, now(), now(), 'system', 'system'
 FROM base_org_menu m JOIN base_org_role r ON r.id IN (101, 103)
-WHERE m.id IN (122, 123) OR m.id BETWEEN 130 AND 158;
+WHERE m.id IN (122, 123) OR m.id BETWEEN 130 AND 159;
