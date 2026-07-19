@@ -5,7 +5,9 @@ import io.github.opensabre.organization.entity.po.Menu;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.util.StringUtils;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 
 @EqualsAndHashCode(callSuper = true)
@@ -25,9 +27,14 @@ public class MenuForm extends BaseForm<Menu> {
     @Schema(title = "菜单类型")
     private String type;
 
-    @NotBlank(message = "菜单路径不能为空")
     @Schema(title = "菜单路径")
     private String href;
+
+    /** 按钮不对应前端路由，其他菜单类型必须配置路径。 */
+    @AssertTrue(message = "菜单路径不能为空")
+    public boolean isHrefValidForMenuType() {
+        return "BUTTON".equalsIgnoreCase(type) || "B".equalsIgnoreCase(type) || StringUtils.hasText(href);
+    }
 
     @Schema(title = "菜单图标")
     private String icon;
