@@ -68,12 +68,15 @@ public class MenuService extends ServiceImpl<MenuMapper, Menu> implements IMenuS
     public List<Menu> query(MenuQueryParam menuQueryParam) {
         QueryWrapper<Menu> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(null != menuQueryParam.getName(), "name", menuQueryParam.getName());
+        queryWrapper.orderByAsc("order_num");
         return this.list(queryWrapper);
     }
 
     @Override
     public List<Menu> queryByParentId(String id) {
-        return this.list(new QueryWrapper<Menu>().eq("parent_id", id));
+        return this.list(new QueryWrapper<Menu>()
+                .eq("parent_id", id)
+                .orderByAsc("order_num"));
     }
 
     @Override
@@ -130,15 +133,6 @@ public class MenuService extends ServiceImpl<MenuMapper, Menu> implements IMenuS
         return sortMenuVos(menuVos.stream()
                 .filter(menu -> !menuIds.contains(menu.getParentId()))
                 .collect(Collectors.toList()));
-    }
-
-    private List<Menu> sortMenus(List<Menu> menus) {
-        if (CollectionUtils.isEmpty(menus)) {
-            return new ArrayList<>();
-        }
-        return menus.stream()
-                .sorted(Comparator.comparingInt(Menu::getOrderNum))
-                .collect(Collectors.toList());
     }
 
     private List<MenuVo> sortMenuVos(List<MenuVo> menus) {

@@ -26,6 +26,14 @@ class MenuFormValidationTest {
                 .contains("菜单路径不能为空");
     }
 
+    @Test
+    void shouldCopyNumericOrderNumToMenu() {
+        MenuForm form = menuForm("MENU", "/system/menu");
+        form.setOrderNum(12);
+
+        assertThat(form.toPo(io.github.opensabre.organization.entity.po.Menu.class).getOrderNum()).isEqualTo(12);
+    }
+
     private MenuForm menuForm(String type, String href) {
         MenuForm form = new MenuForm();
         form.setParentId("120");
