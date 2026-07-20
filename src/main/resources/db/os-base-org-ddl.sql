@@ -300,6 +300,7 @@ VALUES (101, -1, 'MENU', '/admin', 'setting', '基础管理', '用户，角色�
        (114, 109, 'MENU', '/sysadmin/captcha-scenes', 'captcha', '验证码管理', '{"routeName":"CaptchaScenes","component":"sysadmin/captcha-scenes/index","visible":1}', 40, now(), now(), 'system', 'system'),
        (115, 109, 'MENU', '/sysadmin/notification', 'bell', '通知管理', '{"routeName":"NotificationAdmin","component":"sysadmin/notification/index","visible":1}', 50, now(), now(), 'system', 'system'),
        (119, 109, 'MENU', '/sysadmin/ratelimit-scenes', 'timer', '限次场景', '{"routeName":"RateLimitScenes","component":"sysadmin/ratelimit-scenes/index","visible":1}', 55, now(), now(), 'system', 'system'),
+       (126, 109, 'MENU', '/sysadmin/usage-scenes', 'collection-tag', '计次场景', '{"routeName":"UsageScenes","component":"sysadmin/usage-scenes/index","visible":1}', 68, now(), now(), 'system', 'system'),
        (160, -1, 'MENU', '/gateway', 'api', '网关', '{"routeName":"Gateway","visible":1}', 85, now(), now(), 'system', 'system'),
        (120, 160, 'MENU', '/sysadmin/gateway-routes', 'api', '网关路由', '{"routeName":"GatewayRoute","component":"system/gateway-route/index","visible":1}', 10, now(), now(), 'system', 'system'),
        (121, 109, 'MENU', '/sysadmin/internal-messages', 'bell', '站内信管理', '{"routeName":"InternalMessage","component":"system/notice/index","visible":1}', 65, now(), now(), 'system', 'system'),
@@ -358,7 +359,9 @@ VALUES (101, 101, 101, now(), now(), 'system', 'system'),
        (141, 101, 120, now(), now(), 'system', 'system'),
        (146, 103, 120, now(), now(), 'system', 'system'),
        (147, 101, 121, now(), now(), 'system', 'system'),
-       (148, 103, 121, now(), now(), 'system', 'system');
+       (148, 103, 121, now(), now(), 'system', 'system'),
+       (160, 101, 126, now(), now(), 'system', 'system'),
+       (161, 103, 126, now(), now(), 'system', 'system');
 
 -- 按钮菜单控制管理台可见性；API 授权数据仍由 base_org_resource 维护。
 INSERT INTO base_org_menu (id, parent_id, type, href, icon, name, description, order_num, created_time, updated_time, created_by, updated_by)
