@@ -40,7 +40,7 @@ public class MenuForm extends BaseForm<Menu> {
     private String icon;
 
     @Schema(title = "菜单序号")
-    private String orderNum;
+    private Integer orderNum;
 
     @Schema(title = "菜单描述")
     private String description;
