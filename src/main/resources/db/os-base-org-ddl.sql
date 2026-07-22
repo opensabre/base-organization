@@ -399,7 +399,7 @@ VALUES (122, 109, 'MENU', '/sysadmin/configs', 'setting', '系统配置', '{"rou
        (156,123,'BUTTON','','','新增租户','{"perm":"sys:tenant:create"}',1,now(),now(),'system','system'), (157,123,'BUTTON','','','修改租户','{"perm":"sys:tenant:update"}',2,now(),now(),'system','system'), (158,123,'BUTTON','','','删除租户','{"perm":"sys:tenant:delete"}',3,now(),now(),'system','system'), (159,203,'BUTTON','','','发布 OAuth2 认证方式','{"perm":"gateway:oauth2-client:update"}',1,now(),now(),'system','system'), (164,205,'BUTTON','','','发布网关全局过滤器','{"perm":"gateway:filter:update"}',1,now(),now(),'system','system');
 
 INSERT INTO base_org_role_menu (id, role_id, menu_id, created_time, updated_time, created_by, updated_by)
-SELECT 100000 + CAST(r.id AS UNSIGNED) * 1000 + m.id, r.id, m.id, now(), now(), 'system', 'system'
+SELECT 100000 + r.id * 1000 + m.id, r.id, m.id, now(), now(), 'system', 'system'
 FROM base_org_menu m JOIN base_org_role r ON r.id IN (101, 103)
 WHERE m.id IN (120,160,161,162,164,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219)
 ON DUPLICATE KEY UPDATE updated_time=VALUES(updated_time), updated_by=VALUES(updated_by);

@@ -43,7 +43,7 @@ UPDATE base_org_menu SET parent_id=205, name='发布网关全局过滤器', orde
 
 -- 当前沿用既有管理员角色范围；业务角色后续按最小权限单独授权。
 INSERT INTO base_org_role_menu (id, role_id, menu_id, created_time, updated_time, created_by, updated_by)
-SELECT 100000 + CAST(r.id AS UNSIGNED) * 1000 + m.id, r.id, m.id, now(), now(), 'system', 'system'
+SELECT 100000 + r.id * 1000 + m.id, r.id, m.id, now(), now(), 'system', 'system'
 FROM base_org_menu m JOIN base_org_role r ON r.id IN (101, 103)
 WHERE m.id IN (120,159,160,161,162,164,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219)
 ON DUPLICATE KEY UPDATE updated_time=VALUES(updated_time), updated_by=VALUES(updated_by);
