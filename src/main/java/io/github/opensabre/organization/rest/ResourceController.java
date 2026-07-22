@@ -1,6 +1,7 @@
 package io.github.opensabre.organization.rest;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.github.opensabre.boot.annotations.ResourcePermission;
 import io.github.opensabre.common.core.entity.vo.Result;
 import io.github.opensabre.organization.entity.form.ResourceForm;
 import io.github.opensabre.organization.entity.form.ResourceQueryForm;
@@ -31,6 +32,7 @@ public class ResourceController {
 
     @Operation(summary = "新增资源", description = "新增一个资源")
     @PostMapping
+    @ResourcePermission(code = "resource_manager:add", name = "新增资源", type = "resource", description = "新增权限资源")
     public boolean add(@Parameter(name = "resourceForm", description = "新增资源form表单", required = true) @Valid @RequestBody ResourceForm resourceForm) {
         log.debug("name:{}", resourceForm);
         Resource resource = resourceForm.toPo(Resource.class);
@@ -39,6 +41,7 @@ public class ResourceController {
 
     @Operation(summary = "删除资源", description = "根据url的id来指定删除对象")
     @DeleteMapping(value = "/{id}")
+    @ResourcePermission(code = "resource_manager:adel", name = "删除资源", type = "resource", description = "删除权限资源")
     public boolean delete(@Parameter(name = "id", description = "资源ID", required = true)
                           @NotBlank(message = "资源ID不能为空") @PathVariable String id) {
         return resourceService.delete(id);
@@ -46,6 +49,7 @@ public class ResourceController {
 
     @Operation(summary = "修改资源", description = "修改指定资源信息")
     @PutMapping(value = "/{id}")
+    @ResourcePermission(code = "resource_manager:edit", name = "修改资源", type = "resource", description = "修改权限资源")
     public boolean update(@Parameter(name = "id", description = "资源ID", required = true)
                           @NotBlank(message = "资源ID不能为空") @PathVariable String id,
                           @Parameter(name = "resourceForm", description = "资源实体", required = true) @Valid @RequestBody ResourceForm resourceForm) {
@@ -56,6 +60,7 @@ public class ResourceController {
 
     @Operation(summary = "获取资源", description = "获取指定资源信息")
     @GetMapping(value = "/{id}")
+    @ResourcePermission(code = "resource_manager:view", name = "查看资源", type = "resource", description = "查看权限资源")
     public Resource get(@Parameter(name = "id", description = "资源ID", required = true)
                         @NotBlank(message = "资源ID不能为空") @PathVariable String id) {
         log.debug("get with id:{}", id);
@@ -67,6 +72,7 @@ public class ResourceController {
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @GetMapping(value = "/user/{username}")
+    @ResourcePermission(code = "resource_manager:user", name = "查询用户资源", type = "resource", description = "查询用户拥有的权限资源")
     public List<Resource> queryByUsername(@Parameter(name = "userId", description = "用户id", required = true)
                                           @NotBlank(message = "用户名不能为空") @PathVariable String username) {
         log.debug("query with username:{}", username);
@@ -78,6 +84,7 @@ public class ResourceController {
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @GetMapping(value = "/all")
+    @ResourcePermission(code = "resource_manager:all", name = "查询全部资源", type = "resource", description = "查询全部权限资源")
     public List<Resource> queryAll() {
         return resourceService.getAll();
     }
@@ -87,6 +94,7 @@ public class ResourceController {
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @PostMapping(value = "/conditions")
+    @ResourcePermission(code = "resource_manager:query", name = "搜索资源", type = "resource", description = "按条件搜索权限资源")
     public Page query(@Parameter(name = "resourceQueryForm", description = "资源查询参数", required = true) @Valid @RequestBody ResourceQueryForm resourceQueryForm) {
         log.debug("query with name:{}", resourceQueryForm);
         return resourceService.query(resourceQueryForm.getPage(), resourceQueryForm.toParam(ResourceQueryParam.class));
@@ -98,6 +106,7 @@ public class ResourceController {
             @ApiResponse(responseCode = "200", description = "处理成功", content = @Content(schema = @Schema(implementation = Result.class)))
     )
     @GetMapping(value = "/role/{roleCode}")
+    @ResourcePermission(code = "resource_manager:role", name = "查询角色资源", type = "resource", description = "查询角色拥有的权限资源")
     public List<Resource> queryByRole(@Parameter(name = "roleCode", description = "角色名", required = true)
                                       @NotBlank(message = "角色编码不能为空") @PathVariable String roleCode) {
         return resourceService.queryByRole(roleCode);

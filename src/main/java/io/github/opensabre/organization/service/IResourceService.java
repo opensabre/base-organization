@@ -1,13 +1,14 @@
 package io.github.opensabre.organization.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import io.github.opensabre.organization.entity.param.ResourceQueryParam;
 import io.github.opensabre.organization.entity.po.Resource;
 
 import java.util.List;
 import java.util.Set;
 
-public interface IResourceService {
+public interface IResourceService extends IService<Resource> {
     /**
      * 获取资源
      *
