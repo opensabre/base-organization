@@ -6,7 +6,7 @@ INSERT INTO base_org_menu (id, parent_id, type, href, icon, name, description, o
                            created_time, updated_time, created_by, updated_by)
 VALUES
  (200,160,'MENU','/gateway/dashboard','homepage','网关总览','{"routeName":"GatewayDashboard","component":"system/gateway/planned/index","visible":1}',10,now(),now(),'system','system'),
- (201,160,'MENU','/gateway/services','cluster','服务管理','{"routeName":"GatewayServices","component":"system/gateway/planned/index","visible":1}',20,now(),now(),'system','system'),
+ (201,160,'MENU','/gateway/services','cluster','服务管理','{"routeName":"GatewayServices","component":"system/gateway/services/index","visible":1}',20,now(),now(),'system','system'),
  (202,160,'MENU','/gateway/traffic','timer','流量治理','{"routeName":"GatewayTraffic","visible":1}',40,now(),now(),'system','system'),
  (217,202,'MENU','/gateway/traffic/rate-limits','timer','限流规则','{"routeName":"GatewayRateLimits","component":"system/gateway/planned/index","visible":1}',10,now(),now(),'system','system'),
  (218,202,'MENU','/gateway/traffic/circuit-breakers','switch','熔断规则','{"routeName":"GatewayCircuitBreakers","component":"system/gateway/planned/index","visible":1}',20,now(),now(),'system','system'),
