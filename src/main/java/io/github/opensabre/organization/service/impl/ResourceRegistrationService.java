@@ -66,6 +66,11 @@ public class ResourceRegistrationService implements IResourceRegistrationService
                 continue;
             }
             Resource resource = StringUtils.isNotBlank(mapping.getCode()) ? byCode.get(mapping.getCode()) : null;
+            if (resource != null && !"legacy".equals(resource.getApplication())
+                    && !application.equals(resource.getApplication())) {
+                throw new IllegalArgumentException("resource code " + mapping.getCode()
+                        + " is already owned by " + resource.getApplication());
+            }
             if (resource == null) {
                 resource = byEndpoint.get(endpointKey(mapping.getMethod(), mapping.getUrl()));
             }

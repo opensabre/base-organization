@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 class ResourceRegistrationServiceTest {
@@ -76,5 +77,29 @@ class ResourceRegistrationServiceTest {
         assertThat(updated.getId()).isEqualTo(existingId);
         assertThat(updated.getApplication()).isEqualTo("base-organization");
         assertThat(updated.getSource()).isEqualTo("ANNOTATION");
+    }
+
+    @Test
+    void declaredPermissionShouldRejectCodeOwnedByAnotherApplication() {
+        Resource existing = resourceService.getOne(new LambdaQueryWrapper<Resource>()
+                .eq(Resource::getCode, "resource_manager:view"));
+        existing.setApplication("base-organization");
+        resourceService.updateById(existing);
+        ResourceMappingSnapshot snapshot = ResourceMappingSnapshot.builder()
+                .application("other-application")
+                .version("1.0.0")
+                .resources(Set.of(RestMappingInfo.builder()
+                        .code("resource_manager:view")
+                        .name("劫持资源")
+                        .type("resource")
+                        .url("/hijacked")
+                        .method("POST")
+                        .declaredPermission(true)
+                        .build()))
+                .build();
+
+        assertThatThrownBy(() -> registrationService.register(snapshot, false))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("already owned by base-organization");
     }
 }
