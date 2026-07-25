@@ -222,7 +222,10 @@ VALUES (101, '新增用户', 'user_manager:btn_add', 'user', '/user', 'POST', '�
        (317, '搜索网关路由', 'resource_manager:query', 'resource', '/resource/conditions', 'POST', '搜索资源', now(), now(), 'system', 'system'),
        (318, '全局加载路由', 'resource_manager:all', 'resource', '/resource/all', 'GET', '查询全部资源', now(), now(), 'system', 'system'),
        (322, '获取当前登录用户', 'user_manager:current', 'user', '/user/current', 'GET', '获取当前认证用户信息', now(), now(), 'system', 'system'),
-       (323, '发布网关 OAuth2 认证方式', 'gateway:oauth2-client:update', 'gateway', '/gateway/routes/oauth2-clients', 'PUT', '更新并发布网关 OAuth2/OIDC 登录认证方式', now(), now(), 'system', 'system');
+       (323, '发布网关 OAuth2 认证方式', 'gateway:oauth2-client:update', 'gateway', '/gateway/routes/oauth2-clients', 'PUT', '更新并发布网关 OAuth2/OIDC 登录认证方式', now(), now(), 'system', 'system'),
+       (330, '查询OAuth2授权记录', 'auth:authorization:query', 'authorization', '/api/auth/authorizations/conditions', 'POST', '分页查询OAuth2服务端授权记录', now(), now(), 'system', 'system'),
+       (331, '查看OAuth2授权记录', 'auth:authorization:view', 'authorization', '/api/auth/authorizations/{id}', 'GET', '查看OAuth2服务端授权详情', now(), now(), 'system', 'system'),
+       (332, '终止OAuth2服务端授权', 'auth:authorization:revoke', 'authorization', '/api/auth/authorizations/{id}', 'DELETE', '删除服务端授权并阻止Refresh Token继续使用', now(), now(), 'system', 'system');
 
 -- 用户关系授权
 INSERT INTO base_org_user_role (id, user_id, role_id, created_time, updated_time, created_by, updated_by)
@@ -266,7 +269,13 @@ VALUES (101, 101, 101, now(), now(), 'system', 'system'),
        (518, 102, 322, now(), now(), 'system', 'system'),
        (519, 103, 322, now(), now(), 'system', 'system'),
        (520, 101, 323, now(), now(), 'system', 'system'),
-       (521, 103, 323, now(), now(), 'system', 'system');
+       (521, 103, 323, now(), now(), 'system', 'system'),
+       (522, 101, 330, now(), now(), 'system', 'system'),
+       (523, 101, 331, now(), now(), 'system', 'system'),
+       (524, 101, 332, now(), now(), 'system', 'system'),
+       (525, 103, 330, now(), now(), 'system', 'system'),
+       (526, 103, 331, now(), now(), 'system', 'system'),
+       (527, 103, 332, now(), now(), 'system', 'system');
 
 -- 岗位
 INSERT INTO base_org_position (id, name, description, created_time, updated_time, created_by, updated_by)
@@ -412,11 +421,11 @@ WHERE m.id IN (122, 123) OR m.id BETWEEN 130 AND 159;
 
 -- OAuth2授权记录管理
 INSERT INTO base_org_menu (id, parent_id, type, href, icon, name, description, order_num, created_time, updated_time, created_by, updated_by)
-VALUES (220, 108, 'MENU', '/auth/authorization', 'key', 'Token管理', '{"routeName":"OAuthAuthorization","component":"auth/authorization/index","visible":1}', 20, now(), now(), 'system', 'system'),
-       (221, 220, 'BUTTON', '', '', '撤销OAuth2授权', '{"perm":"auth:authorization:revoke"}', 1, now(), now(), 'system', 'system');
+VALUES (230, 108, 'MENU', '/auth/authorization', 'key', 'Token管理', '{"routeName":"OAuthAuthorization","component":"auth/authorization/index","visible":1}', 20, now(), now(), 'system', 'system'),
+       (231, 230, 'BUTTON', '', '', '终止OAuth2服务端授权', '{"perm":"auth:authorization:revoke"}', 1, now(), now(), 'system', 'system');
 
 INSERT INTO base_org_role_menu (id, role_id, menu_id, created_time, updated_time, created_by, updated_by)
-VALUES (101220, 101, 220, now(), now(), 'system', 'system'),
-       (103220, 103, 220, now(), now(), 'system', 'system'),
-       (101221, 101, 221, now(), now(), 'system', 'system'),
-       (103221, 103, 221, now(), now(), 'system', 'system');
+VALUES (201230, 101, 230, now(), now(), 'system', 'system'),
+       (203230, 103, 230, now(), now(), 'system', 'system'),
+       (201231, 101, 231, now(), now(), 'system', 'system'),
+       (203231, 103, 231, now(), now(), 'system', 'system');
