@@ -337,7 +337,8 @@ VALUES (101, -1, 'MENU', '/admin', 'setting', '基础管理', '用户，角色�
        (121, 109, 'MENU', '/sysadmin/internal-messages', 'bell', '站内信管理', '{"routeName":"InternalMessage","component":"system/notice/index","visible":1}', 65, now(), now(), 'system', 'system'),
        (116, 108, 'MENU', '/auth/online-user', 'el-icon-User', '在线用户', '{"routeName":"OnlineUser","component":"security/online-user/index","visible":1}', 20, now(), now(), 'system', 'system'),
        (117, -1, 'MENU', '/development', 'code', '研发管理', '研发工具与接口文档', 90, now(), now(), 'system', 'system'),
-       (118, 117, 'MENU', '/development/api-docs', 'document', 'API文档', '{"iframeUrl":"/doc.html","visible":1}', 10, now(), now(), 'system', 'system');
+       (118, 117, 'MENU', '/development/api-docs', 'document', 'API文档', '{"iframeUrl":"/doc.html","visible":1}', 10, now(), now(), 'system', 'system'),
+       (186, 117, 'MENU', '/sysadmin/error-catalog', 'warning', '错误码目录', '{"routeName":"ErrorCatalog","component":"sysadmin/error-catalog/index","visible":1}', 20, now(), now(), 'system', 'system');
 
 INSERT INTO base_org_user_group (id, user_id, group_id, created_time, updated_time, created_by, updated_by)
 VALUES (101, 101, 101, now(), now(), 'system', 'system'),
@@ -392,7 +393,9 @@ VALUES (101, 101, 101, now(), now(), 'system', 'system'),
        (147, 101, 121, now(), now(), 'system', 'system'),
        (148, 103, 121, now(), now(), 'system', 'system'),
        (160, 101, 126, now(), now(), 'system', 'system'),
-       (161, 103, 126, now(), now(), 'system', 'system');
+       (161, 103, 126, now(), now(), 'system', 'system'),
+       (186, 101, 186, now(), now(), 'system', 'system'),
+       (187, 103, 186, now(), now(), 'system', 'system');
 
 -- 按钮菜单控制管理台可见性；API 授权数据仍由 base_org_resource 维护。
 INSERT INTO base_org_menu (id, parent_id, type, href, icon, name, description, order_num, created_time, updated_time, created_by, updated_by)
