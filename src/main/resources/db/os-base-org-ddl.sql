@@ -309,7 +309,7 @@ VALUES (101, -1, 'MENU', '/admin', 'setting', '基础管理', '用户，角色�
        (114, 109, 'MENU', '/sysadmin/captcha-scenes', 'captcha', '验证码管理', '{"routeName":"CaptchaScenes","component":"sysadmin/captcha-scenes/index","visible":1}', 40, now(), now(), 'system', 'system'),
        (115, 109, 'MENU', '/sysadmin/notification', 'bell', '通知管理', '{"routeName":"NotificationAdmin","component":"sysadmin/notification/index","visible":1}', 50, now(), now(), 'system', 'system'),
        (119, 109, 'MENU', '/sysadmin/ratelimit-scenes', 'timer', '限次场景', '{"routeName":"RateLimitScenes","component":"sysadmin/ratelimit-scenes/index","visible":1}', 55, now(), now(), 'system', 'system'),
-       (126, 109, 'MENU', '/sysadmin/usage-scenes', 'collection-tag', '计次场景', '{"routeName":"UsageScenes","component":"sysadmin/usage-scenes/index","visible":1}', 68, now(), now(), 'system', 'system'),
+       (126, 109, 'MENU', '/sysadmin/usage-management', 'collection-tag', '计次管理', '{"routeName":"UsageManagement","component":"sysadmin/usage-management/index","visible":1}', 68, now(), now(), 'system', 'system'),
        (160, -1, 'MENU', '/gateway', 'api', '网关路由', '{"routeName":"Gateway","visible":1}', 85, now(), now(), 'system', 'system'),
        (200,160,'MENU','/gateway/dashboard','homepage','网关总览','{"routeName":"GatewayDashboard","component":"system/gateway/planned/index","visible":1}',10,now(),now(),'system','system'),
        (201,160,'MENU','/gateway/services','cluster','服务管理','{"routeName":"GatewayServices","component":"system/gateway/services/index","visible":1}',20,now(),now(),'system','system'),
