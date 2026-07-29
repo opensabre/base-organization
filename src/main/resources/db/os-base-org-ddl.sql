@@ -226,7 +226,10 @@ VALUES (101, '新增用户', 'user_manager:btn_add', 'user', '/user', 'POST', '�
        (330, '查询OAuth2授权记录', 'auth:authorization:query', 'authorization', '/api/auth/authorizations/conditions', 'POST', '分页查询OAuth2服务端授权记录', now(), now(), 'system', 'system'),
        (331, '查看OAuth2授权记录', 'auth:authorization:view', 'authorization', '/api/auth/authorizations/{id}', 'GET', '查看OAuth2服务端授权详情', now(), now(), 'system', 'system'),
        (332, '终止OAuth2服务端授权', 'auth:authorization:revoke', 'authorization', '/api/auth/authorizations/{id}', 'DELETE', '删除服务端授权并阻止Refresh Token继续使用', now(), now(), 'system', 'system'),
-       (333, '清理已失效OAuth2授权记录', 'auth:authorization:cleanup', 'authorization', '/api/auth/authorizations/expired/cleanup', 'DELETE', '删除所有Token、授权码和设备码均已过期的服务端授权记录', now(), now(), 'system', 'system');
+       (333, '清理已失效OAuth2授权记录', 'auth:authorization:cleanup', 'authorization', '/api/auth/authorizations/expired/cleanup', 'DELETE', '删除所有Token、授权码和设备码均已过期的服务端授权记录', now(), now(), 'system', 'system'),
+       (334, '查询客户端授权记录', 'auth:consent:query', 'authorization', '/api/auth/authorization-consents/conditions', 'POST', '分页查询用户授予OAuth2客户端的权限记录', now(), now(), 'system', 'system'),
+       (335, '查看客户端授权记录', 'auth:consent:view', 'authorization', '/api/auth/authorization-consents', 'GET', '查看用户授予OAuth2客户端的权限详情', now(), now(), 'system', 'system'),
+       (336, '删除客户端授权记录', 'auth:consent:remove', 'authorization', '/api/auth/authorization-consents', 'DELETE', '删除客户端授权同意，用户下次授权时需要重新同意', now(), now(), 'system', 'system');
 
 -- 用户关系授权
 INSERT INTO base_org_user_role (id, user_id, role_id, created_time, updated_time, created_by, updated_by)
@@ -278,7 +281,13 @@ VALUES (101, 101, 101, now(), now(), 'system', 'system'),
        (526, 103, 331, now(), now(), 'system', 'system'),
        (527, 103, 332, now(), now(), 'system', 'system'),
        (528, 101, 333, now(), now(), 'system', 'system'),
-       (529, 103, 333, now(), now(), 'system', 'system');
+       (529, 103, 333, now(), now(), 'system', 'system'),
+       (530, 101, 334, now(), now(), 'system', 'system'),
+       (531, 101, 335, now(), now(), 'system', 'system'),
+       (532, 101, 336, now(), now(), 'system', 'system'),
+       (533, 103, 334, now(), now(), 'system', 'system'),
+       (534, 103, 335, now(), now(), 'system', 'system'),
+       (535, 103, 336, now(), now(), 'system', 'system');
 
 -- 岗位
 INSERT INTO base_org_position (id, name, description, created_time, updated_time, created_by, updated_by)
@@ -413,7 +422,7 @@ VALUES (122, 109, 'MENU', '/sysadmin/configs', 'setting', '系统配置', '{"rou
        (147,121,'BUTTON','','','创建站内信','{"perm":"sys:internal-message:create"}',1,now(),now(),'system','system'), (148,121,'BUTTON','','','修改站内信','{"perm":"sys:internal-message:update"}',2,now(),now(),'system','system'), (149,121,'BUTTON','','','删除站内信','{"perm":"sys:internal-message:delete"}',3,now(),now(),'system','system'), (150,121,'BUTTON','','','发布站内信','{"perm":"sys:internal-message:publish"}',4,now(),now(),'system','system'), (151,121,'BUTTON','','','撤回站内信','{"perm":"sys:internal-message:revoke"}',5,now(),now(),'system','system'),
        (152,122,'BUTTON','','','新增系统配置','{"perm":"sys:config:create"}',1,now(),now(),'system','system'), (153,122,'BUTTON','','','修改系统配置','{"perm":"sys:config:update"}',2,now(),now(),'system','system'), (154,122,'BUTTON','','','删除系统配置','{"perm":"sys:config:delete"}',3,now(),now(),'system','system'), (155,122,'BUTTON','','','刷新系统配置缓存','{"perm":"sys:config:refresh"}',4,now(),now(),'system','system'),
        (156,123,'BUTTON','','','新增租户','{"perm":"sys:tenant:create"}',1,now(),now(),'system','system'), (157,123,'BUTTON','','','修改租户','{"perm":"sys:tenant:update"}',2,now(),now(),'system','system'), (158,123,'BUTTON','','','删除租户','{"perm":"sys:tenant:delete"}',3,now(),now(),'system','system'), (159,203,'BUTTON','','','发布 OAuth2 认证方式','{"perm":"gateway:oauth2-client:update"}',1,now(),now(),'system','system'), (164,205,'BUTTON','','','发布网关全局过滤器','{"perm":"gateway:filter:update"}',1,now(),now(),'system','system'),
-       (221,220,'BUTTON','','','轮换内部 Token 密钥','{"perm":"sysadmin:internal-token-key:rotate"}',1,now(),now(),'system','system'), (222,220,'BUTTON','','','退役 previous 密钥','{"perm":"sysadmin:internal-token-key:retire"}',2,now(),now(),'system','system'), (231,110,'BUTTON','','','终止 OAuth2 服务端授权','{"perm":"auth:authorization:revoke"}',1,now(),now(),'system','system'), (232,110,'BUTTON','','','清理已失效 Token','{"perm":"auth:authorization:cleanup"}',2,now(),now(),'system','system');
+       (221,220,'BUTTON','','','轮换内部 Token 密钥','{"perm":"sysadmin:internal-token-key:rotate"}',1,now(),now(),'system','system'), (222,220,'BUTTON','','','退役 previous 密钥','{"perm":"sysadmin:internal-token-key:retire"}',2,now(),now(),'system','system'), (231,110,'BUTTON','','','终止 OAuth2 服务端授权','{"perm":"auth:authorization:revoke"}',1,now(),now(),'system','system'), (232,110,'BUTTON','','','清理已失效 Token','{"perm":"auth:authorization:cleanup"}',2,now(),now(),'system','system'), (233,110,'BUTTON','','','删除客户端授权记录','{"perm":"auth:consent:remove"}',3,now(),now(),'system','system');
 
 INSERT INTO base_org_role_menu (id, role_id, menu_id, created_time, updated_time, created_by, updated_by)
 SELECT 100000 + r.id * 1000 + m.id, r.id, m.id, now(), now(), 'system', 'system'
@@ -424,4 +433,4 @@ ON DUPLICATE KEY UPDATE updated_time=VALUES(updated_time), updated_by=VALUES(upd
 INSERT INTO base_org_role_menu (id, role_id, menu_id, created_time, updated_time, created_by, updated_by)
 SELECT 100000 + r.id * 1000 + m.id, r.id, m.id, now(), now(), 'system', 'system'
 FROM base_org_menu m JOIN base_org_role r ON r.id IN (101, 103)
-WHERE m.id IN (122, 123, 220, 221, 222, 231, 232) OR m.id BETWEEN 130 AND 159;
+WHERE m.id IN (122, 123, 220, 221, 222, 231, 232, 233) OR m.id BETWEEN 130 AND 159;
