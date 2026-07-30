@@ -105,7 +105,7 @@ This is a Spring Boot-based organization management service that provides user, 
 ## Deployment
 
 ### GitHub Actions
-- Automated Docker builds on push to master
+- Automated Docker builds on push to main
 - Uses Jib to build and push to Tencent Cloud Container Registry
 - Requires secrets: `TENCENT_CLOUD_SECRET_ID`, `TENCENT_CLOUD_SECRET_KEY`, `TENCENT_CLOUD_NAMESPACE`
 
