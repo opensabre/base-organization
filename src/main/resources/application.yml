@@ -19,6 +19,8 @@ spring:
       maximum-pool-size: 20
 # opensabre framework配置
 opensabre:
+  resource-registration:
+    registration-token: ${RESOURCE_REGISTRATION_TOKEN:}
   sensitive:
     log:
       enabled: false # 日志脱敏开关，默认关闭
@@ -51,4 +53,3 @@ mybatis-plus:
   global-config:
     db-config:
       table-prefix: base_org_
-

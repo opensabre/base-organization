@@ -140,6 +140,14 @@ CREATE TABLE base_org_resource
     url          VARCHAR(200) NOT NULL COMMENT '资源url',
     method       VARCHAR(20)  NOT NULL COMMENT '资源方法',
     description  VARCHAR(500) COMMENT '简介',
+    application  VARCHAR(100) NOT NULL DEFAULT 'legacy' COMMENT '来源应用',
+    source       VARCHAR(20)  NOT NULL DEFAULT 'MANUAL' COMMENT '资源来源',
+    status       VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE' COMMENT '注册状态',
+    handler      VARCHAR(300) COMMENT '处理器方法',
+    first_seen_at DATETIME COMMENT '首次发现时间',
+    last_seen_at DATETIME COMMENT '最后发现时间',
+    missing_since DATETIME COMMENT '首次缺失时间',
+    app_version  VARCHAR(100) COMMENT '应用版本',
     created_time DATETIME     NOT NULL DEFAULT now() COMMENT '创建时间',
     updated_time DATETIME     NOT NULL DEFAULT now() COMMENT '更新时间',
     created_by   VARCHAR(100) NOT NULL COMMENT '创建人',
@@ -147,6 +155,8 @@ CREATE TABLE base_org_resource
 ) COMMENT '资源表';
 CREATE UNIQUE INDEX ux_resource_code
     ON base_org_resource (code);
+CREATE INDEX ix_resource_endpoint
+    ON base_org_resource (application, method, url);
 
 -- 用户和角色关系表
 DROP TABLE IF EXISTS base_org_user_role;
