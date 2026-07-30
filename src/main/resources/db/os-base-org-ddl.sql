@@ -232,7 +232,14 @@ VALUES (101, '新增用户', 'user_manager:btn_add', 'user', '/user', 'POST', '�
        (317, '搜索网关路由', 'resource_manager:query', 'resource', '/resource/conditions', 'POST', '搜索资源', now(), now(), 'system', 'system'),
        (318, '全局加载路由', 'resource_manager:all', 'resource', '/resource/all', 'GET', '查询全部资源', now(), now(), 'system', 'system'),
        (322, '获取当前登录用户', 'user_manager:current', 'user', '/user/current', 'GET', '获取当前认证用户信息', now(), now(), 'system', 'system'),
-       (323, '发布网关 OAuth2 认证方式', 'gateway:oauth2-client:update', 'gateway', '/gateway/routes/oauth2-clients', 'PUT', '更新并发布网关 OAuth2/OIDC 登录认证方式', now(), now(), 'system', 'system');
+       (323, '发布网关 OAuth2 认证方式', 'gateway:oauth2-client:update', 'gateway', '/gateway/routes/oauth2-clients', 'PUT', '更新并发布网关 OAuth2/OIDC 登录认证方式', now(), now(), 'system', 'system'),
+       (330, '查询OAuth2授权记录', 'auth:authorization:query', 'authorization', '/api/auth/authorizations/conditions', 'POST', '分页查询OAuth2服务端授权记录', now(), now(), 'system', 'system'),
+       (331, '查看OAuth2授权记录', 'auth:authorization:view', 'authorization', '/api/auth/authorizations/{id}', 'GET', '查看OAuth2服务端授权详情', now(), now(), 'system', 'system'),
+       (332, '终止OAuth2服务端授权', 'auth:authorization:revoke', 'authorization', '/api/auth/authorizations/{id}', 'DELETE', '删除服务端授权并阻止Refresh Token继续使用', now(), now(), 'system', 'system'),
+       (333, '清理已失效OAuth2授权记录', 'auth:authorization:cleanup', 'authorization', '/api/auth/authorizations/expired/cleanup', 'DELETE', '删除所有Token、授权码和设备码均已过期的服务端授权记录', now(), now(), 'system', 'system'),
+       (334, '查询客户端授权记录', 'auth:consent:query', 'authorization', '/api/auth/authorization-consents/conditions', 'POST', '分页查询用户授予OAuth2客户端的权限记录', now(), now(), 'system', 'system'),
+       (335, '查看客户端授权记录', 'auth:consent:view', 'authorization', '/api/auth/authorization-consents', 'GET', '查看用户授予OAuth2客户端的权限详情', now(), now(), 'system', 'system'),
+       (336, '删除客户端授权记录', 'auth:consent:remove', 'authorization', '/api/auth/authorization-consents', 'DELETE', '删除客户端授权同意，用户下次授权时需要重新同意', now(), now(), 'system', 'system');
 
 -- 用户关系授权
 INSERT INTO base_org_user_role (id, user_id, role_id, created_time, updated_time, created_by, updated_by)
@@ -276,7 +283,21 @@ VALUES (101, 101, 101, now(), now(), 'system', 'system'),
        (518, 102, 322, now(), now(), 'system', 'system'),
        (519, 103, 322, now(), now(), 'system', 'system'),
        (520, 101, 323, now(), now(), 'system', 'system'),
-       (521, 103, 323, now(), now(), 'system', 'system');
+       (521, 103, 323, now(), now(), 'system', 'system'),
+       (522, 101, 330, now(), now(), 'system', 'system'),
+       (523, 101, 331, now(), now(), 'system', 'system'),
+       (524, 101, 332, now(), now(), 'system', 'system'),
+       (525, 103, 330, now(), now(), 'system', 'system'),
+       (526, 103, 331, now(), now(), 'system', 'system'),
+       (527, 103, 332, now(), now(), 'system', 'system'),
+       (528, 101, 333, now(), now(), 'system', 'system'),
+       (529, 103, 333, now(), now(), 'system', 'system'),
+       (530, 101, 334, now(), now(), 'system', 'system'),
+       (531, 101, 335, now(), now(), 'system', 'system'),
+       (532, 101, 336, now(), now(), 'system', 'system'),
+       (533, 103, 334, now(), now(), 'system', 'system'),
+       (534, 103, 335, now(), now(), 'system', 'system'),
+       (535, 103, 336, now(), now(), 'system', 'system');
 
 -- 岗位
 INSERT INTO base_org_position (id, name, description, created_time, updated_time, created_by, updated_by)
@@ -303,17 +324,17 @@ VALUES (101, -1, 'MENU', '/admin', 'setting', '基础管理', '用户，角色�
        (107, 101, 'MENU', '/admin/positions', 'project', '岗位管理', '岗位新增，修改，查看，删除', 60, now(), now(), 'system', 'system'),
        (108, -1, 'MENU', '/auth', 'client', '安全认证', '安全认证服务管理', 70, now(), now(), 'system', 'system'),
        (109, -1, 'MENU', '/sysadmin', 'document', '系统管理', '审计与系统运维管理', 80, now(), now(), 'system', 'system'),
-       (110, 108, 'MENU', '/auth/client', 'client', '客户端管理', 'OAuth2客户端新增，修改，删除', 10, now(), now(), 'system', 'system'),
+       (110, 108, 'MENU', '/auth/client', 'client', '客户端管理', '{"routeName":"OAuthClientManagement","component":"auth/client-management/index","visible":1}', 10, now(), now(), 'system', 'system'),
        (111, 109, 'MENU', '/sysadmin/audit-log', 'document', '审计日志', '审计日志查询，清理', 10, now(), now(), 'system', 'system'),
        (112, 109, 'MENU', '/sysadmin/dicts', 'dict', '字典管理', '{"routeName":"Dict","component":"system/dict/index","visible":1}', 20, now(), now(), 'system', 'system'),
        (113, 109, 'MENU', '/sysadmin/dict-items', 'dict', '字典项', '{"routeName":"DictItem","component":"system/dict/dict-item","visible":0}', 30, now(), now(), 'system', 'system'),
        (114, 109, 'MENU', '/sysadmin/captcha-scenes', 'captcha', '验证码管理', '{"routeName":"CaptchaScenes","component":"sysadmin/captcha-scenes/index","visible":1}', 40, now(), now(), 'system', 'system'),
        (115, 109, 'MENU', '/sysadmin/notification', 'bell', '通知管理', '{"routeName":"NotificationAdmin","component":"sysadmin/notification/index","visible":1}', 50, now(), now(), 'system', 'system'),
        (119, 109, 'MENU', '/sysadmin/ratelimit-scenes', 'timer', '限次场景', '{"routeName":"RateLimitScenes","component":"sysadmin/ratelimit-scenes/index","visible":1}', 55, now(), now(), 'system', 'system'),
-       (126, 109, 'MENU', '/sysadmin/usage-scenes', 'collection-tag', '计次场景', '{"routeName":"UsageScenes","component":"sysadmin/usage-scenes/index","visible":1}', 68, now(), now(), 'system', 'system'),
+       (126, 109, 'MENU', '/sysadmin/usage-management', 'collection-tag', '计次管理', '{"routeName":"UsageManagement","component":"sysadmin/usage-management/index","visible":1}', 68, now(), now(), 'system', 'system'),
        (160, -1, 'MENU', '/gateway', 'api', '网关路由', '{"routeName":"Gateway","visible":1}', 85, now(), now(), 'system', 'system'),
        (200,160,'MENU','/gateway/dashboard','homepage','网关总览','{"routeName":"GatewayDashboard","component":"system/gateway/planned/index","visible":1}',10,now(),now(),'system','system'),
-       (201,160,'MENU','/gateway/services','cluster','服务管理','{"routeName":"GatewayServices","component":"system/gateway/services/index","visible":1}',20,now(),now(),'system','system'),
+       (201,117,'MENU','/gateway/services','cluster','服务管理','{"routeName":"GatewayServices","component":"system/gateway/services/index","visible":1}',30,now(),now(),'system','system'),
        (120,160,'MENU','/gateway/routes','api','路由管理','{"routeName":"GatewayRouteManagement","component":"system/gateway/route/index","visible":1}',30,now(),now(),'system','system'),
        (202,160,'MENU','/gateway/traffic','timer','流量治理','{"routeName":"GatewayTraffic","visible":1}',40,now(),now(),'system','system'),
        (217,202,'MENU','/gateway/traffic/rate-limits','timer','限流规则','{"routeName":"GatewayRateLimits","component":"system/gateway/planned/index","visible":1}',10,now(),now(),'system','system'),
@@ -337,8 +358,10 @@ VALUES (101, -1, 'MENU', '/admin', 'setting', '基础管理', '用户，角色�
        (216,160,'MENU','/gateway/settings','setting','系统设置','{"routeName":"GatewaySettings","component":"system/gateway/planned/index","visible":1}',90,now(),now(),'system','system'),
        (121, 109, 'MENU', '/sysadmin/internal-messages', 'bell', '站内信管理', '{"routeName":"InternalMessage","component":"system/notice/index","visible":1}', 65, now(), now(), 'system', 'system'),
        (116, 108, 'MENU', '/auth/online-user', 'el-icon-User', '在线用户', '{"routeName":"OnlineUser","component":"security/online-user/index","visible":1}', 20, now(), now(), 'system', 'system'),
+       (220, 108, 'MENU', '/auth/internal-token-keys', 'key', '内部认证', '{"routeName":"InternalTokenKeys","component":"sysadmin/internal-token-keys/index","visible":1}', 30, now(), now(), 'system', 'system'),
        (117, -1, 'MENU', '/development', 'code', '研发管理', '研发工具与接口文档', 90, now(), now(), 'system', 'system'),
-       (118, 117, 'MENU', '/development/api-docs', 'document', 'API文档', '{"iframeUrl":"/doc.html","visible":1}', 10, now(), now(), 'system', 'system');
+       (118, 117, 'MENU', '/development/api-docs', 'document', 'API文档', '{"iframeUrl":"/doc.html","visible":1}', 10, now(), now(), 'system', 'system'),
+       (186, 117, 'MENU', '/sysadmin/error-catalog', 'warning', '错误码目录', '{"routeName":"ErrorCatalog","component":"sysadmin/error-catalog/index","visible":1}', 20, now(), now(), 'system', 'system');
 
 INSERT INTO base_org_user_group (id, user_id, group_id, created_time, updated_time, created_by, updated_by)
 VALUES (101, 101, 101, now(), now(), 'system', 'system'),
@@ -393,7 +416,9 @@ VALUES (101, 101, 101, now(), now(), 'system', 'system'),
        (147, 101, 121, now(), now(), 'system', 'system'),
        (148, 103, 121, now(), now(), 'system', 'system'),
        (160, 101, 126, now(), now(), 'system', 'system'),
-       (161, 103, 126, now(), now(), 'system', 'system');
+       (161, 103, 126, now(), now(), 'system', 'system'),
+       (186, 101, 186, now(), now(), 'system', 'system'),
+       (187, 103, 186, now(), now(), 'system', 'system');
 
 -- 按钮菜单控制管理台可见性；API 授权数据仍由 base_org_resource 维护。
 INSERT INTO base_org_menu (id, parent_id, type, href, icon, name, description, order_num, created_time, updated_time, created_by, updated_by)
@@ -406,7 +431,8 @@ VALUES (122, 109, 'MENU', '/sysadmin/configs', 'setting', '系统配置', '{"rou
        (143,116,'BUTTON','','','强制下线','{"perm":"security:online-user:kickout"}',1,now(),now(),'system','system'), (144,120,'BUTTON','','','新增网关路由','{"perm":"gateway:route:create"}',1,now(),now(),'system','system'), (145,120,'BUTTON','','','修改网关路由','{"perm":"gateway:route:update"}',2,now(),now(),'system','system'), (146,120,'BUTTON','','','删除网关路由','{"perm":"gateway:route:delete"}',3,now(),now(),'system','system'),
        (147,121,'BUTTON','','','创建站内信','{"perm":"sys:internal-message:create"}',1,now(),now(),'system','system'), (148,121,'BUTTON','','','修改站内信','{"perm":"sys:internal-message:update"}',2,now(),now(),'system','system'), (149,121,'BUTTON','','','删除站内信','{"perm":"sys:internal-message:delete"}',3,now(),now(),'system','system'), (150,121,'BUTTON','','','发布站内信','{"perm":"sys:internal-message:publish"}',4,now(),now(),'system','system'), (151,121,'BUTTON','','','撤回站内信','{"perm":"sys:internal-message:revoke"}',5,now(),now(),'system','system'),
        (152,122,'BUTTON','','','新增系统配置','{"perm":"sys:config:create"}',1,now(),now(),'system','system'), (153,122,'BUTTON','','','修改系统配置','{"perm":"sys:config:update"}',2,now(),now(),'system','system'), (154,122,'BUTTON','','','删除系统配置','{"perm":"sys:config:delete"}',3,now(),now(),'system','system'), (155,122,'BUTTON','','','刷新系统配置缓存','{"perm":"sys:config:refresh"}',4,now(),now(),'system','system'),
-       (156,123,'BUTTON','','','新增租户','{"perm":"sys:tenant:create"}',1,now(),now(),'system','system'), (157,123,'BUTTON','','','修改租户','{"perm":"sys:tenant:update"}',2,now(),now(),'system','system'), (158,123,'BUTTON','','','删除租户','{"perm":"sys:tenant:delete"}',3,now(),now(),'system','system'), (159,203,'BUTTON','','','发布 OAuth2 认证方式','{"perm":"gateway:oauth2-client:update"}',1,now(),now(),'system','system'), (164,205,'BUTTON','','','发布网关全局过滤器','{"perm":"gateway:filter:update"}',1,now(),now(),'system','system');
+       (156,123,'BUTTON','','','新增租户','{"perm":"sys:tenant:create"}',1,now(),now(),'system','system'), (157,123,'BUTTON','','','修改租户','{"perm":"sys:tenant:update"}',2,now(),now(),'system','system'), (158,123,'BUTTON','','','删除租户','{"perm":"sys:tenant:delete"}',3,now(),now(),'system','system'), (159,203,'BUTTON','','','发布 OAuth2 认证方式','{"perm":"gateway:oauth2-client:update"}',1,now(),now(),'system','system'), (164,205,'BUTTON','','','发布网关全局过滤器','{"perm":"gateway:filter:update"}',1,now(),now(),'system','system'),
+       (221,220,'BUTTON','','','轮换内部 Token 密钥','{"perm":"sysadmin:internal-token-key:rotate"}',1,now(),now(),'system','system'), (222,220,'BUTTON','','','退役 previous 密钥','{"perm":"sysadmin:internal-token-key:retire"}',2,now(),now(),'system','system'), (231,110,'BUTTON','','','终止 OAuth2 服务端授权','{"perm":"auth:authorization:revoke"}',1,now(),now(),'system','system'), (232,110,'BUTTON','','','清理已失效 Token','{"perm":"auth:authorization:cleanup"}',2,now(),now(),'system','system'), (233,110,'BUTTON','','','删除客户端授权记录','{"perm":"auth:consent:remove"}',3,now(),now(),'system','system');
 
 INSERT INTO base_org_role_menu (id, role_id, menu_id, created_time, updated_time, created_by, updated_by)
 SELECT 100000 + r.id * 1000 + m.id, r.id, m.id, now(), now(), 'system', 'system'
@@ -417,4 +443,4 @@ ON DUPLICATE KEY UPDATE updated_time=VALUES(updated_time), updated_by=VALUES(upd
 INSERT INTO base_org_role_menu (id, role_id, menu_id, created_time, updated_time, created_by, updated_by)
 SELECT 100000 + r.id * 1000 + m.id, r.id, m.id, now(), now(), 'system', 'system'
 FROM base_org_menu m JOIN base_org_role r ON r.id IN (101, 103)
-WHERE m.id IN (122, 123) OR m.id BETWEEN 130 AND 159;
+WHERE m.id IN (122, 123, 220, 221, 222, 231, 232, 233) OR m.id BETWEEN 130 AND 159;
