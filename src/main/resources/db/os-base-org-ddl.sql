@@ -335,7 +335,7 @@ VALUES (101, -1, 'MENU', '/admin', 'setting', '基础管理', '用户，角色�
        (160, -1, 'MENU', '/gateway', 'api', '网关路由', '{"routeName":"Gateway","visible":1}', 85, now(), now(), 'system', 'system'),
        (200,160,'MENU','/gateway/dashboard','homepage','网关总览','{"routeName":"GatewayDashboard","component":"system/gateway/planned/index","visible":1}',10,now(),now(),'system','system'),
        (201,117,'MENU','/gateway/services','cluster','服务管理','{"routeName":"GatewayServices","component":"system/gateway/services/index","visible":1}',30,now(),now(),'system','system'),
-       (120,160,'MENU','/gateway/routes','api','路由管理','{"routeName":"GatewayRouteManagement","component":"system/gateway/route/index","visible":1}',30,now(),now(),'system','system'),
+       (120,160,'MENU','/gateway/api-routes','api','API 路由管理','{"routeName":"GatewayApiRoutes","component":"system/gateway/api-routes/index","visible":1}',30,now(),now(),'system','system'),
        (202,160,'MENU','/gateway/traffic','timer','流量治理','{"routeName":"GatewayTraffic","visible":1}',40,now(),now(),'system','system'),
        (217,202,'MENU','/gateway/traffic/rate-limits','timer','限流规则','{"routeName":"GatewayRateLimits","component":"system/gateway/planned/index","visible":1}',10,now(),now(),'system','system'),
        (218,202,'MENU','/gateway/traffic/circuit-breakers','switch','熔断规则','{"routeName":"GatewayCircuitBreakers","component":"system/gateway/planned/index","visible":1}',20,now(),now(),'system','system'),

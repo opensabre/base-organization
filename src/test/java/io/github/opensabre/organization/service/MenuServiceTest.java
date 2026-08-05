@@ -30,7 +30,7 @@ class MenuServiceTest {
         assertThat(menus.get(2).getChildren().get(0).getHref()).isEqualTo("/sysadmin/audit-log");
         assertThat(menus.get(3).getChildren()).extracting(MenuVo::getId)
                 .containsExactly("200", "120", "202", "161", "162", "207", "211", "216");
-        assertThat(menus.get(3).getChildren().get(1).getHref()).isEqualTo("/gateway/routes");
+        assertThat(menus.get(3).getChildren().get(1).getHref()).isEqualTo("/gateway/api-routes");
         assertThat(menus.get(4).getChildren()).extracting(MenuVo::getId).containsExactly("118", "186", "201");
         assertThat(menus.get(4).getChildren().get(0).getHref()).isEqualTo("/development/api-docs");
     }
