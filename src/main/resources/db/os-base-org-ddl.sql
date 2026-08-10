@@ -469,5 +469,5 @@ ON DUPLICATE KEY UPDATE updated_time=VALUES(updated_time), updated_by=VALUES(upd
 INSERT INTO base_org_role_menu (id, role_id, menu_id, created_time, updated_time, created_by, updated_by)
 SELECT 100000 + r.id * 1000 + m.id, r.id, m.id, now(), now(), 'system', 'system'
 FROM base_org_menu m JOIN base_org_role r ON r.id IN (101, 103)
-WHERE m.id IN (122, 123, 164, 220, 221, 222, 231, 232, 233, 234, 235, 236, 237, 238)
+WHERE m.id IN (122, 123, 220, 221, 222, 231, 232, 233, 234, 235, 236, 237, 238)
    OR m.id BETWEEN 130 AND 159;
