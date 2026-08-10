@@ -242,7 +242,11 @@ VALUES (101, '新增用户', 'user_manager:btn_add', 'user', '/user', 'POST', '�
        (336, '删除客户端授权记录', 'auth:consent:remove', 'authorization', '/api/auth/authorization-consents', 'DELETE', '删除客户端授权同意，用户下次授权时需要重新同意', now(), now(), 'system', 'system'),
        (337, '查询网关黑白名单', 'gateway:access-list:read', 'gateway', '/api/gateway-admin/policies', 'GET', '查询网关 IP 黑白名单策略', now(), now(), 'system', 'system'),
        (338, '修改网关黑白名单', 'gateway:access-list:update', 'gateway', '/api/gateway-admin/policies', 'PUT', '保存网关 IP 黑白名单策略草稿', now(), now(), 'system', 'system'),
-       (339, '发布网关黑白名单', 'gateway:access-list:publish', 'gateway', '/api/gateway-admin/releases', 'POST', '校验并发布网关配置版本', now(), now(), 'system', 'system');
+       (339, '发布网关黑白名单', 'gateway:access-list:publish', 'gateway', '/api/gateway-admin/releases', 'POST', '校验并发布网关配置版本', now(), now(), 'system', 'system'),
+       (340, '查询网关全局规则', 'gateway:global-rule:read', 'gateway', '/api/gateway-admin/policies', 'GET', '查询网关全局安全响应头和跨域规则', now(), now(), 'system', 'system'),
+       (341, '修改网关全局过滤器', 'gateway:global-rule:update', 'gateway', '/api/gateway-admin/policies', 'PUT', '保存网关 default-filters 草稿', now(), now(), 'system', 'system'),
+       (342, '修改网关跨域规则', 'gateway:cors:update', 'gateway', '/api/gateway-admin/policies', 'PUT', '保存网关全局跨域规则草稿', now(), now(), 'system', 'system'),
+       (343, '发布网关全局规则', 'gateway:global-rule:publish', 'gateway', '/api/gateway-admin/releases', 'POST', '预检并发布网关全局规则', now(), now(), 'system', 'system');
 
 -- 用户关系授权
 INSERT INTO base_org_user_role (id, user_id, role_id, created_time, updated_time, created_by, updated_by)
@@ -306,7 +310,15 @@ VALUES (101, 101, 101, now(), now(), 'system', 'system'),
        (538, 101, 339, now(), now(), 'system', 'system'),
        (539, 103, 337, now(), now(), 'system', 'system'),
        (540, 103, 338, now(), now(), 'system', 'system'),
-       (541, 103, 339, now(), now(), 'system', 'system');
+       (541, 103, 339, now(), now(), 'system', 'system'),
+       (542, 101, 340, now(), now(), 'system', 'system'),
+       (543, 101, 341, now(), now(), 'system', 'system'),
+       (544, 101, 342, now(), now(), 'system', 'system'),
+       (545, 101, 343, now(), now(), 'system', 'system'),
+       (546, 103, 340, now(), now(), 'system', 'system'),
+       (547, 103, 341, now(), now(), 'system', 'system'),
+       (548, 103, 342, now(), now(), 'system', 'system'),
+       (549, 103, 343, now(), now(), 'system', 'system');
 
 -- 岗位
 INSERT INTO base_org_position (id, name, description, created_time, updated_time, created_by, updated_by)
@@ -440,10 +452,13 @@ VALUES (122, 109, 'MENU', '/sysadmin/configs', 'setting', '系统配置', '{"rou
        (143,116,'BUTTON','','','强制下线','{"perm":"security:online-user:kickout"}',1,now(),now(),'system','system'), (144,120,'BUTTON','','','新增网关路由','{"perm":"gateway:route:create"}',1,now(),now(),'system','system'), (145,120,'BUTTON','','','修改网关路由','{"perm":"gateway:route:update"}',2,now(),now(),'system','system'), (146,120,'BUTTON','','','删除网关路由','{"perm":"gateway:route:delete"}',3,now(),now(),'system','system'),
        (147,121,'BUTTON','','','创建站内信','{"perm":"sys:internal-message:create"}',1,now(),now(),'system','system'), (148,121,'BUTTON','','','修改站内信','{"perm":"sys:internal-message:update"}',2,now(),now(),'system','system'), (149,121,'BUTTON','','','删除站内信','{"perm":"sys:internal-message:delete"}',3,now(),now(),'system','system'), (150,121,'BUTTON','','','发布站内信','{"perm":"sys:internal-message:publish"}',4,now(),now(),'system','system'), (151,121,'BUTTON','','','撤回站内信','{"perm":"sys:internal-message:revoke"}',5,now(),now(),'system','system'),
        (152,122,'BUTTON','','','新增系统配置','{"perm":"sys:config:create"}',1,now(),now(),'system','system'), (153,122,'BUTTON','','','修改系统配置','{"perm":"sys:config:update"}',2,now(),now(),'system','system'), (154,122,'BUTTON','','','删除系统配置','{"perm":"sys:config:delete"}',3,now(),now(),'system','system'), (155,122,'BUTTON','','','刷新系统配置缓存','{"perm":"sys:config:refresh"}',4,now(),now(),'system','system'),
-       (156,123,'BUTTON','','','新增租户','{"perm":"sys:tenant:create"}',1,now(),now(),'system','system'), (157,123,'BUTTON','','','修改租户','{"perm":"sys:tenant:update"}',2,now(),now(),'system','system'), (158,123,'BUTTON','','','删除租户','{"perm":"sys:tenant:delete"}',3,now(),now(),'system','system'), (159,203,'BUTTON','','','发布 OAuth2 认证方式','{"perm":"gateway:oauth2-client:update"}',1,now(),now(),'system','system'), (164,205,'BUTTON','','','发布网关全局过滤器','{"perm":"gateway:filter:update"}',1,now(),now(),'system','system'),
+       (156,123,'BUTTON','','','新增租户','{"perm":"sys:tenant:create"}',1,now(),now(),'system','system'), (157,123,'BUTTON','','','修改租户','{"perm":"sys:tenant:update"}',2,now(),now(),'system','system'), (158,123,'BUTTON','','','删除租户','{"perm":"sys:tenant:delete"}',3,now(),now(),'system','system'), (159,203,'BUTTON','','','发布 OAuth2 认证方式','{"perm":"gateway:oauth2-client:update"}',1,now(),now(),'system','system'), (164,205,'BUTTON','','','修改全局过滤器','{"perm":"gateway:global-rule:update"}',1,now(),now(),'system','system'),
        (221,220,'BUTTON','','','轮换内部 Token 密钥','{"perm":"sysadmin:internal-token-key:rotate"}',1,now(),now(),'system','system'), (222,220,'BUTTON','','','退役 previous 密钥','{"perm":"sysadmin:internal-token-key:retire"}',2,now(),now(),'system','system'), (231,110,'BUTTON','','','终止 OAuth2 服务端授权','{"perm":"auth:authorization:revoke"}',1,now(),now(),'system','system'), (232,110,'BUTTON','','','清理已失效 Token','{"perm":"auth:authorization:cleanup"}',2,now(),now(),'system','system'), (233,110,'BUTTON','','','删除客户端授权记录','{"perm":"auth:consent:remove"}',3,now(),now(),'system','system'),
        (234,204,'BUTTON','','','修改黑白名单','{"perm":"gateway:access-list:update"}',1,now(),now(),'system','system'),
-       (235,204,'BUTTON','','','发布黑白名单','{"perm":"gateway:access-list:publish"}',2,now(),now(),'system','system');
+       (235,204,'BUTTON','','','发布黑白名单','{"perm":"gateway:access-list:publish"}',2,now(),now(),'system','system'),
+       (236,205,'BUTTON','','','发布全局规则','{"perm":"gateway:global-rule:publish"}',2,now(),now(),'system','system'),
+       (237,206,'BUTTON','','','修改跨域规则','{"perm":"gateway:cors:update"}',1,now(),now(),'system','system'),
+       (238,206,'BUTTON','','','发布跨域规则','{"perm":"gateway:global-rule:publish"}',2,now(),now(),'system','system');
 
 INSERT INTO base_org_role_menu (id, role_id, menu_id, created_time, updated_time, created_by, updated_by)
 SELECT 100000 + r.id * 1000 + m.id, r.id, m.id, now(), now(), 'system', 'system'
@@ -454,4 +469,5 @@ ON DUPLICATE KEY UPDATE updated_time=VALUES(updated_time), updated_by=VALUES(upd
 INSERT INTO base_org_role_menu (id, role_id, menu_id, created_time, updated_time, created_by, updated_by)
 SELECT 100000 + r.id * 1000 + m.id, r.id, m.id, now(), now(), 'system', 'system'
 FROM base_org_menu m JOIN base_org_role r ON r.id IN (101, 103)
-WHERE m.id IN (122, 123, 220, 221, 222, 231, 232, 233, 234, 235) OR m.id BETWEEN 130 AND 159;
+WHERE m.id IN (122, 123, 164, 220, 221, 222, 231, 232, 233, 234, 235, 236, 237, 238)
+   OR m.id BETWEEN 130 AND 159;
