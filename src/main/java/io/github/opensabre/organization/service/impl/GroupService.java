@@ -4,7 +4,7 @@ import com.alicp.jetcache.anno.CacheInvalidate;
 import com.alicp.jetcache.anno.CacheType;
 import com.alicp.jetcache.anno.Cached;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import io.github.opensabre.organization.dao.GroupMapper;
 import io.github.opensabre.organization.entity.param.GroupQueryParam;
 import io.github.opensabre.organization.entity.po.Group;

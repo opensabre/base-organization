@@ -1,6 +1,6 @@
 package io.github.opensabre.organization.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 import io.github.opensabre.organization.entity.param.GroupQueryParam;
 import io.github.opensabre.organization.entity.po.Group;
 

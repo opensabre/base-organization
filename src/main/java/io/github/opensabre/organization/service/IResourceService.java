@@ -1,7 +1,7 @@
 package io.github.opensabre.organization.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 import io.github.opensabre.organization.entity.param.ResourceQueryParam;
 import io.github.opensabre.organization.entity.po.Resource;
 
