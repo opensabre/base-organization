@@ -2,7 +2,7 @@ package io.github.opensabre.organization.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import io.github.opensabre.organization.dao.RoleMenuMapper;
 import io.github.opensabre.organization.entity.po.RoleMenu;
 import io.github.opensabre.organization.service.IRoleMenuService;

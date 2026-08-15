@@ -1,8 +1,8 @@
 package io.github.opensabre.organization.rest;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import io.github.opensabre.governance.audit.annotations.Audit;
 import io.github.opensabre.governance.audit.annotations.OperationType;
 import io.github.opensabre.common.core.entity.vo.Result;
@@ -128,7 +128,7 @@ public class UserController {
             String payload = new String(Base64.getUrlDecoder().decode(tokenParts[1]), StandardCharsets.UTF_8);
             JsonNode claims = objectMapper.readTree(payload);
             return claims.path("sub").asText(StringUtils.EMPTY);
-        } catch (IllegalArgumentException | java.io.IOException e) {
+        } catch (IllegalArgumentException e) {
             log.warn("Cannot parse current-user JWT payload");
             return StringUtils.EMPTY;
         }
