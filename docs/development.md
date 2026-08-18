@@ -14,6 +14,16 @@
 4. 同步更新初始化 DDL 与增量迁移，分别覆盖全新环境和升级环境。
 5. 执行前查询目标记录，执行后验证菜单名称、父子关系、前端路径和权限编码。
 
+## 审计时间毫秒精度迁移
+
+`V20260818_01__use_millisecond_precision_for_audit_timestamps.sql` 将组织服务 11 张表的
+`created_time`、`updated_time` 升级为 `DATETIME(3)`；`updated_time` 使用
+`ON UPDATE CURRENT_TIMESTAMP(3)` 自动维护。该迁移保留 `DATETIME` 的无时区语义、非空约束、
+默认值、注释和既有索引。
+
+迁移前已被 `DATETIME` 截断的毫秒无法恢复。发布前先备份目标库并记录该版本已执行；如需回滚，
+可将两字段改回 `DATETIME`，但回滚会再次丢弃迁移后写入的毫秒。
+
 ## 验证清单
 
 - 用户、角色、菜单、资源 CRUD 与关联关系正确；
