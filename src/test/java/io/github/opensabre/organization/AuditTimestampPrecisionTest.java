@@ -46,7 +46,7 @@ class AuditTimestampPrecisionTest {
     @Test
     void jdbcPreservesMillisecondsAndOnlyUpdateUpdatedTime() throws Exception {
         String id = "audit-time-test";
-        Timestamp createdTime = Timestamp.valueOf("2026-08-18 12:34:56.789");
+        Timestamp createdTime = Timestamp.valueOf("2020-08-18 12:34:56.789");
         try (Connection connection = newConnection()) {
             try (PreparedStatement insert = connection.prepareStatement("INSERT INTO base_org_group "
                     + "(id, parent_id, name, created_time, updated_time, created_by, updated_by) "
