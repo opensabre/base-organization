@@ -7,11 +7,11 @@
     <parent>
         <artifactId>opensabre-base-dependencies</artifactId>
         <groupId>io.github.opensabre</groupId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </parent>
 
     <artifactId>base-organization</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
     <name>base-organization</name>
@@ -23,7 +23,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!--  编译   -->
         <maven.compiler.release>21</maven.compiler.release>
-        <native-build-tools-plugin.version>0.9.28</native-build-tools-plugin.version>
+        <native-build-tools-plugin.version>0.10.6</native-build-tools-plugin.version>
     </properties>
 
     <licenses>
@@ -151,37 +151,42 @@
     <profiles>
         <profile>
             <id>native</id>
+            <properties>
+                <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>log4j-over-slf4j</artifactId>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                     </plugin>
-<!--                    <plugin>-->
-<!--                        <groupId>org.graalvm.buildtools</groupId>-->
-<!--                        <artifactId>native-maven-plugin</artifactId>-->
-<!--                        <version>0.10.3</version>-->
-<!--                        <configuration>-->
-<!--                            &lt;!&ndash; imageName用于设置生成的二进制文件名称 &ndash;&gt;-->
-<!--                            <imageName>${project.artifactId}</imageName>-->
-<!--                            &lt;!&ndash; mainClass用于指定main方法类路径 &ndash;&gt;-->
-<!--                            <mainClass>io.github.opensabre.organization.OrganizationApplication</mainClass>-->
-<!--                            <buildArgs>-->
-<!--                                &#45;&#45;no-fallback-->
-<!--                            </buildArgs>-->
-<!--                            <skipNativeTests>true</skipNativeTests>-->
-<!--                            <verbose>true</verbose>-->
-<!--                        </configuration>-->
-<!--                        <executions>-->
-<!--                            <execution>-->
-<!--                                <id>build-native</id>-->
-<!--                                <goals>-->
-<!--                                    <goal>compile-no-fork</goal>-->
-<!--                                </goals>-->
-<!--                                <phase>package</phase>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                    </plugin>-->
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <configuration>
+                            <imageName>${project.artifactId}</imageName>
+                            <mainClass>io.github.opensabre.organization.OrganizationApplication</mainClass>
+                            <buildArgs>
+                                <buildArg>--no-fallback</buildArg>
+                            </buildArgs>
+                            <skipNativeTests>true</skipNativeTests>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>build-native</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
