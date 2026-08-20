@@ -36,7 +36,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v5.6.0
         with:
-          java-version: '21'
+          java-version: '25'
           distribution: 'temurin'
           cache: maven
 
@@ -69,7 +69,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v5.6.0
         with:
-          java-version: '21'
+          java-version: '25'
           distribution: 'temurin'
           cache: maven
 
@@ -81,31 +81,3 @@ jobs:
           jib:build
           -Dsecret.id=${{ secrets.DOCKER_CLOUD_SECRET_ID }}
           -Dsecret.key=${{ secrets.DOCKER_CLOUD_SECRET_KEY }}
-
-  native-build:
-    name: Build Native Docker Image
-    needs: test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v7.0.1
-
-      - name: Set up GraalVM
-        uses: graalvm/setup-graalvm@v1
-        with:
-          java-version: '21'
-          distribution: 'graalvm'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          cache: maven
-
-      - name: Verify Native Image toolchain
-        run: native-image --version
-
-      - name: Build Native Executable
-        run: mvn --batch-mode --no-transfer-progress -Pnative -DskipTests package
-
-      - name: Build Native Docker Image
-        run: >-
-          docker build --file Dockerfile.native --build-arg BINARY=base-organization
-          --tag base-organization:${{ github.sha }}-native .

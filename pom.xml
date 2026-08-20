@@ -145,50 +145,19 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
+                <configuration>
+                    <from>
+                        <image>eclipse-temurin:25-jre-alpine</image>
+                    </from>
+                    <container>
+                        <jvmFlags combine.children="append">
+                            <jvmFlag>-XX:InitialRAMPercentage=10</jvmFlag>
+                            <jvmFlag>-XX:MaxRAMPercentage=60</jvmFlag>
+                            <jvmFlag>-XX:+ExitOnOutOfMemoryError</jvmFlag>
+                        </jvmFlags>
+                    </container>
+                </configuration>
             </plugin>
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>native</id>
-            <properties>
-                <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>log4j-over-slf4j</artifactId>
-                </dependency>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.graalvm.buildtools</groupId>
-                        <artifactId>native-maven-plugin</artifactId>
-                        <configuration>
-                            <imageName>${project.artifactId}</imageName>
-                            <mainClass>io.github.opensabre.organization.OrganizationApplication</mainClass>
-                            <buildArgs>
-                                <buildArg>--no-fallback</buildArg>
-                            </buildArgs>
-                            <skipNativeTests>true</skipNativeTests>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>build-native</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>compile-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
