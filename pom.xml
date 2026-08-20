@@ -7,11 +7,11 @@
     <parent>
         <artifactId>opensabre-base-dependencies</artifactId>
         <groupId>io.github.opensabre</groupId>
-        <version>1.1.0</version>
+        <version>1.1.1</version>
     </parent>
 
     <artifactId>base-organization</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
     <name>base-organization</name>
@@ -139,23 +139,6 @@
                 <configuration>
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
                     <injectIntoSysProperties>true</injectIntoSysProperties>
-                </configuration>
-            </plugin>
-            <!-- docker镜像构建 -->
-            <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>jib-maven-plugin</artifactId>
-                <configuration>
-                    <from>
-                        <image>eclipse-temurin:25-jre-alpine</image>
-                    </from>
-                    <container>
-                        <jvmFlags combine.children="append">
-                            <jvmFlag>-XX:InitialRAMPercentage=10</jvmFlag>
-                            <jvmFlag>-XX:MaxRAMPercentage=60</jvmFlag>
-                            <jvmFlag>-XX:+ExitOnOutOfMemoryError</jvmFlag>
-                        </jvmFlags>
-                    </container>
                 </configuration>
             </plugin>
         </plugins>
