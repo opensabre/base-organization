@@ -336,11 +336,11 @@ VALUES (101, -1, '总公司', '总公司', now(3), now(3), 'system', 'system'),
        (107, 101, '北京分公司', '北京分公司', now(3), now(3), 'system', 'system');
 -- 菜单
 INSERT INTO base_org_menu (id, parent_id, type, href, icon, name, description, order_num, created_time, updated_time, created_by, updated_by)
-VALUES (101, -1, 'MENU', '/admin', 'setting', '基础管理', '用户，角色，菜单，组织等基础数据管理', 0, now(3), now(3), 'system', 'system'),
+VALUES (101, -1, 'MENU', '/admin', 'setting', '系统管理', '用户，角色，菜单，部门等基础数据管理', 0, now(3), now(3), 'system', 'system'),
        (102, 101, 'MENU', '/admin/users', 'user', '用户管理', '用户新增，修改，查看，删除', 10, now(3), now(3), 'system', 'system'),
        (103, 101, 'MENU', '/admin/menus', 'menu', '菜单管理', '菜单新增，修改，删除', 20, now(3), now(3), 'system', 'system'),
        (104, 101, 'MENU', '/admin/roles', 'role', '角色管理', '角色新增，修改，删除和菜单授权', 30, now(3), now(3), 'system', 'system'),
-       (105, 101, 'MENU', '/admin/groups', 'tree', '组织管理', '组织新增，修改，查看，删除', 40, now(3), now(3), 'system', 'system'),
+       (105, 101, 'MENU', '/admin/groups', 'tree', '部门管理', '部门新增，修改，查看，删除', 40, now(3), now(3), 'system', 'system'),
        (106, 101, 'MENU', '/admin/resources', 'api', '资源管理', '功能资源新增，修改，查看，删除', 50, now(3), now(3), 'system', 'system'),
        (107, 101, 'MENU', '/admin/positions', 'project', '岗位管理', '岗位新增，修改，查看，删除', 60, now(3), now(3), 'system', 'system'),
        (108, -1, 'MENU', '/auth', 'client', '安全认证', '安全认证服务管理', 70, now(3), now(3), 'system', 'system'),

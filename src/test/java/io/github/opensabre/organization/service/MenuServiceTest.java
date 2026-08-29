@@ -20,7 +20,7 @@ class MenuServiceTest {
         List<MenuVo> menus = menuService.queryByUserId("101");
 
         assertThat(menus).extracting(MenuVo::getId).containsExactly("101", "108", "109", "160", "117");
-        assertThat(menus).extracting(MenuVo::getName).containsExactly("基础管理", "安全认证", "系统管理", "网关路由", "研发管理");
+        assertThat(menus).extracting(MenuVo::getName).containsExactly("系统管理", "安全认证", "系统管理", "网关路由", "研发管理");
         assertThat(menus.get(0).getChildren()).extracting(MenuVo::getId).containsExactly("102", "103", "104", "105", "106", "107", "123");
         assertThat(menus.get(1).getChildren()).extracting(MenuVo::getId).containsExactly("110", "116", "220");
         assertThat(menus.get(1).getChildren().get(1).getHref()).isEqualTo("/auth/online-user");

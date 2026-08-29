@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ResourceRegistrationController {
     private final IResourceRegistrationService registrationService;
-    @Value("${opensabre.resource-registration.registration-token:}")
+    @Value("${opensabre.governance.registration-token:}")
     private String registrationToken;
 
     @PutMapping("/{application}")
