@@ -33,8 +33,6 @@ spring:
       maximum-pool-size: 20
 # opensabre framework配置
 opensabre:
-  resource-registration:
-    registration-token: ${RESOURCE_REGISTRATION_TOKEN:}
   sensitive:
     log:
       enabled: false # 日志脱敏开关，默认关闭
@@ -62,6 +60,8 @@ logging:
   level:
     io.github.opensabre: debug
     java.sql.PreparedStatement: debug
+  pattern:
+    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-},%X{parentSpanId:-}]'
 
 mybatis-plus:
   global-config:
