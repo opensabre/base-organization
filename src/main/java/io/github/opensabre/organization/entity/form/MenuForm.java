@@ -15,6 +15,9 @@ import jakarta.validation.constraints.NotBlank;
 @Data
 public class MenuForm extends BaseForm<Menu> {
 
+    @Schema(title = "产品编码", description = "产品编码或 COMMON")
+    private String productCode;
+
     @NotBlank(message = "菜单父id不能为空")
     @Schema(title = "菜单父id")
     private String parentId;

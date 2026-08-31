@@ -9,6 +9,8 @@ import io.github.opensabre.organization.entity.param.MenuQueryParam;
 import io.github.opensabre.organization.entity.po.Menu;
 import io.github.opensabre.organization.entity.vo.MenuVo;
 import io.github.opensabre.organization.service.IMenuService;
+import io.github.opensabre.organization.service.CurrentUserService;
+import io.github.opensabre.boot.annotations.ResourcePermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -29,8 +32,13 @@ import java.util.List;
 @Slf4j
 public class MenuController {
 
+    private static final String DEFAULT_PRODUCT_CODE = "opensabre-admin";
+
     @Resource
     private IMenuService menuService;
+
+    @Resource
+    private CurrentUserService currentUserService;
 
     @Operation(summary = "新增菜单", description = "新增一个菜单")
     @PostMapping
@@ -38,6 +46,7 @@ public class MenuController {
     public boolean add(@Parameter(description = "新增菜单form表单", required = true) @Valid @RequestBody MenuForm menuForm) {
         log.debug("name:{}", menuForm);
         Menu menu = menuForm.toPo(Menu.class);
+        defaultProductCode(menu);
         return menuService.add(menu);
     }
 
@@ -57,6 +66,11 @@ public class MenuController {
                           @Parameter(description = "菜单实体", required = true) @Valid @RequestBody MenuForm menuForm) {
         Menu menu = menuForm.toPo(Menu.class);
         menu.setId(id);
+        if (menu.getProductCode() == null || menu.getProductCode().isBlank()) {
+            Menu existing = menuService.get(id);
+            menu.setProductCode(existing == null || existing.getProductCode() == null
+                    ? DEFAULT_PRODUCT_CODE : existing.getProductCode());
+        }
         return menuService.update(menu);
     }
 
@@ -104,11 +118,30 @@ public class MenuController {
         return menuService.queryTree();
     }
 
+    @Operation(summary = "查询产品菜单树", description = "返回指定产品和公共菜单的完整树")
+    @GetMapping(value = "/tree/{productCode}")
+    public List<MenuVo> queryTree(@PathVariable String productCode) {
+        return menuService.queryTree(productCode);
+    }
+
+    @Operation(summary = "查询当前用户产品菜单", description = "根据登录用户角色、产品归属和公共菜单计算菜单树")
+    @GetMapping(value = "/current")
+    @ResourcePermission(code = "product_menu:view", name = "查看当前产品菜单", type = "menu")
+    public List<MenuVo> queryCurrent(@RequestParam String productCode, HttpServletRequest request) {
+        return menuService.queryByUserId(currentUserService.current(request).getId(), productCode);
+    }
+
     @Operation(summary = "根据用户id查询菜单", description = "根据用户拥有的角色查询授权菜单树")
     @GetMapping(value = "/user/{userId}")
     public List<MenuVo> queryByUserId(@Parameter(description = "用户ID", required = true)
                                       @NotBlank(message = "用户ID不能为空") @PathVariable String userId) {
         log.debug("query with user id:{}", userId);
         return menuService.queryByUserId(userId);
+    }
+
+    private void defaultProductCode(Menu menu) {
+        if (menu.getProductCode() == null || menu.getProductCode().isBlank()) {
+            menu.setProductCode(DEFAULT_PRODUCT_CODE);
+        }
     }
 }

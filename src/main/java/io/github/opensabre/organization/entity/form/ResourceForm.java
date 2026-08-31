@@ -35,4 +35,8 @@ public class ResourceForm extends BaseForm<Resource> {
 
     @Schema(title = "资源描述")
     private String description;
+
+    @NotBlank(message = "产品编码不能为空")
+    @Schema(title = "产品编码", description = "产品编码或 COMMON")
+    private String productCode;
 }

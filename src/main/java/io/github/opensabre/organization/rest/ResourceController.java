@@ -85,8 +85,8 @@ public class ResourceController {
     )
     @GetMapping(value = "/all")
     @ResourcePermission(code = "resource_manager:all", name = "查询全部资源", type = "resource", description = "查询全部权限资源")
-    public List<Resource> queryAll() {
-        return resourceService.getAll();
+    public List<Resource> queryAll(@RequestParam(required = false) String productCode) {
+        return resourceService.getAll(productCode);
     }
 
     @Operation(summary = "搜索资源", description = "根据条件搜索资源信息")

@@ -52,6 +52,12 @@ public interface IMenuService {
      */
     List<MenuVo> queryByUserId(String userId);
 
+    /** 根据用户和产品查询授权菜单；公共菜单仍需角色授权。 */
+    List<MenuVo> queryByUserId(String userId, String productCode);
+
+    /** 查询指定产品及公共菜单的完整管理树。 */
+    List<MenuVo> queryTree(String productCode);
+
     /**
      * 更新菜单信息
      *

@@ -25,6 +25,9 @@ public class ResourceQueryForm extends BaseQueryForm<ResourceQueryParam> {
     @Schema(title = "资源方法")
     private String method;
 
+    @Schema(title = "产品编码")
+    private String productCode;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Past(message = "查询开始时间必须小于当前日期")
     @Schema(title = "查询开始时间")

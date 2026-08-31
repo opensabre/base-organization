@@ -19,6 +19,7 @@ public class MenuVo extends BaseVo {
     }
 
     private String parentId;
+    private String productCode;
     private String name;
     private String type;
     private String href;

@@ -3,6 +3,7 @@ package io.github.opensabre.organization.rest;
 import io.github.opensabre.organization.entity.po.User;
 import io.github.opensabre.organization.entity.vo.UserVo;
 import io.github.opensabre.organization.service.IUserService;
+import io.github.opensabre.organization.service.CurrentUserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.http.MediaType;
@@ -86,6 +87,7 @@ class UserControllerTest {
     private static MockMvc mockMvc(IUserService userService) {
         UserController userController = new UserController();
         ReflectionTestUtils.setField(userController, "userService", userService);
+        ReflectionTestUtils.setField(userController, "currentUserService", new CurrentUserService(userService));
 
         LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();

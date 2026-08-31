@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 public class MenuService extends ServiceImpl<MenuMapper, Menu> implements IMenuService {
 
     private final String CACHE_PREFIX_KEY = "menu:";
+    private static final String COMMON_PRODUCT = "COMMON";
 
     @Resource
     private IUserRoleService userRoleService;
@@ -85,7 +86,17 @@ public class MenuService extends ServiceImpl<MenuMapper, Menu> implements IMenuS
     }
 
     @Override
+    public List<MenuVo> queryTree(String productCode) {
+        return buildMenuTree(this.list().stream().filter(menu -> visibleInProduct(menu, productCode)).toList());
+    }
+
+    @Override
     public List<MenuVo> queryByUserId(String userId) {
+        return queryByUserId(userId, null);
+    }
+
+    @Override
+    public List<MenuVo> queryByUserId(String userId, String productCode) {
         Set<String> roleIds = userRoleService.queryByUserId(userId);
         List<RoleMenu> roleMenus = roleMenuService.queryByRoleIds(roleIds);
         Set<String> menuIds = roleMenus.stream().map(RoleMenu::getMenuId).collect(Collectors.toSet());
@@ -94,13 +105,14 @@ public class MenuService extends ServiceImpl<MenuMapper, Menu> implements IMenuS
         }
 
         Map<String, Menu> menuMap = this.listByIds(menuIds).stream()
+                .filter(menu -> visibleInProduct(menu, productCode))
                 .collect(Collectors.toMap(Menu::getId, Function.identity(), (left, right) -> left));
-        fillParentMenus(menuMap);
+        fillParentMenus(menuMap, productCode);
 
         return buildMenuTree(menuMap.values().stream().toList());
     }
 
-    private void fillParentMenus(Map<String, Menu> menuMap) {
+    private void fillParentMenus(Map<String, Menu> menuMap, String productCode) {
         Set<String> pendingParentIds = menuMap.values().stream()
                 .map(Menu::getParentId)
                 .filter(parentId -> Objects.nonNull(parentId) && !"-1".equals(parentId))
@@ -112,7 +124,8 @@ public class MenuService extends ServiceImpl<MenuMapper, Menu> implements IMenuS
             pendingParentIds.clear();
 
             for (Menu parentMenu : parentMenus) {
-                if (menuMap.putIfAbsent(parentMenu.getId(), parentMenu) == null
+                if (visibleInProduct(parentMenu, productCode)
+                        && menuMap.putIfAbsent(parentMenu.getId(), parentMenu) == null
                         && Objects.nonNull(parentMenu.getParentId())
                         && !"-1".equals(parentMenu.getParentId())
                         && !menuMap.containsKey(parentMenu.getParentId())) {
@@ -120,6 +133,11 @@ public class MenuService extends ServiceImpl<MenuMapper, Menu> implements IMenuS
                 }
             }
         }
+    }
+
+    private boolean visibleInProduct(Menu menu, String productCode) {
+        return productCode == null || productCode.isBlank()
+                || productCode.equals(menu.getProductCode()) || COMMON_PRODUCT.equals(menu.getProductCode());
     }
 
     private List<MenuVo> buildMenuTree(List<Menu> menus) {

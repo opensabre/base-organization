@@ -78,12 +78,21 @@ public class ResourceService extends ServiceImpl<ResourceMapper, Resource> imple
         queryWrapper.eq(StringUtils.isNotBlank(resourceQueryParam.getType()), "type", resourceQueryParam.getType());
         queryWrapper.eq(StringUtils.isNotBlank(resourceQueryParam.getUrl()), "url", resourceQueryParam.getUrl());
         queryWrapper.eq(StringUtils.isNotBlank(resourceQueryParam.getMethod()), "method", resourceQueryParam.getMethod());
+        if (StringUtils.isNotBlank(resourceQueryParam.getProductCode())) {
+            queryWrapper.in("product_code", resourceQueryParam.getProductCode(), ProductService.COMMON_PRODUCT);
+        }
         return this.page(page, queryWrapper);
     }
 
     @Override
     public List<Resource> getAll() {
         return this.list();
+    }
+
+    @Override
+    public List<Resource> getAll(String productCode) {
+        if (StringUtils.isBlank(productCode)) return getAll();
+        return this.list(new QueryWrapper<Resource>().in("product_code", productCode, ProductService.COMMON_PRODUCT));
     }
 
     @Override

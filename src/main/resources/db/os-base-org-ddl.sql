@@ -34,6 +34,7 @@ DROP TABLE IF EXISTS base_org_menu;
 CREATE TABLE base_org_menu
 (
     id           VARCHAR(20) PRIMARY KEY COMMENT 'id',
+    product_code VARCHAR(64) NOT NULL DEFAULT 'opensabre-admin' COMMENT '归属产品编码，COMMON 表示公共菜单',
     parent_id    VARCHAR(20)  NOT NULL COMMENT '父菜单id',
     type         VARCHAR(100) COMMENT '菜单类型',
     href         VARCHAR(200) COMMENT '菜单路径',
@@ -141,6 +142,7 @@ CREATE TABLE base_org_resource
     method       VARCHAR(20)  NOT NULL COMMENT '资源方法',
     description  VARCHAR(500) COMMENT '简介',
     application  VARCHAR(100) NOT NULL DEFAULT 'legacy' COMMENT '来源应用',
+    product_code VARCHAR(64) NOT NULL DEFAULT 'opensabre-admin' COMMENT '归属产品编码，COMMON 表示公共资源',
     source       VARCHAR(20)  NOT NULL DEFAULT 'MANUAL' COMMENT '资源来源',
     status       VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE' COMMENT '注册状态',
     handler      VARCHAR(300) COMMENT '处理器方法',
@@ -157,6 +159,65 @@ CREATE UNIQUE INDEX ux_resource_code
     ON base_org_resource (code);
 CREATE INDEX ix_resource_endpoint
     ON base_org_resource (application, method, url);
+CREATE INDEX ix_resource_product
+    ON base_org_resource (product_code);
+
+-- 产品及应用归属
+DROP TABLE IF EXISTS base_org_product;
+CREATE TABLE base_org_product
+(
+    id                 VARCHAR(20) PRIMARY KEY COMMENT '产品id',
+    code               VARCHAR(64) NOT NULL COMMENT '产品编码',
+    name               VARCHAR(200) NOT NULL COMMENT '产品全称',
+    short_name         VARCHAR(100) NOT NULL COMMENT '产品简称',
+    description        VARCHAR(500) COMMENT '产品描述',
+    logo_url           VARCHAR(500) COMMENT 'Logo 地址',
+    collapsed_logo_url VARCHAR(500) COMMENT '折叠 Logo 地址',
+    favicon_url        VARCHAR(500) COMMENT '浏览器图标地址',
+    primary_color      VARCHAR(20) COMMENT '主题色',
+    home_path          VARCHAR(200) NOT NULL COMMENT '默认首页',
+    enabled            BOOLEAN NOT NULL DEFAULT TRUE COMMENT '是否启用',
+    order_num          INTEGER NOT NULL DEFAULT 0 COMMENT '排序',
+    created_time       DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    updated_time       DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+    created_by         VARCHAR(100) NOT NULL,
+    updated_by         VARCHAR(100) NOT NULL,
+    UNIQUE KEY ux_product_code (code)
+) COMMENT '产品配置表';
+
+DROP TABLE IF EXISTS base_org_product_application;
+CREATE TABLE base_org_product_application
+(
+    id           VARCHAR(20) PRIMARY KEY COMMENT '关系id',
+    product_code VARCHAR(64) NOT NULL COMMENT '产品编码',
+    application  VARCHAR(100) NOT NULL COMMENT '应用注册名',
+    created_time DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    updated_time DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+    created_by   VARCHAR(100) NOT NULL,
+    updated_by   VARCHAR(100) NOT NULL,
+    UNIQUE KEY ux_product_application (application)
+) COMMENT '产品应用映射表';
+
+INSERT INTO base_org_product
+    (id, code, name, short_name, description, logo_url, collapsed_logo_url, favicon_url,
+     primary_color, home_path, enabled, order_num, created_by, updated_by)
+VALUES
+    ('prod-common', 'COMMON', '公共能力', '公共', '所有产品可复用的菜单和资源', NULL, NULL, NULL,
+     '#315EFB', '/', TRUE, 0, 'system', 'system'),
+    ('prod-opensabre', 'opensabre-admin', 'OpenSabre 开发平台', 'OpenSabre', 'OpenSabre 系统与开发管理控制台',
+     '/favicon.ico', '/favicon.ico', '/favicon.ico', '#409EFF', '/dashboard', TRUE, 10, 'system', 'system'),
+    ('prod-iqc', 'iqc', '智能质检平台', '睿检', '基于规则与智能体的会话质量分析平台',
+     NULL, NULL, NULL, '#315EFB', '/dashboard', TRUE, 20, 'system', 'system');
+
+INSERT INTO base_org_product_application
+    (id, product_code, application, created_by, updated_by)
+VALUES
+    ('pa-authorization', 'COMMON', 'base-authorization', 'system', 'system'),
+    ('pa-organization', 'opensabre-admin', 'base-organization', 'system', 'system'),
+    ('pa-sysadmin', 'opensabre-admin', 'base-sysadmin', 'system', 'system'),
+    ('pa-gateway', 'opensabre-admin', 'base-gateway', 'system', 'system'),
+    ('pa-gateway-admin', 'opensabre-admin', 'base-gateway-admin', 'system', 'system'),
+    ('pa-iqc', 'iqc', 'iqc-platform', 'system', 'system');
 
 -- 用户和角色关系表
 DROP TABLE IF EXISTS base_org_user_role;

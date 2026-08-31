@@ -34,6 +34,7 @@ public class ResourceRegistrationService implements IResourceRegistrationService
 
     private final IResourceService resourceService;
     private final ResourceMapper resourceMapper;
+    private final io.github.opensabre.organization.service.IProductService productService;
 
     @Override
     @Transactional
@@ -84,6 +85,7 @@ public class ResourceRegistrationService implements IResourceRegistrationService
                 resource.setUrl(mapping.getUrl());
                 resource.setMethod(mapping.getMethod());
                 resource.setDescription(mapping.getDescription());
+                resource.setProductCode(productService.resolveProductCode(application));
                 resource.setStatus(STATUS_PENDING);
                 resource.setFirstSeenAt(now);
                 resource.setCreatedTime(now);
@@ -93,6 +95,9 @@ public class ResourceRegistrationService implements IResourceRegistrationService
                 updated++;
             }
             resource.setApplication(application);
+            if (StringUtils.isBlank(resource.getProductCode())) {
+                resource.setProductCode(productService.resolveProductCode(application));
+            }
             resource.setSource(mapping.isDeclaredPermission() ? SOURCE_ANNOTATION : SOURCE_DISCOVERED);
             resource.setHandler(mapping.getHandlerClass() + "#" + mapping.getHandlerMethod());
             resource.setLastSeenAt(now);

@@ -14,4 +14,5 @@ public class ResourceQueryParam extends BaseParam {
     private String type;
     private String url;
     private String method;
+    private String productCode;
 }

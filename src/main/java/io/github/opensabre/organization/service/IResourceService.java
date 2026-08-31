@@ -47,6 +47,9 @@ public interface IResourceService extends IService<Resource> {
      */
     List<Resource> getAll();
 
+    /** 查询指定产品及公共资源。 */
+    List<Resource> getAll(String productCode);
+
     /**
      * 根据username查询角色拥有的资源
      *

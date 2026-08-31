@@ -18,6 +18,7 @@ public class Resource extends BasePo {
     private String name;
     private String description;
     private String application;
+    private String productCode;
     private String source;
     private String status;
     private String handler;
@@ -26,4 +27,3 @@ public class Resource extends BasePo {
     private Date missingSince;
     private String appVersion;
 }
-
