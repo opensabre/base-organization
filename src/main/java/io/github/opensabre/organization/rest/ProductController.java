@@ -32,6 +32,13 @@ public class ProductController {
         return productService.listOrdered();
     }
 
+    /** Resolves the product that owns an application for control-plane asset classification. */
+    @GetMapping("/applications/{application}/product-code")
+    @Operation(summary = "查询应用所属产品")
+    public String resolveApplicationProduct(@NotBlank @PathVariable String application) {
+        return productService.resolveProductCode(application);
+    }
+
     @GetMapping("/{code}/profile")
     @Operation(summary = "查询启用的产品品牌信息")
     @ResourcePermission(code = "product_profile:view", name = "查看产品品牌", type = "product")
