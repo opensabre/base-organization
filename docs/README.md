@@ -4,6 +4,7 @@
 
 | 文档 | 用途 |
 | --- | --- |
+| [数据模型与 ER 图](data-model.md) | 全部业务表、领域分组和逻辑关系 |
 | [架构与边界](architecture.md) | 服务职责、领域模型和权限边界 |
 | [开发与数据库迁移](development.md) | 数据库初始化、升级和验证 |
 | [模块：组织与权限](modules/organization-and-access.md) | 功能、使用和关键流程 |
