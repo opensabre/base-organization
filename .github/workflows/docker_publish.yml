@@ -25,6 +25,7 @@ jobs:
 
   test:
     name: Maven Verify
+    needs: database-migrations
     runs-on: ubuntu-latest
     services:
       redis:
@@ -74,7 +75,7 @@ jobs:
   build-and-push:
     name: Build and Push Image
     if: github.event_name == 'push'
-    needs: test
+    needs: [database-migrations, test]
     runs-on: ubuntu-latest
     env:
       REGISTRY_URL: 'ccr.ccs.tencentyun.com/opensabre'
