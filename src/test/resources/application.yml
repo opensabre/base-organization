@@ -24,7 +24,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: '*'
+        include: health,info,metrics,prometheus,internalTokenKeyStatus
 
 mybatis-plus:
   global-config:

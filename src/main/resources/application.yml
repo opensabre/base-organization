@@ -62,7 +62,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: '*'
+        include: health,info,metrics,prometheus,internalTokenKeyStatus
   tracing:
     sampling:
       probability: 1.0
