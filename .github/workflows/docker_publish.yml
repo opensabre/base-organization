@@ -37,6 +37,12 @@ jobs:
         env:
           MYSQL_TEST_CONTAINER: ${{ job.services.mysql.id }}
         run: bash scripts/test-iqc-label-permissions.sh
+      - name: Upload validated migration resources
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: iqc-label-migrations-${{ github.sha }}
+          path: src/main/resources/db/migration/mysql/
+          retention-days: 14
 
   database-migrations:
     name: Flyway MySQL
@@ -97,7 +103,7 @@ jobs:
   build-and-push:
     name: Build and Push Image
     if: github.event_name == 'push'
-    needs: test
+    needs: [test, database-migrations, label-permissions]
     runs-on: ubuntu-latest
     env:
       REGISTRY_URL: 'ccr.ccs.tencentyun.com/opensabre'
