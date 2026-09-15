@@ -15,6 +15,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  label-permissions:
+    name: IQC Label Permission Regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: iqc-label-ci-only
+        options: >-
+          --label opensabre.test=iqc-label-permissions
+          --health-cmd "mysqladmin ping -h localhost -piqc-label-ci-only"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7.0.1
+      - name: Verify fresh and registered-resource upgrade scenarios
+        env:
+          MYSQL_TEST_CONTAINER: ${{ job.services.mysql.id }}
+        run: bash scripts/test-iqc-label-permissions.sh
+      - name: Upload validated migration resources
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: iqc-label-migrations-${{ github.sha }}
+          path: src/main/resources/db/migration/mysql/
+          retention-days: 14
+
   database-migrations:
     name: Flyway MySQL
     uses: opensabre/base-k8s/.github/workflows/service-database-migrations.yml@main
@@ -74,7 +103,7 @@ jobs:
   build-and-push:
     name: Build and Push Image
     if: github.event_name == 'push'
-    needs: test
+    needs: [test, database-migrations, label-permissions]
     runs-on: ubuntu-latest
     env:
       REGISTRY_URL: 'ccr.ccs.tencentyun.com/opensabre'
