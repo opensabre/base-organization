@@ -8,8 +8,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 
 /** Protects control-plane Actuator metric reads with OpenSabre internal tokens. */
 @Configuration(proxyBeanMethods = false)
@@ -27,10 +27,15 @@ public class ActuatorMonitoringSecurityConfiguration {
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/actuator/internalTokenKeyStatus")
+                        .hasAuthority(ActuatorMonitoringAccess.AUTHORITY)
                         .requestMatchers(ActuatorMonitoringAccess.metricPathArray())
                         .hasAuthority(ActuatorMonitoringAccess.AUTHORITY)
+                        .requestMatchers("/actuator/**")
+                        .hasAuthority("SCOPE_actuator.read")
                         .anyRequest().permitAll())
-                .addFilterBefore(internalTokenAuthenticationFilter, AuthorizationFilter.class);
+                .oauth2ResourceServer(resourceServer -> resourceServer.jwt(jwt -> {}))
+                .addFilterBefore(internalTokenAuthenticationFilter, BearerTokenAuthenticationFilter.class);
         return http.build();
     }
 }
