@@ -2,9 +2,11 @@
 
 ## 启动与数据
 
-1. 全新环境执行 `src/main/resources/db/os-base-org-ddl.sql` 和对应初始数据脚本。
+1. 全新环境先由 `base-k8s` 创建数据库和迁移账号，再运行独立 Flyway 迁移；新库使用 `src/main/resources/db/migration/mysql/baseline/` 及之后的版本迁移。
 2. 数据库变更写入 `src/main/resources/db/migration/mysql/`，由发布阶段的独立 Flyway 进程执行；应用 Pod 启动时不执行迁移。
 3. 配置注册中心、数据库等环境依赖后，以 Maven 启动服务。
+
+服务测试使用 `src/test/resources/db/organization-service-fixture.sql` 中的 H2 夹具；它只包含测试需要的记录，不代表生产表结构。生产表结构由 MySQL + Flyway 验证。
 
 ## 菜单与权限迁移
 

@@ -1,7 +1,9 @@
-SET NAMES utf8;
+-- H2 fixture for organization service tests only; not a production schema.
+-- Contains the records needed by service assertions and startup.
+-- Production schema and data are validated with MySQL + Flyway under base-k8s/scripts/.
 
--- 用户组表
 DROP TABLE IF EXISTS base_org_group;
+
 CREATE TABLE base_org_group
 (
     id           VARCHAR(20) PRIMARY KEY COMMENT 'id',
@@ -15,8 +17,8 @@ CREATE TABLE base_org_group
     updated_by   VARCHAR(100) NOT NULL COMMENT '更新人'
 ) COMMENT '用户组表';
 
--- 岗位表
 DROP TABLE IF EXISTS base_org_position;
+
 CREATE TABLE base_org_position
 (
     id           VARCHAR(20) PRIMARY KEY COMMENT 'id',
@@ -29,8 +31,8 @@ CREATE TABLE base_org_position
     updated_by   VARCHAR(100) NOT NULL COMMENT '更新人'
 ) COMMENT '岗位表';
 
--- 菜单表
 DROP TABLE IF EXISTS base_org_menu;
+
 CREATE TABLE base_org_menu
 (
     id           VARCHAR(20) PRIMARY KEY COMMENT 'id',
@@ -48,9 +50,8 @@ CREATE TABLE base_org_menu
     updated_by   VARCHAR(100) NOT NULL COMMENT '更新人'
 ) COMMENT '菜单表';
 
-
--- 用户和组关系表
 DROP TABLE IF EXISTS base_org_user_group;
+
 CREATE TABLE base_org_user_group
 (
     id           VARCHAR(20) PRIMARY KEY COMMENT 'id',
@@ -62,9 +63,8 @@ CREATE TABLE base_org_user_group
     updated_by   VARCHAR(100) NOT NULL COMMENT '更新人'
 ) COMMENT '用户和组关系表';
 
-
--- 用户和岗位系表
 DROP TABLE IF EXISTS base_org_user_position;
+
 CREATE TABLE base_org_user_position
 (
     id           VARCHAR(20) PRIMARY KEY COMMENT 'id',
@@ -76,9 +76,8 @@ CREATE TABLE base_org_user_position
     updated_by   VARCHAR(100) NOT NULL COMMENT '更新人'
 ) COMMENT '用户和岗位关系表';
 
-
--- 角色和菜单关系表
 DROP TABLE IF EXISTS base_org_role_menu;
+
 CREATE TABLE base_org_role_menu
 (
     id           VARCHAR(20) PRIMARY KEY COMMENT 'id',
@@ -90,8 +89,8 @@ CREATE TABLE base_org_role_menu
     updated_by   VARCHAR(100) NOT NULL COMMENT '更新人'
 ) COMMENT '角色和菜单关系表';
 
---  用户表
 DROP TABLE IF EXISTS base_org_user;
+
 CREATE TABLE base_org_user
 (
     id                      VARCHAR(20) PRIMARY KEY COMMENT '用户id',
@@ -111,13 +110,9 @@ CREATE TABLE base_org_user
     created_by              VARCHAR(100) NOT NULL COMMENT '创建人',
     updated_by              VARCHAR(100) NOT NULL COMMENT '更新人'
 ) COMMENT '用户表';
-CREATE UNIQUE INDEX ux_user_username
-    ON base_org_user (username);
-CREATE UNIQUE INDEX ux_user_mobile
-    ON base_org_user (mobile);
 
---  角色表
 DROP TABLE IF EXISTS base_org_role;
+
 CREATE TABLE base_org_role
 (
     id           VARCHAR(20) PRIMARY KEY COMMENT '角色id',
@@ -130,8 +125,8 @@ CREATE TABLE base_org_role
     updated_by   VARCHAR(100) NOT NULL COMMENT '更新人'
 ) COMMENT '角色表';
 
--- 资源表
 DROP TABLE IF EXISTS base_org_resource;
+
 CREATE TABLE base_org_resource
 (
     id           VARCHAR(20) PRIMARY KEY COMMENT '资源id',
@@ -155,15 +150,9 @@ CREATE TABLE base_org_resource
     created_by   VARCHAR(100) NOT NULL COMMENT '创建人',
     updated_by   VARCHAR(100) NOT NULL COMMENT '更新人'
 ) COMMENT '资源表';
-CREATE UNIQUE INDEX ux_resource_code
-    ON base_org_resource (code);
-CREATE INDEX ix_resource_endpoint
-    ON base_org_resource (application, method, url);
-CREATE INDEX ix_resource_product
-    ON base_org_resource (product_code);
 
--- 产品及应用归属
 DROP TABLE IF EXISTS base_org_product;
+
 CREATE TABLE base_org_product
 (
     id                 VARCHAR(20) PRIMARY KEY COMMENT '产品id',
@@ -186,6 +175,7 @@ CREATE TABLE base_org_product
 ) COMMENT '产品配置表';
 
 DROP TABLE IF EXISTS base_org_product_application;
+
 CREATE TABLE base_org_product_application
 (
     id           VARCHAR(20) PRIMARY KEY COMMENT '关系id',
@@ -219,8 +209,8 @@ VALUES
     ('pa-gateway-admin', 'opensabre-admin', 'base-gateway-admin', 'system', 'system'),
     ('pa-iqc', 'iqc', 'iqc-platform', 'system', 'system');
 
--- 用户和角色关系表
 DROP TABLE IF EXISTS base_org_user_role;
+
 CREATE TABLE base_org_user_role
 (
     id           VARCHAR(20) PRIMARY KEY COMMENT '关系id',
@@ -232,8 +222,8 @@ CREATE TABLE base_org_user_role
     updated_by   VARCHAR(100) NOT NULL COMMENT '更新人'
 ) COMMENT '用户和角色关系表';
 
--- 角色和资源关系表
 DROP TABLE IF EXISTS base_org_role_resource;
+
 CREATE TABLE base_org_role_resource
 (
     id           VARCHAR(20) PRIMARY KEY COMMENT '关系id',
@@ -254,138 +244,30 @@ VALUES
  '超级管理员', '', 'M', now(3), now(3), 'system', 'system'),
 (102, 'zhoutaoo', '$2a$10$vYA9wKn/hVGOtwQw2eHiceeIGNBdfLYpDmbzHgBSVmOfHXPH4iYdS', 'N', true, true, true, true,
  '周涛', 15619841000, 'M', now(3), now(3), 'system', 'system');
+
 -- 角色
 INSERT INTO base_org_role (id, code, name, description, created_time, updated_time, created_by, updated_by)
 VALUES (101, 'ADMIN', '超级管理员', '公司IT总负责人', now(3), now(3), 'system', 'system'),
        (102, 'FIN', '财务', '财务', now(3), now(3), 'system', 'system'),
        (103, 'IT', 'IT', 'IT角色', now(3), now(3), 'system', 'system');
--- 资源
-INSERT INTO base_org_resource (id, name, code, type, url, method, description, created_time, updated_time, created_by, updated_by)
-VALUES (101, '新增用户', 'user_manager:btn_add', 'user', '/user', 'POST', '新增用户功能', now(3), now(3), 'system', 'system'),
-       (102, '编辑用户', 'user_manager:btn_edit', 'user', '/user/{id}', 'PUT', '编辑用户功能', now(3), now(3), 'system', 'system'),
-       (103, '删除用户', 'user_manager:btn_del', 'user', '/user/{id}', 'DELETE', '根据用户id删除用户', now(3), now(3), 'system', 'system'),
-       (104, '查看用户', 'user_manager:view', 'user', '/user/{id}', 'GET', '根据用户id获取用户', now(3), now(3), 'system', 'system'),
-       (105, '搜索用户', 'user_manager:query', 'user', '/user/conditions', 'POST', '根据条件查询用户', now(3), now(3), 'system', 'system'),
-       (106, '获取用户', 'user_manager:get', 'user', '/user', 'GET', '根据唯一标识获取用户', now(3), now(3), 'system', 'system'),
-       (201, '新增角色', 'role_manager:btn_add', 'role', '/role', 'POST', '新增角色功能', now(3), now(3), 'system', 'system'),
-       (202, '编辑角色', 'role_manager:btn_edit', 'role', '/role/{id}', 'PUT', '编辑角色功能', now(3), now(3), 'system', 'system'),
-       (203, '删除角色', 'role_manager:btn_del', 'role', '/role/{id}', 'DELETE', '根据id删除角色', now(3), now(3), 'system', 'system'),
-       (204, '查看角色', 'role_manager:view', 'role', '/role/{id}', 'GET', '根据id获取角色', now(3), now(3), 'system', 'system'),
-       (205, '根据用户id查询角色', 'role_manager:user', 'role', '/role/user/{userId}', 'GET', '根据用户id获取用户所拥有的角色集', now(3), now(3), 'system', 'system'),
-       (206, '获取所有角色', 'role_manager:all', 'role', '/role/all', 'GET', '获取所有角色', now(3), now(3), 'system', 'system'),
-       (207, '搜索角色', 'role_manager:query', 'role', '/role/conditions', 'POST', '根据条件查询角色', now(3), now(3), 'system', 'system'),
-       (301, '根据父id查询组', 'group_manager:parent', 'group', '/group/parent/{id}', 'GET', '根据父id查询用户组', now(3), now(3), 'system', 'system'),
-       (302, '查看用户组', 'group_manager:get', 'group', '/group/{id}', 'GET', '根据id查询用户组', now(3), now(3), 'system', 'system'),
-       (303, '搜索用户组', 'group_manager:query', 'group', '/group/conditions', 'POST', '根据条件查询用户组信息', now(3), now(3), 'system', 'system'),
-       (304, '删除用户组', 'group_manager:del', 'group', '/group/{id}', 'DELETE', '根据用户id删除用户组', now(3), now(3), 'system', 'system'),
-       (305, '编辑用户组', 'group_manager:edit', 'group', '/group/{id}', 'PUT', '修改用户组', now(3), now(3), 'system', 'system'),
-       (306, '新增用户组', 'group_manager:add', 'group', '/group', 'POST', '新增用户组', now(3), now(3), 'system', 'system'),
-       (307, '新增网关路由', 'gateway_manager:add', 'gateway', '/gateway/routes', 'POST', '新增网关路由', now(3), now(3), 'system', 'system'),
-       (308, '修改网关路由', 'gateway_manager:edit', 'gateway', '/gateway/routes/{id}', 'PUT', '修改网关路由', now(3), now(3), 'system', 'system'),
-       (309, '删除网关路由', 'gateway_manager:adel', 'gateway', '/gateway/routes/{id}', 'DELETE', '删除网关路由', now(3), now(3), 'system', 'system'),
-       (310, '查看网关路由', 'gateway_manager:view', 'gateway', '/gateway/routes/{id}', 'GET', '查看网关路由', now(3), now(3), 'system', 'system'),
-       (311, '搜索网关路由', 'gateway_manager:query', 'gateway', '/gateway/routes/conditions', 'POST', '搜索网关路由', now(3), now(3), 'system', 'system'),
-       (312, '全局加载路由', 'gateway_manager:overload', 'gateway', '/gateway/routes/overload', 'POST', '全局加载路由', now(3), now(3), 'system', 'system'),
-       (313, '新增网关路由', 'resource_manager:add', 'resource', '/resource', 'POST', '新增资源路由', now(3), now(3), 'system', 'system'),
-       (314, '修改网关路由', 'resource_manager:edit', 'resource', '/resource/{id}', 'PUT', '修改资源', now(3), now(3), 'system', 'system'),
-       (315, '删除网关路由', 'resource_manager:adel', 'resource', '/resource/{id}', 'DELETE', '删除资源', now(3), now(3), 'system', 'system'),
-       (316, '查看网关路由', 'resource_manager:view', 'resource', '/resource/{id}', 'GET', '查看资源', now(3), now(3), 'system', 'system'),
-       (317, '搜索网关路由', 'resource_manager:query', 'resource', '/resource/conditions', 'POST', '搜索资源', now(3), now(3), 'system', 'system'),
-       (318, '全局加载路由', 'resource_manager:all', 'resource', '/resource/all', 'GET', '查询全部资源', now(3), now(3), 'system', 'system'),
-       (322, '获取当前登录用户', 'user_manager:current', 'user', '/user/current', 'GET', '获取当前认证用户信息', now(3), now(3), 'system', 'system'),
-       (323, '发布网关 OAuth2 认证方式', 'gateway:oauth2-client:update', 'gateway', '/gateway/routes/oauth2-clients', 'PUT', '更新并发布网关 OAuth2/OIDC 登录认证方式', now(3), now(3), 'system', 'system'),
-       (330, '查询OAuth2授权记录', 'auth:authorization:query', 'authorization', '/api/auth/authorizations/conditions', 'POST', '分页查询OAuth2服务端授权记录', now(3), now(3), 'system', 'system'),
-       (331, '查看OAuth2授权记录', 'auth:authorization:view', 'authorization', '/api/auth/authorizations/{id}', 'GET', '查看OAuth2服务端授权详情', now(3), now(3), 'system', 'system'),
-       (332, '终止OAuth2服务端授权', 'auth:authorization:revoke', 'authorization', '/api/auth/authorizations/{id}', 'DELETE', '删除服务端授权并阻止Refresh Token继续使用', now(3), now(3), 'system', 'system'),
-       (333, '清理已失效OAuth2授权记录', 'auth:authorization:cleanup', 'authorization', '/api/auth/authorizations/expired/cleanup', 'DELETE', '删除所有Token、授权码和设备码均已过期的服务端授权记录', now(3), now(3), 'system', 'system'),
-       (334, '查询客户端授权记录', 'auth:consent:query', 'authorization', '/api/auth/authorization-consents/conditions', 'POST', '分页查询用户授予OAuth2客户端的权限记录', now(3), now(3), 'system', 'system'),
-       (335, '查看客户端授权记录', 'auth:consent:view', 'authorization', '/api/auth/authorization-consents', 'GET', '查看用户授予OAuth2客户端的权限详情', now(3), now(3), 'system', 'system'),
-       (336, '删除客户端授权记录', 'auth:consent:remove', 'authorization', '/api/auth/authorization-consents', 'DELETE', '删除客户端授权同意，用户下次授权时需要重新同意', now(3), now(3), 'system', 'system'),
-       (337, '查询网关黑白名单', 'gateway:access-list:read', 'gateway', '/api/gateway-admin/policies', 'GET', '查询网关 IP 黑白名单策略', now(3), now(3), 'system', 'system'),
-       (338, '修改网关黑白名单', 'gateway:access-list:update', 'gateway', '/api/gateway-admin/policies', 'PUT', '保存网关 IP 黑白名单策略草稿', now(3), now(3), 'system', 'system'),
-       (339, '发布网关黑白名单', 'gateway:access-list:publish', 'gateway', '/api/gateway-admin/releases', 'POST', '校验并发布网关配置版本', now(3), now(3), 'system', 'system'),
-       (340, '查询网关全局规则', 'gateway:global-rule:read', 'gateway', '/api/gateway-admin/policies', 'GET', '查询网关全局安全响应头和跨域规则', now(3), now(3), 'system', 'system'),
-       (341, '修改网关全局过滤器', 'gateway:global-rule:update', 'gateway', '/api/gateway-admin/policies', 'PUT', '保存网关 default-filters 草稿', now(3), now(3), 'system', 'system'),
-       (342, '修改网关跨域规则', 'gateway:cors:update', 'gateway', '/api/gateway-admin/policies', 'PUT', '保存网关全局跨域规则草稿', now(3), now(3), 'system', 'system'),
-       (343, '发布网关全局规则', 'gateway:global-rule:publish', 'gateway', '/api/gateway-admin/releases', 'POST', '预检并发布网关全局规则', now(3), now(3), 'system', 'system');
+
+INSERT INTO base_org_resource
+    (id, name, code, type, url, method, description, created_time, updated_time, created_by, updated_by)
+VALUES (316, '查看网关路由', 'resource_manager:view', 'resource', '/resource/{id}', 'GET',
+        '查看资源', now(3), now(3), 'system', 'system');
 
 -- 用户关系授权
 INSERT INTO base_org_user_role (id, user_id, role_id, created_time, updated_time, created_by, updated_by)
 VALUES (101, 101, 101, now(3), now(3), 'system', 'system'),
        (102, 102, 101, now(3), now(3), 'system', 'system'),
        (103, 102, 103, now(3), now(3), 'system', 'system');
--- 角色与资源关系表
-INSERT INTO base_org_role_resource (id, role_id, resource_id, created_time, updated_time, created_by, updated_by)
-VALUES (101, 101, 101, now(3), now(3), 'system', 'system'),
-       (102, 101, 102, now(3), now(3), 'system', 'system'),
-       (103, 101, 103, now(3), now(3), 'system', 'system'),
-       (104, 101, 104, now(3), now(3), 'system', 'system'),
-       (105, 101, 105, now(3), now(3), 'system', 'system'),
-       (106, 101, 106, now(3), now(3), 'system', 'system'),
-       (201, 101, 201, now(3), now(3), 'system', 'system'),
-       (202, 101, 202, now(3), now(3), 'system', 'system'),
-       (203, 101, 203, now(3), now(3), 'system', 'system'),
-       (204, 101, 204, now(3), now(3), 'system', 'system'),
-       (205, 101, 205, now(3), now(3), 'system', 'system'),
-       (206, 101, 206, now(3), now(3), 'system', 'system'),
-       (207, 101, 207, now(3), now(3), 'system', 'system'),
-       (208, 101, 301, now(3), now(3), 'system', 'system'),
-       (209, 101, 302, now(3), now(3), 'system', 'system'),
-       (210, 101, 303, now(3), now(3), 'system', 'system'),
-       (211, 101, 304, now(3), now(3), 'system', 'system'),
-       (212, 101, 305, now(3), now(3), 'system', 'system'),
-       (213, 101, 306, now(3), now(3), 'system', 'system'),
-       (401, 101, 307, now(3), now(3), 'system', 'system'),
-       (402, 101, 308, now(3), now(3), 'system', 'system'),
-       (403, 101, 309, now(3), now(3), 'system', 'system'),
-       (404, 101, 310, now(3), now(3), 'system', 'system'),
-       (405, 101, 311, now(3), now(3), 'system', 'system'),
-       (406, 101, 312, now(3), now(3), 'system', 'system'),
-       (501, 101, 313, now(3), now(3), 'system', 'system'),
-       (502, 101, 314, now(3), now(3), 'system', 'system'),
-       (503, 101, 315, now(3), now(3), 'system', 'system'),
-       (504, 101, 316, now(3), now(3), 'system', 'system'),
-       (505, 101, 317, now(3), now(3), 'system', 'system'),
-       (506, 101, 318, now(3), now(3), 'system', 'system'),
-       (517, 101, 322, now(3), now(3), 'system', 'system'),
-       (518, 102, 322, now(3), now(3), 'system', 'system'),
-       (519, 103, 322, now(3), now(3), 'system', 'system'),
-       (520, 101, 323, now(3), now(3), 'system', 'system'),
-       (521, 103, 323, now(3), now(3), 'system', 'system'),
-       (522, 101, 330, now(3), now(3), 'system', 'system'),
-       (523, 101, 331, now(3), now(3), 'system', 'system'),
-       (524, 101, 332, now(3), now(3), 'system', 'system'),
-       (525, 103, 330, now(3), now(3), 'system', 'system'),
-       (526, 103, 331, now(3), now(3), 'system', 'system'),
-       (527, 103, 332, now(3), now(3), 'system', 'system'),
-       (528, 101, 333, now(3), now(3), 'system', 'system'),
-       (529, 103, 333, now(3), now(3), 'system', 'system'),
-       (530, 101, 334, now(3), now(3), 'system', 'system'),
-       (531, 101, 335, now(3), now(3), 'system', 'system'),
-       (532, 101, 336, now(3), now(3), 'system', 'system'),
-       (533, 103, 334, now(3), now(3), 'system', 'system'),
-       (534, 103, 335, now(3), now(3), 'system', 'system'),
-       (535, 103, 336, now(3), now(3), 'system', 'system'),
-       (536, 101, 337, now(3), now(3), 'system', 'system'),
-       (537, 101, 338, now(3), now(3), 'system', 'system'),
-       (538, 101, 339, now(3), now(3), 'system', 'system'),
-       (539, 103, 337, now(3), now(3), 'system', 'system'),
-       (540, 103, 338, now(3), now(3), 'system', 'system'),
-       (541, 103, 339, now(3), now(3), 'system', 'system'),
-       (542, 101, 340, now(3), now(3), 'system', 'system'),
-       (543, 101, 341, now(3), now(3), 'system', 'system'),
-       (544, 101, 342, now(3), now(3), 'system', 'system'),
-       (545, 101, 343, now(3), now(3), 'system', 'system'),
-       (546, 103, 340, now(3), now(3), 'system', 'system'),
-       (547, 103, 341, now(3), now(3), 'system', 'system'),
-       (548, 103, 342, now(3), now(3), 'system', 'system'),
-       (549, 103, 343, now(3), now(3), 'system', 'system');
 
 -- 岗位
 INSERT INTO base_org_position (id, name, description, created_time, updated_time, created_by, updated_by)
 VALUES (101, '首席执行官', '公司CEO，负责公司整体运转', now(3), now(3), 'system', 'system'),
        (102, '首席运营官', '公司COO，负责公司整体运营', now(3), now(3), 'system', 'system'),
        (103, '首席技术官', '公司CTO，负责公司整体运营', now(3), now(3), 'system', 'system');
+
 -- 用户组
 INSERT INTO base_org_group (id, parent_id, name, description, created_time, updated_time, created_by, updated_by)
 VALUES (101, -1, '总公司', '总公司', now(3), now(3), 'system', 'system'),
@@ -395,6 +277,7 @@ VALUES (101, -1, '总公司', '总公司', now(3), now(3), 'system', 'system'),
        (105, 102, '运营部门', '负责公司产品运营', now(3), now(3), 'system', 'system'),
        (106, 102, '销售部门', '负责公司产品销售', now(3), now(3), 'system', 'system'),
        (107, 101, '北京分公司', '北京分公司', now(3), now(3), 'system', 'system');
+
 -- 菜单
 INSERT INTO base_org_menu (id, parent_id, type, href, icon, name, description, order_num, created_time, updated_time, created_by, updated_by)
 VALUES (101, -1, 'MENU', '/admin', 'setting', '系统管理', '用户，角色，菜单，部门等基础数据管理', 0, now(3), now(3), 'system', 'system'),
@@ -448,9 +331,11 @@ VALUES (101, -1, 'MENU', '/admin', 'setting', '系统管理', '用户，角色�
 INSERT INTO base_org_user_group (id, user_id, group_id, created_time, updated_time, created_by, updated_by)
 VALUES (101, 101, 101, now(3), now(3), 'system', 'system'),
        (102, 102, 101, now(3), now(3), 'system', 'system');
+
 INSERT INTO base_org_user_position (id, user_id, position_id, created_time, updated_time, created_by, updated_by)
 VALUES (101, 101, 103, now(3), now(3), 'system', 'system'),
        (102, 102, 103, now(3), now(3), 'system', 'system');
+
 -- 角色关系表
 INSERT INTO base_org_role_menu (id, role_id, menu_id, created_time, updated_time, created_by, updated_by)
 VALUES (101, 101, 101, now(3), now(3), 'system', 'system'),

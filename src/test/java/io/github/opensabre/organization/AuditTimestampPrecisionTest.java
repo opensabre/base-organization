@@ -7,41 +7,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Validates MySQL-compatible audit timestamp DDL and JDBC timestamp mapping. */
+/** Checks JDBC timestamp mapping against the organization H2 test fixture. */
 class AuditTimestampPrecisionTest {
-
-    private static final List<String> AUDITED_TABLES = List.of(
-            "base_org_group", "base_org_position", "base_org_menu", "base_org_user_group",
-            "base_org_user_position", "base_org_role_menu", "base_org_user", "base_org_role",
-            "base_org_resource", "base_org_user_role", "base_org_role_resource");
-
-    @Test
-    void auditColumnsUseMillisecondPrecisionForEveryOrganizationTable() throws Exception {
-        try (Connection connection = newConnection()) {
-            for (String table : AUDITED_TABLES) {
-                try (PreparedStatement statement = connection.prepareStatement(
-                        "SELECT COLUMN_NAME, DATETIME_PRECISION FROM INFORMATION_SCHEMA.COLUMNS "
-                                + "WHERE TABLE_NAME = ? AND COLUMN_NAME IN ('CREATED_TIME', 'UPDATED_TIME')")) {
-                    statement.setString(1, table.toUpperCase());
-                    try (ResultSet columns = statement.executeQuery()) {
-                        int count = 0;
-                        while (columns.next()) {
-                            count++;
-                            assertEquals(3, columns.getInt("DATETIME_PRECISION"),
-                                    table + "." + columns.getString("COLUMN_NAME") + " must retain milliseconds");
-                        }
-                        assertEquals(2, count, table + " must have both audit columns");
-                    }
-                }
-            }
-        }
-    }
 
     @Test
     void jdbcPreservesMillisecondsAndOnlyUpdateUpdatedTime() throws Exception {
@@ -86,7 +58,7 @@ class AuditTimestampPrecisionTest {
     private Connection newConnection() throws Exception {
         JdbcDataSource dataSource = new JdbcDataSource();
         dataSource.setURL("jdbc:h2:mem:audit_timestamp_" + UUID.randomUUID()
-                + ";MODE=MySQL;INIT=RUNSCRIPT FROM 'classpath:db/os-base-org-ddl.sql'");
+                + ";MODE=MySQL;INIT=RUNSCRIPT FROM 'classpath:db/organization-service-fixture.sql'");
         return dataSource.getConnection();
     }
 }
