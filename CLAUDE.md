@@ -88,8 +88,8 @@ This is a Spring Boot-based organization management service that provides user, 
 - `base_org_menu` - Navigation menus
 
 ### Schema Management
-- DDL scripts in `src/main/resources/db/os-base-org-ddl.sql`
-- Sample data in `src/main/resources/db/os-base-org-db.sql`
+- Production schema and controlled seed data are maintained in `src/main/resources/db/migration/mysql/` by Flyway.
+- H2-only service test data lives in `src/test/resources/db/organization-service-fixture.sql` and is not a production schema.
 
 ## Testing
 
