@@ -31,3 +31,7 @@ IQC_ADMIN、IQC_QUALITY_MANAGER 获得全部 15 个接口。IQC_INSPECTOR、IQC_
 未在共享数据库执行，未新增或执行测试。发布验收需要隔离 MySQL 新库/已注册 PENDING/重复运行场景，以及四类角色真实登录验证；前端按钮需在 UI 实现后接入。没有据此声称已部署或完成权限验收。
 
 依据：workspace AGENTS；Wiki access-control；raw/base-organization organization-and-access；现有 V20260915_01 标签权限、V20260917_01 方案权限及 ResourceRegistrationService。
+
+## 已发布流水线任务入口
+
+V20261004_02 新增 POST /api/iqc/pipelines/{id}/tasks 的独立资源 iqc:pipeline:task:create。IQC_ADMIN、IQC_QM、IQC_INSPECTOR 可创建已发布版本任务；VIEWER 不授予。沿用现有组织资源注册与关系表，未执行数据库迁移。
