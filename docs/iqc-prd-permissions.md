@@ -37,3 +37,5 @@ IQC_ADMIN、IQC_QUALITY_MANAGER 获得全部 15 个接口。IQC_INSPECTOR、IQC_
 V20261004_02 新增 POST /api/iqc/pipelines/{id}/tasks 的独立资源 iqc:pipeline:task:create。IQC_ADMIN、IQC_QM、IQC_INSPECTOR 可创建已发布版本任务；VIEWER 不授予。沿用现有组织资源注册与关系表，未执行数据库迁移。
 
 V20261004_03：重算创建仅 IQC_ADMIN/IQC_QUALITY_MANAGER；历史查看同 IQC_ADMIN/IQC_QUALITY_MANAGER/IQC_INSPECTOR/IQC_VIEWER，实际数据范围仍由源任务校验。未运行迁移。
+
+V20261004_04：保留900150及既有授权，将查看事实目录升级为/iqc/findings页面；补齐详情/更新/可用性/历史按钮权限，与既有API授权对应。ADMIN/QUALITY_MANAGER管理，INSPECTOR/VIEWER查询。未运行数据库迁移。
