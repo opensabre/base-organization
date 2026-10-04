@@ -39,3 +39,5 @@ V20261004_02 新增 POST /api/iqc/pipelines/{id}/tasks 的独立资源 iqc:pipel
 V20261004_03：重算创建仅 IQC_ADMIN/IQC_QUALITY_MANAGER；历史查看同 IQC_ADMIN/IQC_QUALITY_MANAGER/IQC_INSPECTOR/IQC_VIEWER，实际数据范围仍由源任务校验。未运行迁移。
 
 V20261004_04：保留900150及既有授权，将查看事实目录升级为/iqc/findings页面；补齐详情/更新/可用性/历史按钮权限，与既有API授权对应。ADMIN/QUALITY_MANAGER管理，INSPECTOR/VIEWER查询。未运行数据库迁移。
+
+V20261004_05：补齐Pipeline详情/版本/更新/启停按钮权限，与V01既有接口资源授权对应；使发布政策版本选择可按菜单权限工作。此次仍无Pipeline配置页导航，页面交付后再提升900160。未执行迁移或角色登录验收。
