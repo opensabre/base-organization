@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,4 +17,6 @@ public class UserQueryParam extends BaseParam {
     private String mobile;
     private String username;
     private String groupId;
+    private Date createdTimeStart;
+    private Date createdTimeEnd;
 }

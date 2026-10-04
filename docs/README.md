@@ -13,6 +13,6 @@
 ## 维护规则
 
 - Controller 映射是 API 事实源，位于 `src/main/java/**/rest/`。
-- DDL、初始数据及迁移脚本位于 `src/main/resources/db/`。
+- 表结构与受控初始数据以 `src/main/resources/db/migration/mysql/` 中的 Flyway 脚本为准。
 - 菜单只控制管理端入口和按钮可见性；API 访问由资源及角色资源授权独立决定。
 - 菜单、按钮或 URL 资源权限变更必须同步更新模块文档和管理端联动说明。

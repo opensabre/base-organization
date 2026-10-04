@@ -139,6 +139,8 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
         queryWrapper.apply(StringUtils.isNotBlank(userQueryParam.getGroupId()),
                 "id in (select user_id from base_org_user_group where group_id = {0})",
                 userQueryParam.getGroupId());
+        queryWrapper.ge(userQueryParam.getCreatedTimeStart() != null, "created_time", userQueryParam.getCreatedTimeStart());
+        queryWrapper.le(userQueryParam.getCreatedTimeEnd() != null, "created_time", userQueryParam.getCreatedTimeEnd());
         // 分页查询用户
         IPage<User> iPageUser = this.page(page, queryWrapper);
         // 转换成VO返回

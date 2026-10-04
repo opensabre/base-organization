@@ -20,6 +20,11 @@ spring:
         file-extension: yml
   config:
     import: optional:nacos:${OPENSABRE_COMMON_CONFIG_DATA_ID:opensabre-common.yml}?group=${OPENSABRE_COMMON_CONFIG_GROUP:DEFAULT_GROUP}&refreshEnabled=true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${AUTH_JWK_SET_URI:http://localhost:8000/oauth2/jwks}
   data:
     redis:
       host: ${REDIS_HOST:localhost}
