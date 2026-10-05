@@ -76,3 +76,17 @@ V20261004_08 配合本批数据集页面，将既有按钮 900185 提升为 MENU
 # I3 冻结数据集评测执行接口
 
 V20261004_09 注册4个独立资源与按钮900193–900196，挂已交付的数据集菜单900185；无新MENU，无用户/用户角色变化。ADMIN/QUALITY_MANAGER可创建评测（包括精确草稿目标），四类IQC角色可按Task数据范围读取样本摘要、精确轨迹和报告。执行、暂停、恢复、取消仍沿用已有任务API资源，不新增平行执行接口。未执行SQL、测试、网关或角色验收；评测任务/报告前端仍待接入。
+
+## 单变量 Benchmark 与评测任务页面
+
+V20261004_10 新增 MENU 900197「评测任务与对照」，路径 `/iqc/evaluation/tasks`，父菜单复用 Dataset 900185 的现有父节点，顺序39，权限描述 `iqc:evaluation:report:view`。四类 IQC 角色均获得入口；既有09按钮900193–900196保留ID、权限码与角色关系，移到此入口下。新资源及按钮900198–900200均通过已有组织能力配置，无新持久模型或授权抽象。新增版本与ID在编写前已检索未占用。
+
+| Method | URL | 资源/按钮 code | 角色 |
+|---|---|---|---|
+| POST | `/api/iqc/evaluation/benchmarks` | `iqc:benchmark:create` | IQC_ADMIN / IQC_QUALITY_MANAGER |
+| GET | `/api/iqc/evaluation/benchmarks/{baselineTaskId}` | `iqc:benchmark:view` | 四类 IQC 角色 |
+| GET | `/api/iqc/evaluation/benchmarks/{baselineTaskId}/report` | `iqc:benchmark:report:view` | 四类 IQC 角色 |
+
+服务须继续校验两个任务的数据范围、冻结数据集一致与单变量条件；资源授权不替代这些约束。执行、暂停、恢复和取消复用原任务接口权限。资源按唯一code激活已注册PENDING并保留已有ID/URL/method，角色资源查询真实资源ID；关系使用固定20字符哈希键并按自然键去重。仅授予四类产品角色，不授权系统ADMIN，不创建用户或用户角色关系。
+
+本批仅完成本地静态编写与代码审阅，未新增或执行测试，未运行SQL、部署、网关或四角色登录验收。实际菜单及接口边界须在发布后验证。
