@@ -92,3 +92,9 @@ CI 的 `IQC Label Permission Regression` 在显式标记的隔离 MySQL 容器�
 - 固化授权数据变更的审计和回滚规范；
 - 补齐菜单、按钮、资源的批量校验工具；
 - 为跨租户/跨组织授权明确边界与测试用例。
+
+### IQC Selector 独立资产（已编码，待部署）
+
+`V20261004_13__dml_add_iqc_selector_asset_permissions.sql` 沿用检测流水线菜单900160，为选择器资产目录、详情、新建、修订、启停、历史、发布、精确版本读取和版本预览分别登记9个资源/按钮（900204–900212）。资源按code激活，保留已注册ID和URL/方法；角色关联按实际resource.id及自然键幂等，关联ID沿用20字符稳定哈希。
+
+IQC_ADMIN、IQC_QUALITY_MANAGER获得全部九项；IQC_INSPECTOR、IQC_VIEWER仅获得目录、详情、历史、精确版本与预览。正式任务创建仍使用既有iqc:pipeline:task:create，数据范围由IQC核验。未创建用户/角色、不授权全局ADMIN。未运行SQL、权限测试、真实登录或部署。
