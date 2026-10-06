@@ -98,3 +98,11 @@ CI 的 `IQC Label Permission Regression` 在显式标记的隔离 MySQL 容器�
 `V20261004_13__dml_add_iqc_selector_asset_permissions.sql` 沿用检测流水线菜单900160，为选择器资产目录、详情、新建、修订、启停、历史、发布、精确版本读取和版本预览分别登记9个资源/按钮（900204–900212）。资源按code激活，保留已注册ID和URL/方法；角色关联按实际resource.id及自然键幂等，关联ID沿用20字符稳定哈希。
 
 IQC_ADMIN、IQC_QUALITY_MANAGER获得全部九项；IQC_INSPECTOR、IQC_VIEWER仅获得目录、详情、历史、精确版本与预览。正式任务创建仍使用既有iqc:pipeline:task:create，数据范围由IQC核验。未创建用户/角色、不授权全局ADMIN。未运行SQL、权限测试、真实登录或部署。
+
+### IQC 周期调度当前授权查询（实现前取舍）
+
+现有 `UserService.getByUniqueId` / `RoleService.query` / `ResourceService.query` 提供普通交互身份与权限查询，其中角色/用户资源链路有 JetCache，且不存在调度专用、单事务且不输出密码的当前授权投影。Cron 触发不得把创建时角色永久继承，也不能以system代替负责人。
+
+新增 `GET /internal/iqc/scheduler-access/{userId}` 只复用现有用户、角色、用户角色、角色资源和用户群组表/Mapper，在只读REPEATABLE_READ事务直接读取当前行；不新增或复制身份/授权持久化，不改Framework。入口使用已有 `InternalTokenUserContext.currentClaims()` 核验已验签的 `service:iqc-platform`、issuer/source=`iqc-platform`、destination/audience=`base-organization`、首跳且无用户角色/权限声明；不接受外部用户、网关或请求头自行声明服务身份，不注册菜单/用户API资源。
+
+返回仅含用户ID/username、账号有效状态、可确定的单一有效group、当前角色与ACTIVE的IQC资源code、读取时间。缺失/停用/锁定/过期用户返回无权限投影；组织关系歧义不扩大到多group。查询失败/超限即失败关闭。结果是触发时授权证据，不是授权写入或永久角色快照。
