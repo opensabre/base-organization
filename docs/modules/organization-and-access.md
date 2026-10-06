@@ -106,3 +106,11 @@ IQC_ADMIN、IQC_QUALITY_MANAGER获得全部九项；IQC_INSPECTOR、IQC_VIEWER�
 新增 `GET /internal/iqc/scheduler-access/{userId}` 只复用现有用户、角色、用户角色、角色资源和用户群组表/Mapper，在只读REPEATABLE_READ事务直接读取当前行；不新增或复制身份/授权持久化，不改Framework。入口使用已有 `InternalTokenUserContext.currentClaims()` 核验已验签的 `service:iqc-platform`、issuer/source=`iqc-platform`、destination/audience=`base-organization`、首跳且无用户角色/权限声明；不接受外部用户、网关或请求头自行声明服务身份，不注册菜单/用户API资源。
 
 返回仅含用户ID/username、账号有效状态、可确定的单一有效group、当前角色与ACTIVE的IQC资源code、读取时间。缺失/停用/锁定/过期用户返回无权限投影；组织关系歧义不扩大到多group。查询失败/超限即失败关闭。结果是触发时授权证据，不是授权写入或永久角色快照。
+
+### IQC 周期调度资源与导航（已编码，待部署）
+
+`V20261004_14__dml_add_iqc_periodic_schedule_permissions.sql` 复用现有任务导航900019的父级，仅在不存在同产品、同href的MENU时新增周期调度入口900213（`/tasks/schedules`）。按钮和菜单角色授权按实际MENU ID关联，避免为已存在的同一入口再造MENU。九个独立资源/按钮900214–900222分别对应目录GET、详情GET、创建POST、修订PUT、发布POST、启停POST、版本历史GET、周期实例GET及预览POST；服务端基址为`/api/iqc/periodic-schedules`，资源码依次为`iqc:schedule:view/detail:view/create/update/publish/availability/versions:view/instances:view/preview`。
+
+IQC_ADMIN、IQC_QUALITY_MANAGER获得全部九项；IQC_INSPECTOR、IQC_VIEWER仅获得目录、详情、版本历史、实例与预览。资源更新保留已注册ID及URL/方法，关系使用现有自然键防重和20字符稳定哈希ID，不创建用户或角色，不授予全局ADMIN。
+
+API资源授权不替代IQC数据范围核验。周期触发必须使用当前授权查询投影，并要求负责人当前仍具备`iqc:schedule:publish`及正式流水线任务创建/执行等所需授权；不凭创建时角色快照持续执行，不以system放大范围。读取异常、缺失有效用户或撤权时失败关闭。此迁移已按周期调度接口清单完成资源与按钮映射；未执行SQL、测试、实际网关登录或部署，真实角色导航、资源鉴权及触发时撤权效果仍待运行验收。
