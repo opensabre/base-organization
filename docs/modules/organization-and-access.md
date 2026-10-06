@@ -114,3 +114,9 @@ IQC_ADMIN、IQC_QUALITY_MANAGER获得全部九项；IQC_INSPECTOR、IQC_VIEWER�
 IQC_ADMIN、IQC_QUALITY_MANAGER获得全部九项；IQC_INSPECTOR、IQC_VIEWER仅获得目录、详情、版本历史、实例与预览。资源更新保留已注册ID及URL/方法，关系使用现有自然键防重和20字符稳定哈希ID，不创建用户或角色，不授予全局ADMIN。
 
 API资源授权不替代IQC数据范围核验。周期触发必须使用当前授权查询投影，并要求负责人当前仍具备`iqc:schedule:publish`及正式流水线任务创建/执行等所需授权；不凭创建时角色快照持续执行，不以system放大范围。读取异常、缺失有效用户或撤权时失败关闭。此迁移已按周期调度接口清单完成资源与按钮映射；未执行SQL、测试、实际网关登录或部署，真实角色导航、资源鉴权及触发时撤权效果仍待运行验收。
+
+### IQC 事件/API触发接收（已编码，待部署）
+
+`V20261004_15__dml_add_iqc_trigger_receive_permission.sql` 为`POST /api/iqc/triggers`登记独立资源`iqc:trigger:receive`及按钮900223。复用现有任务导航900019的父级，不新增页面MENU或重复详情/取消/删除接口。资源按code保留已注册ID、URL和方法；角色关联复用自然键防重与20字符稳定哈希。仅IQC_ADMIN、IQC_QUALITY_MANAGER、IQC_INSPECTOR获得接收权限，IQC_VIEWER不获得；不创建用户/角色、不授予全局ADMIN。
+
+接收保存WAITING_INPUT任务，后续物化使用负责人当前有效授权，同时要求`iqc:pipeline:task:create`、`iqc:task:execute`、`iqc:trigger:receive`；携带会话内容还要求`iqc:conversation:upload`。创建时授权不替代物化时授权，查询失败或撤权失败关闭。详情、取消、删除沿用原任务资源及数据范围校验。迁移未执行SQL、测试、编译、登录验收或部署，运行角色与撤权效果待验收。
