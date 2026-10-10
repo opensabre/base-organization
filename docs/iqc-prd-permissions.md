@@ -90,3 +90,13 @@ V20261004_10 新增 MENU 900197「评测任务与对照」，路径 `/iqc/evalua
 服务须继续校验两个任务的数据范围、冻结数据集一致与单变量条件；资源授权不替代这些约束。执行、暂停、恢复和取消复用原任务接口权限。资源按唯一code激活已注册PENDING并保留已有ID/URL/method，角色资源查询真实资源ID；关系使用固定20字符哈希键并按自然键去重。仅授予四类产品角色，不授权系统ADMIN，不创建用户或用户角色关系。
 
 本批仅完成本地静态编写与代码审阅，未新增或执行测试，未运行SQL、部署、网关或四角色登录验收。实际菜单及接口边界须在发布后验证。
+
+## UNKNOWN 动作核对权限（B 独立分支）
+
+V20261010_01 对应 IQC 后端 b2c3fa6 的真实 POST `/api/iqc/conversation-results/{id}/actions/{actionExecutionId}/reconcile`，独立资源码 `iqc:action:reconcile`，资源/按钮900249。按钮复用任务菜单900019所在父节点；不新增页面、平行角色或账号。仅 IQC_ADMIN / IQC_QUALITY_MANAGER 获得资源和按钮，INSPECTOR、VIEWER、系统 ADMIN 及其他角色不因此自动获得。后端仍校验原负责人稳定身份与数据范围，权限不允许代替其他负责人确认产物，也不授予发送、重试或gold审核能力。
+
+按 code 更新已注册资源，保留原 ID/URL/method；角色关联查实际资源 ID，沿既有自然键排重。已有迁移和baseline保持不变。扩展已有 `scripts/test-iqc-label-permissions.sh`，没有创建第二份权限测试框架；新增SQL断言检查实际POST、按钮父级、两角色正授权及其他角色负边界。
+
+验证：迁移布局检查、bash语法和diff检查通过；隔离MySQL权限回归会话37921 exit0，新环境与PENDING注册资源升级各重复执行两次，旧回归与新断言均PASS，保留生成注册ID2100000000000000041，用户/用户角色数未变化，测试库自动清理。完整Flyway会话46822 exit0，新安装应用38份迁移至20261010.01；升级先应用37份至20261004.29，再只应用本次1份，validate与重复migrate无新增均通过，权限断言PASS，测试库自动清理。Flyway使用本地既有依赖和临时Java验证器，不宣称临时验证器为仓库CI新增步骤；仓库既有可复用Flyway CI仍负责远程验收。日志 `/private/tmp/iqc-b-reconcile-permissions.log`、`/private/tmp/iqc-b-reconcile-permissions-flyway.log`。
+
+未推送、合入A、部署、修改共享组织账号、运行浏览器或真实四角色登录；UI操作入口、网关和服务鉴权链、完整尝试审计及PRD其他能力仍未验收。独立权限分支以b9d2dde为基线，后端B b2c3fa6保持不变。
