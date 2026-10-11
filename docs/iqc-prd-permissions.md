@@ -125,3 +125,5 @@ V20261011_01注册真实POST `/api/iqc/conversation-results/{id}/actions/{action
 风险处理V20261011_04/资源按钮900253仅IQC_ADMIN/QUALITY_MANAGER，risk:handle映射真实POST /api/iqc/conversation-results/{id}/risk-events/{riskEventId}/handle，scope仍沿原结果范围。查询和创建权限不自动取得处理权；此迁移未执行，实际身份/授权/重复执行验收待。
 
 风险create修正V20261011_08（保留03的ID及角色关系）：BACKGROUND能力改MANUAL来源，防完整HTTP快照/旧应用漏报导致STALE。应用注册器须同时移除该能力的自动声明，否则下一轮会重新置ANNOTATION；不能只跑此迁移。后台仍按固定risk:create当前grant校验，不放宽授权。迁移未运行，快照/实际权限验收待。
+
+风险历史V20261011_05/资源按钮900254，risk:history:view实际GET /api/iqc/conversation-results/{id}/risk-events/{riskEventId}/history，复用原四类只读角色及原结果scope，不授风险创建/处理。未运行迁移、真实授权/重复执行验收待。
