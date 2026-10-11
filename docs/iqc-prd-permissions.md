@@ -100,3 +100,8 @@ V20261010_01 对应 IQC 后端 b2c3fa6 的真实 POST `/api/iqc/conversation-res
 验证：迁移布局检查、bash语法和diff检查通过；隔离MySQL权限回归会话37921 exit0，新环境与PENDING注册资源升级各重复执行两次，旧回归与新断言均PASS，保留生成注册ID2100000000000000041，用户/用户角色数未变化，测试库自动清理。完整Flyway会话46822 exit0，新安装应用38份迁移至20261010.01；升级先应用37份至20261004.29，再只应用本次1份，validate与重复migrate无新增均通过，权限断言PASS，测试库自动清理。Flyway使用本地既有依赖和临时Java验证器，不宣称临时验证器为仓库CI新增步骤；仓库既有可复用Flyway CI仍负责远程验收。日志 `/private/tmp/iqc-b-reconcile-permissions.log`、`/private/tmp/iqc-b-reconcile-permissions-flyway.log`。
 
 未推送、合入A、部署、修改共享组织账号、运行浏览器或真实四角色登录；UI操作入口、网关和服务鉴权链、完整尝试审计及PRD其他能力仍未验收。独立权限分支以b9d2dde为基线，后端B b2c3fa6保持不变。
+
+
+## 阻塞动作恢复资源（待数据库验收）
+
+V20261011_01注册真实POST `/api/iqc/conversation-results/{id}/actions/{actionExecutionId}/recover`，复用原资源/任务菜单/角色表，资源及按钮900250、`iqc:action:recover`。仅IQC_ADMIN和IQC_QUALITY_MANAGER获授权；后端还要求当前负责人身份、固定生产权限与原动作业务权限。恢复重新核验冻结政策，不清除原领取或回执，UNKNOWN不可回队。断言文件iqc-action-recovery-permissions-assertions.sql用于迁移后及重复执行验证；本批仅编写，未执行SQL。
