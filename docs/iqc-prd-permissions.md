@@ -113,3 +113,5 @@ V20261011_01注册真实POST `/api/iqc/conversation-results/{id}/actions/{action
 原scheduler-access服务专用入口只允许service:iqc-platform/hop1；真实人工Feign保留用户subject并增加hop，不能复用该入口。现最小扩展同controller `/internal/iqc/scheduler-access/current/{userId}`，复用原一致快照投影，不新增持久模型；严格核对IQC来源/组织目标、非服务用户主体、username和实际目标账号。后台入口限制保持，当前接口无目录管理或发送授权。
 
 组织编译91529通过（只在验证命令跳过不兼容worktree的git元数据插件）。87475 exit0：controller身份7项+实际令牌签发/验签传播1项，零失败错误跳过。真实InternalTokenRequestFactory从用户入站建立hop2及父链，实际controller接受当前用户且原后台入口拒绝；篡改/异目标拒绝。Access数据库服务为替身，这不是Feign网络/MVC Filter/组织数据库全链路证明，后续需补。
+
+实际数据库补验：IqcSchedulerAccessDatabaseTest 复用现有 organization-service-fixture.sql、H2 数据源和生产 Mapper/事务代理，无外层测试事务，仅创建清理 iqc-db-* 专用记录。99698 terminal exit0，3项零失败错误跳过：逐次撤销资源/角色关联立即反映；停用、其他应用/产品资源被排除；四项账号有效标志失效或逻辑删除均返回无权限。日志 /private/tmp/iqc-b-org-access-database-mockweb.log。初次 NONE Web 模式因现有安全配置需要 HttpSecurity 在启动阶段失败，改用原项目默认 Mock Web 模式后通过，未改生产安全配置。启动治理注册出现无 base-sysadmin 实例的异步重试警告，不涉及已验证 SQL 断言；本次不是 MySQL 隔离级别并发验证或组织 HTTP Filter 全链路验收。
