@@ -105,3 +105,5 @@ V20261010_01 对应 IQC 后端 b2c3fa6 的真实 POST `/api/iqc/conversation-res
 ## 阻塞动作恢复资源（待数据库验收）
 
 V20261011_01注册真实POST `/api/iqc/conversation-results/{id}/actions/{actionExecutionId}/recover`，复用原资源/任务菜单/角色表，资源及按钮900250、`iqc:action:recover`。仅IQC_ADMIN和IQC_QUALITY_MANAGER获授权；后端还要求当前负责人身份、固定生产权限与原动作业务权限。恢复重新核验冻结政策，不清除原领取或回执，UNKNOWN不可回队。断言文件iqc-action-recovery-permissions-assertions.sql用于迁移后及重复执行验证；本批仅编写，未执行SQL。
+
+恢复资源实际隔离MySQL验收99496 exit0：扩展原test-iqc-label-permissions.sh，严格核验本地socket/@@datadir/port/bind_address后，在独立临时库验证fresh与upgrade均PASS，各重复执行两次。恢复资源/按钮角色边界断言通过，升级保留既有生成资源ID2100000000000000042，用户/用户角色数量不变。原标签/方案/复核/业务结果/核对资源断言同时通过。脚本包含临时库退出清理；未部署或写共享数据库。locale提示不影响结果；实际登录用户HTTP授权仍另需验收。

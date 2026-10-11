@@ -46,6 +46,7 @@ scheme_migration="$migration_root/dml/V20260917_01__dml_add_iqc_scheme_permissio
 review_migration="$migration_root/dml/V20260927_01__dml_add_iqc_label_review_resources.sql"
 business_result_migration="$migration_root/dml/V20260928_01__dml_add_iqc_business_result_resource.sql"
 action_reconciliation_migration="$migration_root/dml/V20261010_01__dml_register_iqc_action_reconciliation.sql"
+action_recovery_migration="$migration_root/dml/V20261011_01__dml_register_iqc_action_recovery.sql"
 test_database_prefix="iqc_label_permissions_$$"
 cleanup() {
   for scenario in fresh upgrade; do
@@ -59,7 +60,7 @@ for scenario in fresh upgrade; do
   mysql_test -e "CREATE DATABASE $test_database CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
   mysql_test "$test_database" < "$migration_root/baseline/B20260831_02__baseline.sql"
   while IFS= read -r migration; do
-    [[ "$migration" == "$new_migration" || "$migration" == "$scheme_migration" || "$migration" == "$review_migration" || "$migration" == "$business_result_migration" || "$migration" == "$action_reconciliation_migration" ]] && continue
+    [[ "$migration" == "$new_migration" || "$migration" == "$scheme_migration" || "$migration" == "$review_migration" || "$migration" == "$business_result_migration" || "$migration" == "$action_reconciliation_migration" || "$migration" == "$action_recovery_migration" ]] && continue
     mysql_test "$test_database" < "$migration"
   done < <(find "$migration_root/dml" -name '*.sql' -print | sort)
 
@@ -97,6 +98,10 @@ INSERT INTO base_org_resource
     (id, code, type, name, url, method, application, product_code, source, status, created_by, updated_by)
 VALUES
     ('2100000000000000041', 'iqc:action:reconcile', 'iqc', 'test', '/api/iqc/conversation-results/{id}/actions/{actionExecutionId}/reconcile', 'POST', 'iqc-platform', 'iqc', 'ANNOTATION', 'PENDING', 'test', 'test');
+INSERT INTO base_org_resource
+    (id, code, type, name, url, method, application, product_code, source, status, created_by, updated_by)
+VALUES
+    ('2100000000000000042', 'iqc:action:recover', 'iqc', 'test', '/api/iqc/conversation-results/{id}/actions/{actionExecutionId}/recover', 'POST', 'iqc-platform', 'iqc', 'ANNOTATION', 'PENDING', 'test', 'test');
 SQL
   fi
   runtime_counts="$(mysql_test "$test_database" -e 'SELECT (SELECT COUNT(*) FROM base_org_user), (SELECT COUNT(*) FROM base_org_user_role);')"
@@ -106,11 +111,13 @@ SQL
     mysql_test "$test_database" < "$review_migration"
     mysql_test "$test_database" < "$business_result_migration"
     mysql_test "$test_database" < "$action_reconciliation_migration"
+    mysql_test "$test_database" < "$action_recovery_migration"
     [[ "$(mysql_test "$test_database" < "$repository_root/src/test/resources/db/migration/iqc-label-permissions-assertions.sql")" == PASS ]]
     [[ "$(mysql_test "$test_database" < "$repository_root/src/test/resources/db/migration/iqc-scheme-permissions-assertions.sql")" == PASS ]]
     [[ "$(mysql_test "$test_database" < "$repository_root/src/test/resources/db/migration/iqc-label-review-permissions-assertions.sql")" == PASS ]]
     [[ "$(mysql_test "$test_database" < "$repository_root/src/test/resources/db/migration/iqc-business-result-permissions-assertions.sql")" == PASS ]]
     [[ "$(mysql_test "$test_database" < "$repository_root/src/test/resources/db/migration/iqc-action-reconciliation-permissions-assertions.sql")" == PASS ]]
+    [[ "$(mysql_test "$test_database" < "$repository_root/src/test/resources/db/migration/iqc-action-recovery-permissions-assertions.sql")" == PASS ]]
     [[ "$(mysql_test "$test_database" -e 'SELECT (SELECT COUNT(*) FROM base_org_user), (SELECT COUNT(*) FROM base_org_user_role);')" == "$runtime_counts" ]]
   done
   if [[ "$scenario" == upgrade ]]; then
@@ -121,6 +128,7 @@ SQL
     [[ "$(mysql_test "$test_database" -e "SELECT COUNT(*) FROM base_org_resource WHERE code LIKE 'iqc:review:label:%' AND id LIKE '210000000000000002%';")" == 4 ]]
     [[ "$(mysql_test "$test_database" -e "SELECT id FROM base_org_resource WHERE code='iqc:result:business:view';")" == 2100000000000000031 ]]
     [[ "$(mysql_test "$test_database" -e "SELECT id FROM base_org_resource WHERE code='iqc:action:reconcile';")" == 2100000000000000041 ]]
+    [[ "$(mysql_test "$test_database" -e "SELECT id FROM base_org_resource WHERE code='iqc:action:recover';")" == 2100000000000000042 ]]
   fi
-  echo "PASS $scenario: label/scheme/review/business-result/action-reconciliation resources, four-role boundaries, unchanged users, repeat run"
+  echo "PASS $scenario: label/scheme/review/business-result/action-reconciliation/recovery resources, four-role boundaries, unchanged users, repeat run"
 done
