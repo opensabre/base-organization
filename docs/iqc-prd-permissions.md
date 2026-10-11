@@ -107,3 +107,13 @@ V20261010_01 对应 IQC 后端 b2c3fa6 的真实 POST `/api/iqc/conversation-res
 V20261011_01注册真实POST `/api/iqc/conversation-results/{id}/actions/{actionExecutionId}/recover`，复用原资源/任务菜单/角色表，资源及按钮900250、`iqc:action:recover`。仅IQC_ADMIN和IQC_QUALITY_MANAGER获授权；后端还要求当前负责人身份、固定生产权限与原动作业务权限。恢复重新核验冻结政策，不清除原领取或回执，UNKNOWN不可回队。断言文件iqc-action-recovery-permissions-assertions.sql用于迁移后及重复执行验证；本批仅编写，未执行SQL。
 
 恢复资源实际隔离MySQL验收99496 exit0：扩展原test-iqc-label-permissions.sh，严格核验本地socket/@@datadir/port/bind_address后，在独立临时库验证fresh与upgrade均PASS，各重复执行两次。恢复资源/按钮角色边界断言通过，升级保留既有生成资源ID2100000000000000042，用户/用户角色数量不变。原标签/方案/复核/业务结果/核对资源断言同时通过。脚本包含临时库退出清理；未部署或写共享数据库。locale提示不影响结果；实际登录用户HTTP授权仍另需验收。
+
+## 人工恢复的当前用户组织投影
+
+原scheduler-access服务专用入口只允许service:iqc-platform/hop1；真实人工Feign保留用户subject并增加hop，不能复用该入口。现最小扩展同controller `/internal/iqc/scheduler-access/current/{userId}`，复用原一致快照投影，不新增持久模型；严格核对IQC来源/组织目标、非服务用户主体、username和实际目标账号。后台入口限制保持，当前接口无目录管理或发送授权。
+
+组织编译91529通过（只在验证命令跳过不兼容worktree的git元数据插件）。87475 exit0：controller身份7项+实际令牌签发/验签传播1项，零失败错误跳过。真实InternalTokenRequestFactory从用户入站建立hop2及父链，实际controller接受当前用户且原后台入口拒绝；篡改/异目标拒绝。Access数据库服务为替身，这不是Feign网络/MVC Filter/组织数据库全链路证明，后续需补。
+
+实际数据库补验：IqcSchedulerAccessDatabaseTest 复用现有 organization-service-fixture.sql、H2 数据源和生产 Mapper/事务代理，无外层测试事务，仅创建清理 iqc-db-* 专用记录。99698 terminal exit0，3项零失败错误跳过：逐次撤销资源/角色关联立即反映；停用、其他应用/产品资源被排除；四项账号有效标志失效或逻辑删除均返回无权限。日志 /private/tmp/iqc-b-org-access-database-mockweb.log。初次 NONE Web 模式因现有安全配置需要 HttpSecurity 在启动阶段失败，改用原项目默认 Mock Web 模式后通过，未改生产安全配置。启动治理注册出现无 base-sysadmin 实例的异步重试警告，不涉及已验证 SQL 断言；本次不是 MySQL 隔离级别并发验证或组织 HTTP Filter 全链路验收。
+
+组织MVC+SQL组合补验：扩展同一数据库测试，以生产FilterChainProxy挂入webAppContextSetup MockMvc，实际InternalTokenService签发、实际过滤器验签和controller读取原Mapper；缺令牌/篡改401，合法hop2用户返回真实权限，撤权后的下一请求不再返回该权限，请求结束currentClaims清理。85469 terminal exit0，原SQL3项+新增MVC1项共4项零失败错误跳过，日志 /private/tmp/iqc-b-org-access-security-database-agent.log。远程InternalTokenConfigurationRefresher明确MockitoBean替身，避免隔离测试依赖Nacos；无替换签发/验签/过滤器/控制器/投影。测试属性关闭无关治理注册，生产配置未改。验证命令需 -Dmaven.gitcommitid.skip=true 及 -DargLine=-javaagent:/Users/zhoutaoo/.m2/repository/org/mockito/mockito-core/5.23.0/mockito-core-5.23.0.jar（本机实际依赖版本），解决受限环境Mockito运行时self-attach失败。不覆盖真实网络端口、IQC完整恢复流程、MySQL并发隔离或远程配置刷新；实际Feign传输另有B9b875c0独立证据。
