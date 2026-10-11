@@ -121,3 +121,5 @@ V20261011_01注册真实POST `/api/iqc/conversation-results/{id}/actions/{action
 风险查询 V20261011_02/资源按钮900251复用原结果动作历史四角色授权与原结果scope，GET /api/iqc/conversation-results/{id}/risk-events 对应实际后端接口，code iqc:risk:view。只读不授risk:create或处理权限，不建立风险另一路数据范围。迁移尚未执行，实际授权/重复执行验收仍待。
 
 风险创建 V20261011_03/资源按钮900252仅IQC_ADMIN/QUALITY_MANAGER，code iqc:risk:create、method BACKGROUND、内部能力引用/internal/iqc/risk-events/create对应实际RiskEventActionService.create。复用原后台入队能力声明/原角色关系，应用注册快照保留该资源。不是HTTP人工创建接口，不授风险读取或处置权限；未执行迁移，实际授予/撤销/重复执行验收待。
+
+风险处理V20261011_04/资源按钮900253仅IQC_ADMIN/QUALITY_MANAGER，risk:handle映射真实POST /api/iqc/conversation-results/{id}/risk-events/{riskEventId}/handle，scope仍沿原结果范围。查询和创建权限不自动取得处理权；此迁移未执行，实际身份/授权/重复执行验收待。
