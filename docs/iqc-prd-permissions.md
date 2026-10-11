@@ -127,3 +127,8 @@ V20261011_01注册真实POST `/api/iqc/conversation-results/{id}/actions/{action
 风险create修正V20261011_08（保留03的ID及角色关系）：BACKGROUND能力改MANUAL来源，防完整HTTP快照/旧应用漏报导致STALE。应用注册器须同时移除该能力的自动声明，否则下一轮会重新置ANNOTATION；不能只跑此迁移。后台仍按固定risk:create当前grant校验，不放宽授权。迁移未运行，快照/实际权限验收待。
 
 风险历史V20261011_05/资源按钮900254，risk:history:view实际GET /api/iqc/conversation-results/{id}/risk-events/{riskEventId}/history，复用原四类只读角色及原结果scope，不授风险创建/处理。未运行迁移、真实授权/重复执行验收待。
+## SEND_ALERT background grant (2026-10-11)
+
+`V20261011_07__dml_register_iqc_alert_action.sql` registers `iqc:action:alert` as resource 900256, method BACKGROUND and source MANUAL. It is not an exposed HTTP handler; MANUAL prevents HTTP registration with markMissing from retiring the capability. The existing button/role-resource model grants only IQC_ADMIN and IQC_QUALITY_MANAGER. Background execution additionally requires the original action grants, frozen owner bound and fresh authorization. Historical evidence lookup does not require send permission and cannot resend.
+
+Owning migration layout validator passes for organization and notification trees. On the task-only MySQL instance, verified port 34307 and exact temporary datadir before creating a fresh random schema; loaded the formal organization baseline and applied this migration twice. Both executions produced exactly one active MANUAL/BACKGROUND resource, one button and two resource/menu grants to the exact allowed roles. Finally removed only that random schema. Runner `/private/tmp/iqc-b-alert-permission-validation.py` passed; this targeted baseline-plus-DML check is not a complete Flyway history/upgrade/no-op run or actual user/filter acceptance. No shared application database was touched.
