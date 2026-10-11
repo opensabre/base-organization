@@ -11,10 +11,24 @@ import org.springframework.aop.support.AopUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /** Actual mapper queries and transaction proxy; isolated fixture IDs, no outer test transaction. */
-@SpringBootTest
+@SpringBootTest(properties = {
+    "opensabre.security.internal-token.enabled=true",
+    "opensabre.security.internal-token.required=true",
+    "opensabre.security.internal-token.active-key-id=iqc-test",
+    "opensabre.security.internal-token.active-key=MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=",
+    "opensabre.security.internal-token.allowed-issuers=iqc-platform",
+    "opensabre.governance.error-catalog.enabled=false",
+    "opensabre.governance.dictionary.registration-enabled=false"
+})
 class IqcSchedulerAccessDatabaseTest {
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    io.github.opensabre.security.config.InternalTokenConfigurationRefresher remoteRefresh;
     @Autowired IqcSchedulerAccessService access;
     @Autowired JdbcTemplate jdbc;
+    @Autowired org.springframework.web.context.WebApplicationContext web;
+    @Autowired org.springframework.security.web.FilterChainProxy security;
+    @Autowired io.github.opensabre.security.token.InternalTokenService signing;
+    @Autowired io.github.opensabre.security.context.InternalTokenUserContext tokens;
 
     @BeforeEach void seed() {
         clean();
@@ -31,6 +45,30 @@ class IqcSchedulerAccessDatabaseTest {
         jdbc.update("DELETE FROM base_org_resource WHERE id='iqc-db-resource'");
         jdbc.update("DELETE FROM base_org_role WHERE id='iqc-db-role'");
         jdbc.update("DELETE FROM base_org_user WHERE id='iqc-db-user'");
+    }
+
+    @Test void productionSecurityChainProjectsSignedUserAndRejectsInvalidTokens() throws Exception {
+        var mvc=org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup(web)
+                .addFilters(security).build();
+        String path="/internal/iqc/scheduler-access/current/iqc-db-user";
+        String header=io.github.opensabre.security.token.InternalTokenConstants.HEADER;
+        var request=new io.github.opensabre.security.token.InternalTokenRequest(
+                "iqc-platform","iqc-db-user","iqc-db-user","base-organization",
+                java.util.List.of(),java.util.List.of(),2,null,null,java.util.Map.of());
+        String signed=signing.issue(request);
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(path))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isUnauthorized());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(path).header(header,signed+"tampered"))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isUnauthorized());
+        var accepted=mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(path).header(header,signed))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk()).andReturn();
+        assertThat(accepted.getResponse().getContentAsString()).contains("iqc-db-user","iqc:action:recover");
+        assertThat(tokens.currentClaims()).isNull();
+        jdbc.update("DELETE FROM base_org_role_resource WHERE id='iqc-db-rr'");
+        var revoked=mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(path).header(header,signed))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk()).andReturn();
+        assertThat(revoked.getResponse().getContentAsString()).doesNotContain("iqc:action:recover");
+        assertThat(tokens.currentClaims()).isNull();
     }
 
     @Test void revocationIsVisibleOnNextProjection() {
