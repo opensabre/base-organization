@@ -25,3 +25,9 @@ FROM base_org_role role CROSS JOIN base_org_menu menu
 LEFT JOIN base_org_role_menu existing ON existing.role_id=role.id AND existing.menu_id=menu.id
 WHERE menu.product_code='iqc' AND menu.type='BUTTON' AND menu.id='900269' AND existing.id IS NULL
  AND role.code IN ('IQC_ADMIN','IQC_QUALITY_MANAGER','IQC_INSPECTOR');
+
+-- Configuration revisions now supply the explicit rollout task endpoint.
+UPDATE base_org_resource
+SET description='灰度策略修订供后续新的灰度任务请求使用；原任务保留原分配',updated_time=now(3),updated_by='system'
+WHERE application='iqc-platform' AND product_code='iqc'
+ AND code IN ('iqc:pipeline:rollout:view','iqc:pipeline:rollout:history:view','iqc:pipeline:rollout:manage');
