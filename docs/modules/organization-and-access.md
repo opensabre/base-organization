@@ -120,3 +120,12 @@ API资源授权不替代IQC数据范围核验。周期触发必须使用当前�
 `V20261004_15__dml_add_iqc_trigger_receive_permission.sql` 为`POST /api/iqc/triggers`登记独立资源`iqc:trigger:receive`及按钮900223。复用现有任务导航900019的父级，不新增页面MENU或重复详情/取消/删除接口。资源按code保留已注册ID、URL和方法；角色关联复用自然键防重与20字符稳定哈希。仅IQC_ADMIN、IQC_QUALITY_MANAGER、IQC_INSPECTOR获得接收权限，IQC_VIEWER不获得；不创建用户/角色、不授予全局ADMIN。
 
 接收保存WAITING_INPUT任务，后续物化使用负责人当前有效授权，同时要求`iqc:pipeline:task:create`、`iqc:task:execute`、`iqc:trigger:receive`；携带会话内容还要求`iqc:conversation:upload`。创建时授权不替代物化时授权，查询失败或撤权失败关闭。详情、取消、删除沿用原任务资源及数据范围校验。迁移未执行SQL、测试、编译、登录验收或部署，运行角色与撤权效果待验收。
+
+
+### IQC 模型/Skill 独立端点授权（待验证/部署）
+
+V20261028_01 拆分模型更新/启停和 Skill 更新/启停/回滚/历史读取。原 model:manage、skill:manage 固定为创建接口，skill:view 固定为列表。原资源 ID、状态和授权关系保留；新端点只继承其原能力的状态，角色关系仅从 ACTIVE 原资源复制到 ACTIVE 新资源。不新建账号/角色，不向系统 ADMIN 或全部 IQC 角色泛授。已存在新资源的状态也不覆盖。
+
+在匹配的 IQC 版本启动注册前执行本迁移。新环境同样走 Flyway；缺失原资源时创建 PENDING 种子，不推断默认角色授权，须沿原组织管理流程激活并授权。若新代码已先注册出 PENDING 拆分资源，迁移不会擅自激活，必须逐项核对并显式审批。前端原 manage/view 操作组保持，服务端逐端点授权；Skill 的敏感读取也检查新码。
+
+当前仅提供源码迁移，未执行共享库。需独立验证新库/升级/重复执行/已注册ID保留/未激活与撤权/每个URL方法，以及真实网关五职责授权。此修复不等于所有旧 Controller 的同码多端点均已完成审计。
