@@ -23,6 +23,9 @@ GROUPS = {
 CODES = list(GROUPS) + [child for children in GROUPS.values() for child in children]
 TARGETS = sorted(MIGRATIONS.glob('dml/V20261028_0[123]__*.sql'))
 assert len(TARGETS) == 3
+CONTRACT = {fields[0]: fields[1:] for fields in (line.split('\t') for line in
+    (ROOT / 'src/test/resources/db/migration/iqc-endpoint-permission-contract.tsv').read_text().splitlines())}
+assert set(CONTRACT) == set(CODES)
 validation_dir = os.environ['MYSQL_TEST_ALLOWED_DATADIR'].rstrip('/')
 assert re.fullmatch(r'/private/tmp/iqc-mysql-validation\.[A-Za-z0-9_-]+', validation_dir)
 socket = os.environ['MYSQL_TEST_SOCKET']
@@ -105,7 +108,12 @@ def validate(scenario, parent_status='ACTIVE', child_status=None, application='i
                 assert current == first, (scenario, 'non-idempotent identities/state/grants')
             first = current
         rows = {row.split('\t')[1]: row.split('\t') for row in sql(
-            'SELECT id,code,status,application,product_code FROM base_org_resource WHERE code IN (' + in_codes + ')', database).splitlines()}
+            'SELECT id,code,status,application,product_code,method,url FROM base_org_resource WHERE code IN (' + in_codes + ')', database).splitlines()}
+        for code, row in rows.items():
+            if row[3:5] == ['iqc-platform', 'iqc']:
+                assert row[5:7] == CONTRACT[code], (scenario, code, 'endpoint drift', row[5:7])
+            else:
+                assert row[5:7] == ['GET', '/fixture'], (scenario, 'foreign endpoint mutated')
         grants = sql('SELECT rr.role_id,r.code FROM base_org_role_resource rr JOIN base_org_resource r ON r.id=rr.resource_id WHERE r.code IN (' + in_codes + ') ORDER BY rr.role_id,r.code;', database)
         grant_set = {tuple(row.split('\t')) for row in grants.splitlines()}
         inherited = application == 'iqc-platform' and product == 'iqc'
@@ -143,8 +151,10 @@ for scenario, status, child_status, application, product in [
     ('stale', 'STALE', None, 'iqc-platform', 'iqc'),
     ('existing_pending', 'ACTIVE', 'PENDING', 'iqc-platform', 'iqc'),
     ('existing_active', 'PENDING', 'ACTIVE', 'iqc-platform', 'iqc'),
+    ('existing_active_parent_active', 'ACTIVE', 'ACTIVE', 'iqc-platform', 'iqc'),
+    ('existing_stale', 'ACTIVE', 'STALE', 'iqc-platform', 'iqc'),
     ('foreign_application', 'ACTIVE', None, 'other-app', 'iqc'),
     ('foreign_product', 'ACTIVE', None, 'iqc-platform', 'other-product'),
 ]:
     validate(scenario, status, child_status, application, product)
-print('PASS all 8 endpoint permission migration scenarios; no Flyway/PDP/HTTP claim')
+print('PASS all 10 endpoint permission migration scenarios; no Flyway/PDP/HTTP claim')
