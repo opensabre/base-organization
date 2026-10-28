@@ -25,10 +25,19 @@ GROUPS = {
     'iqc:mcp:manage': ['iqc:mcp:update', 'iqc:mcp:enable', 'iqc:mcp:disable'],
     'iqc:scheme:manage': ['iqc:scheme:versions:view'],
     'iqc:dashboard:view': ['iqc:bootstrap:view'],
+    'iqc:label:view': ['iqc:label:detail:view'],
+    'iqc:label:manage': ['iqc:label:category:create', 'iqc:label:group:create', 'iqc:label:category:update',
+                         'iqc:label:group:update', 'iqc:label:update', 'iqc:label:values:update',
+                         'iqc:label:bindings:update', 'iqc:label:disable', 'iqc:label:group:disable', 'iqc:label:category:disable'],
+    'iqc:label-collection:view': ['iqc:label-collection:detail:view'],
+    'iqc:label-collection:manage': ['iqc:label-collection:update', 'iqc:label-collection:members:update',
+                                  'iqc:label-collection:publish', 'iqc:label-collection:disable'],
+    'iqc:label-candidate:view': ['iqc:label-candidate:similarities:view'],
+    'iqc:label-candidate:review': ['iqc:label-candidate:reject', 'iqc:label-candidate:merge'],
 }
 CODES = list(GROUPS) + [child for children in GROUPS.values() for child in children]
-TARGETS = sorted(MIGRATIONS.glob('dml/V20261028_0[12345]__*.sql'))
-assert len(TARGETS) == 5
+TARGETS = sorted(MIGRATIONS.glob('dml/V20261028_0[123456]__*.sql'))
+assert len(TARGETS) == 6
 CONTRACT = {fields[0]: fields[1:] for fields in (line.split('\t') for line in
     (ROOT / 'src/test/resources/db/migration/iqc-endpoint-permission-contract.tsv').read_text().splitlines())}
 assert set(CONTRACT) == set(CODES)
@@ -103,11 +112,15 @@ def validate(scenario, parent_status='ACTIVE', child_status=None, application='i
             if child_status:
                 for child in children:
                     insert_resource(database, child, child_status)
+        approve_before = sql("SELECT id,code,status,url,method FROM base_org_resource WHERE code='iqc:label:approve'", database)
+        approve_grants_before = sql("SELECT rr.id,rr.role_id,rr.resource_id FROM base_org_role_resource rr JOIN base_org_resource r ON r.id=rr.resource_id WHERE r.code='iqc:label:approve' ORDER BY rr.id", database)
         before_runtime = runtime(database)
         first = None
         for iteration in range(2):
             for migration in TARGETS:
                 sql(migration.read_text(), database)
+            assert sql("SELECT id,code,status,url,method FROM base_org_resource WHERE code='iqc:label:approve'", database) == approve_before
+            assert sql("SELECT rr.id,rr.role_id,rr.resource_id FROM base_org_role_resource rr JOIN base_org_resource r ON r.id=rr.resource_id WHERE r.code='iqc:label:approve' ORDER BY rr.id", database) == approve_grants_before
             assert runtime(database) == before_runtime, (scenario, 'runtime counts changed')
             current = snapshot(database)
             if first is not None:
