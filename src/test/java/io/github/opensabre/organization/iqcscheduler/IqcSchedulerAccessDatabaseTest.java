@@ -40,6 +40,8 @@ class IqcSchedulerAccessDatabaseTest {
     }
 
     @AfterEach void clean() {
+        jdbc.update("DELETE FROM base_org_user_group WHERE user_id='iqc-db-user'");
+        jdbc.update("DELETE FROM base_org_group WHERE id IN ('iqc-db-group-a','iqc-db-group-b')");
         jdbc.update("DELETE FROM base_org_role_resource WHERE id='iqc-db-rr'");
         jdbc.update("DELETE FROM base_org_user_role WHERE id='iqc-db-ur'");
         jdbc.update("DELETE FROM base_org_resource WHERE id='iqc-db-resource'");
@@ -82,7 +84,7 @@ class IqcSchedulerAccessDatabaseTest {
             assertThat(input).isNotNull();
             lines=new String(input.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8).lines().toList();
         }
-        assertThat(lines).hasSize(70);
+        assertThat(lines).hasSize(91);
         var json=new tools.jackson.databind.ObjectMapper();
         for(String line:lines){
             String[] fields=line.split("\\t");String code=fields[0];
@@ -107,6 +109,37 @@ class IqcSchedulerAccessDatabaseTest {
         var grants=root.has("data")?root.path("data").path("resourceCodes"):root.path("resourceCodes");
         assertThat(grants.isArray()).isTrue();
         var values=new java.util.ArrayList<String>();grants.forEach(value->values.add(value.asText()));return values;
+    }
+
+    /** Ambiguous or revoked group membership must never yield a guessed data-scope group. */
+    @Test void groupProjectionTracksMembershipRevocationAmbiguityAndDeletedGroups() {
+        assertThat(access.resolve("iqc-db-user").groupId()).isNull();
+        for(String id:java.util.List.of("iqc-db-group-a","iqc-db-group-b"))
+            jdbc.update("INSERT INTO base_org_group(id,parent_id,name,created_by,updated_by) VALUES (?,'0','Fixture','test','test')",id);
+        jdbc.update("INSERT INTO base_org_user_group(id,user_id,group_id,created_by,updated_by) VALUES ('iqc-db-ug-a','iqc-db-user','iqc-db-group-a','test','test')");
+        assertThat(access.resolve("iqc-db-user").groupId()).isEqualTo("iqc-db-group-a");
+        jdbc.update("INSERT INTO base_org_user_group(id,user_id,group_id,created_by,updated_by) VALUES ('iqc-db-ug-b','iqc-db-user','iqc-db-group-b','test','test')");
+        assertThat(access.resolve("iqc-db-user").groupId()).isNull();
+        jdbc.update("UPDATE base_org_group SET deleted='Y' WHERE id='iqc-db-group-b'");
+        assertThat(access.resolve("iqc-db-user").groupId()).isEqualTo("iqc-db-group-a");
+        jdbc.update("DELETE FROM base_org_user_group WHERE id='iqc-db-ug-a'");
+        assertThat(access.resolve("iqc-db-user").groupId()).isNull();
+        jdbc.update("UPDATE base_org_group SET deleted='N' WHERE id='iqc-db-group-b'");
+        var moved=access.resolve("iqc-db-user");
+        assertThat(moved.groupId()).isEqualTo("iqc-db-group-b");
+        assertThat(moved.accountValid()).isTrue();assertThat(moved.resourceCodes()).containsExactly("iqc:action:recover");
+    }
+
+    @Test void excessiveMembershipRowsFailClosedEvenWhenTheyPointToOneExistingGroup() {
+        jdbc.update("INSERT INTO base_org_group(id,parent_id,name,created_by,updated_by) VALUES ('iqc-db-group-a','0','Fixture','test','test')");
+        for(int i=0;i<33;i++){
+            jdbc.update("INSERT INTO base_org_user_group(id,user_id,group_id,created_by,updated_by) VALUES (?,'iqc-db-user','iqc-db-group-a','test','test')","iqc-db-ug-"+i);
+            if(i==31)assertThat(access.resolve("iqc-db-user").groupId()).isEqualTo("iqc-db-group-a");
+        }
+        var overflow=access.resolve("iqc-db-user");assertThat(overflow.groupId()).isNull();
+        assertThat(overflow.accountValid()).isTrue();assertThat(overflow.resourceCodes()).containsExactly("iqc:action:recover");
+        jdbc.update("DELETE FROM base_org_user_group WHERE id='iqc-db-ug-32'");
+        assertThat(access.resolve("iqc-db-user").groupId()).isEqualTo("iqc-db-group-a");
     }
 
     @Test void revocationIsVisibleOnNextProjection() {

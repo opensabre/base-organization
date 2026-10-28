@@ -34,10 +34,16 @@ GROUPS = {
                                   'iqc:label-collection:publish', 'iqc:label-collection:disable'],
     'iqc:label-candidate:view': ['iqc:label-candidate:similarities:view'],
     'iqc:label-candidate:review': ['iqc:label-candidate:reject', 'iqc:label-candidate:merge'],
+    'iqc:agent:view': ['iqc:agent:versions:view', 'iqc:agent:versions:compare', 'iqc:agent:version:effect:view'],
+    'iqc:agent:approve': ['iqc:agent:reject'],
+    'iqc:rule:view': ['iqc:rule:versions:view', 'iqc:rule-set:view', 'iqc:rule-set:versions:view'],
+    'iqc:rule:manage': ['iqc:rule:submit', 'iqc:rule:version:manage', 'iqc:rule-set:manage',
+                        'iqc:rule-set:version:manage', 'iqc:rule-set:submit', 'iqc:template:materialize'],
+    'iqc:rule:approve': ['iqc:rule:reject', 'iqc:rule-set:approve', 'iqc:rule-set:reject'],
 }
 CODES = list(GROUPS) + [child for children in GROUPS.values() for child in children]
-TARGETS = sorted(MIGRATIONS.glob('dml/V20261028_0[123456]__*.sql'))
-assert len(TARGETS) == 6
+TARGETS = sorted(MIGRATIONS.glob('dml/V20261028_0[1234567]__*.sql'))
+assert len(TARGETS) == 7
 CONTRACT = {fields[0]: fields[1:] for fields in (line.split('\t') for line in
     (ROOT / 'src/test/resources/db/migration/iqc-endpoint-permission-contract.tsv').read_text().splitlines())}
 assert set(CONTRACT) == set(CODES)
