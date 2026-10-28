@@ -144,3 +144,8 @@ V20261028_03 保留 result:view 给结果列表、result:export 给普通导出�
 ### IQC 会话独立端点授权（待验证/部署）
 
 V20261028_04 保留 conversation:view 给列表、conversation:upload 给单TXT导入。预览详情/API统计和批TXT/ZIP/JSON/批JSON各用独立码，按旧有效资源的显式角色关系继承。已有ID/状态保留、缺失原资源保持PENDING，先迁移再匹配IQC注册。完整会话与PII的独立敏感授权不变，内嵌内容触发原upload复合检查不变，不包含语音解码或转写。未执行共享SQL，独立SQL/MVC/实际网关及来源数据授权仍待。
+
+
+### IQC MCP、专家历史与基础状态独立授权（待验证/部署）
+
+V20261028_05 保留mcp:manage创建、scheme:manage草稿列表及dashboard:view总览，分别拆出MCP更新/启停、scheme:versions:view专家历史与bootstrap:view基础状态。方案历史敏感前置同步新码；已有资源ID/状态、旧ACTIVE显式关系继承与PENDING新环境策略沿前四份迁移，不创建角色账号或敏感授权。先迁移后匹配IQC注册；未执行共享SQL，独立SQL/MVC/当前权限及真实网关验收仍待。
