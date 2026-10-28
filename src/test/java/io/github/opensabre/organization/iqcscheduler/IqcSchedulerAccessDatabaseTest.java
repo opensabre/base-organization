@@ -71,6 +71,44 @@ class IqcSchedulerAccessDatabaseTest {
         assertThat(tokens.currentClaims()).isNull();
     }
 
+    /** Exercise the production security/filter/controller/mapper chain for every split endpoint code. */
+    @Test void allSplitEndpointGrantsReflectStatusAndRelationRevocationThroughSignedCurrentHttp() throws Exception {
+        var mvc=org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup(web).addFilters(security).build();
+        String path="/internal/iqc/scheduler-access/current/iqc-db-user";
+        String signed=signing.issue(new io.github.opensabre.security.token.InternalTokenRequest(
+            "iqc-platform","iqc-db-user","iqc-db-user","base-organization",java.util.List.of(),java.util.List.of(),2,null,null,java.util.Map.of()));
+        java.util.List<String> lines;
+        try(var input=getClass().getResourceAsStream("/db/migration/iqc-endpoint-permission-contract.tsv")){
+            assertThat(input).isNotNull();
+            lines=new String(input.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8).lines().toList();
+        }
+        assertThat(lines).hasSize(70);
+        var json=new tools.jackson.databind.ObjectMapper();
+        for(String line:lines){
+            String[] fields=line.split("\\t");String code=fields[0];
+            jdbc.update("UPDATE base_org_resource SET code=?,method=?,url=?,status='ACTIVE' WHERE id='iqc-db-resource'",code,fields[1],fields[2]);
+            var active=currentGrantCodes(mvc,path,signed,json);assertThat(active).containsExactly(code);
+            jdbc.update("UPDATE base_org_resource SET status='PENDING' WHERE id='iqc-db-resource'");
+            assertThat(currentGrantCodes(mvc,path,signed,json)).isEmpty();
+            jdbc.update("UPDATE base_org_resource SET status='ACTIVE' WHERE id='iqc-db-resource'");
+            jdbc.update("DELETE FROM base_org_role_resource WHERE id='iqc-db-rr'");
+            assertThat(currentGrantCodes(mvc,path,signed,json)).isEmpty();
+            jdbc.update("INSERT INTO base_org_role_resource(id,role_id,resource_id,created_by,updated_by) VALUES ('iqc-db-rr','iqc-db-role','iqc-db-resource','test','test')");
+            assertThat(tokens.currentClaims()).isNull();
+        }
+    }
+
+    private java.util.List<String> currentGrantCodes(org.springframework.test.web.servlet.MockMvc mvc,String path,
+            String signed,tools.jackson.databind.ObjectMapper json) throws Exception {
+        var response=mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(path)
+            .header(io.github.opensabre.security.token.InternalTokenConstants.HEADER,signed))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk()).andReturn();
+        var root=json.readTree(response.getResponse().getContentAsString());
+        var grants=root.has("data")?root.path("data").path("resourceCodes"):root.path("resourceCodes");
+        assertThat(grants.isArray()).isTrue();
+        var values=new java.util.ArrayList<String>();grants.forEach(value->values.add(value.asText()));return values;
+    }
+
     @Test void revocationIsVisibleOnNextProjection() {
         assertThat(AopUtils.isAopProxy(access)).isTrue();
         var initial=access.resolve("iqc-db-user");
