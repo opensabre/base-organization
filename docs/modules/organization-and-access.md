@@ -149,3 +149,8 @@ V20261028_04 保留 conversation:view 给列表、conversation:upload 给单TXT�
 ### IQC MCP、专家历史与基础状态独立授权（待验证/部署）
 
 V20261028_05 保留mcp:manage创建、scheme:manage草稿列表及dashboard:view总览，分别拆出MCP更新/启停、scheme:versions:view专家历史与bootstrap:view基础状态。方案历史敏感前置同步新码；已有资源ID/状态、旧ACTIVE显式关系继承与PENDING新环境策略沿前四份迁移，不创建角色账号或敏感授权。先迁移后匹配IQC注册；未执行共享SQL，独立SQL/MVC/当前权限及真实网关验收仍待。
+
+
+### IQC 标签域独立端点授权（待验证/部署）
+
+V20261028_06 拆分标签分类/群组/详情/值/绑定/停用、集合详情/修订/成员/发布/停用及候选相似/拒绝/合并资源码。保留label:view树、label:manage标签创建、collection:view列表/manage创建、candidate:view列表/review批准。原label:approve保持独立，仅manage不获标签发布；集合发布仍继承原collection:manage，候选拒绝合并继承原candidate:review。六个原能力与十九个拆分能力按既有资源表迁移，保留ID/状态及ACTIVE显式关系，新环境缺失原能力保持PENDING，无默认角色、用户或敏感/all授权。先迁移后匹配IQC注册，独立SQL/MVC/真实网关仍待，未执行共享SQL。
