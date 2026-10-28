@@ -36,3 +36,9 @@
 固定迁移 `46b7f24`，同一脚本扩至18个原能力、52个新能力、70项独立接口契约，六份迁移每场景执行两遍。原进程7749终态0，`/tmp/iqc-b-six-endpoint-permissions-20261028.log.exit` 为0，十组全部通过，专用socket退出。每遍额外核对原 `iqc:label:approve` 的资源身份/状态/URL/方法与全部关系ID/集合不变。各合成原能力角色精确仅获自身对应子能力；查看角色未获管理子能力，标签管理未扩大至原标签发布授权。标签集合发布沿原集合管理继承，与标签发布权分别核验。
 
 这些是实际SQL授权关系证据，不能替代真实登录HTTP、网关/PDP拒绝或用户可见按钮验收。生产迁移未修改，无共享数据库操作。
+
+## 第七份规则智能体迁移扩展（2026-10-29）
+
+基线1a1fc9a仅合入固定99b9c24；同一独立GROUPS/TSV扩为23个原能力、68个新能力，共91契约。原16654终态0，/tmp/iqc-b-seven-endpoint-permissions-20261029.log.exit为0，十场景七份SQL各两遍全部通过，专用socket退出。精确角色集合证明view不获管理子能力、manage不获approve/reject，规则集审批沿原rule:approve、管理沿原rule:manage；模板物化只沿规则管理而非模板查看。原label:approve身份/状态和关系集合保持。
+
+只证明实际MySQL迁移/幂等/状态/ID与授权关系；不证明第八份菜单迁移、全Controller实际注册、完整Flyway或网关PDP。

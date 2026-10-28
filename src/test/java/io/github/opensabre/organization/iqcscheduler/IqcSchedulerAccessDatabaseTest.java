@@ -84,7 +84,7 @@ class IqcSchedulerAccessDatabaseTest {
             assertThat(input).isNotNull();
             lines=new String(input.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8).lines().toList();
         }
-        assertThat(lines).hasSize(70);
+        assertThat(lines).hasSize(91);
         var json=new tools.jackson.databind.ObjectMapper();
         for(String line:lines){
             String[] fields=line.split("\\t");String code=fields[0];
