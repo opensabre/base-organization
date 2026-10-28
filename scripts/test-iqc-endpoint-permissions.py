@@ -19,10 +19,16 @@ GROUPS = {
                         'iqc:result:label-insights:view', 'iqc:result:conversation:view',
                         'iqc:result:hierarchy:view', 'iqc:result:conversation-history:view', 'iqc:result:feedback:view'],
     'iqc:result:export': ['iqc:result:labels:export'],
+    'iqc:conversation:view': ['iqc:conversation:detail:view', 'iqc:conversation:api-stats:view'],
+    'iqc:conversation:upload': ['iqc:conversation:batch-upload', 'iqc:conversation:zip-upload',
+                                'iqc:conversation:ingest', 'iqc:conversation:batch-ingest'],
+    'iqc:mcp:manage': ['iqc:mcp:update', 'iqc:mcp:enable', 'iqc:mcp:disable'],
+    'iqc:scheme:manage': ['iqc:scheme:versions:view'],
+    'iqc:dashboard:view': ['iqc:bootstrap:view'],
 }
 CODES = list(GROUPS) + [child for children in GROUPS.values() for child in children]
-TARGETS = sorted(MIGRATIONS.glob('dml/V20261028_0[123]__*.sql'))
-assert len(TARGETS) == 3
+TARGETS = sorted(MIGRATIONS.glob('dml/V20261028_0[12345]__*.sql'))
+assert len(TARGETS) == 5
 CONTRACT = {fields[0]: fields[1:] for fields in (line.split('\t') for line in
     (ROOT / 'src/test/resources/db/migration/iqc-endpoint-permission-contract.tsv').read_text().splitlines())}
 assert set(CONTRACT) == set(CODES)

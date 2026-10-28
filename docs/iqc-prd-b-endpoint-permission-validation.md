@@ -22,3 +22,11 @@
 复现需要先启动专用本机测试实例，再设置 `MYSQL_TEST_ALLOWED_DATADIR`、`MYSQL_TEST_SOCKET`、`MYSQL_TEST_PORT`、可选 `MYSQL_TEST_BINARY`，执行 `python3 scripts/test-iqc-endpoint-permissions.py`。拒绝使用共享数据库，不读取生产凭据。
 
 范围：证明实际 SQL 种子/迁移继承和幂等行为；没有运行组织服务、ResourceMapper/Feign/PDP、真实登录/HTTP、完整 Flyway schema history。撤销的是新能力关系，未在撤销后重放迁移；Flyway 本应只执行一次，不能把一次性继承 DML当持续授权同步。当前适用 PRD I1–I7 仍未全部完成。
+
+## 五份迁移扩展验证
+
+2026-10-28 同步固定 `0d646be`（含会话 `ae66fb8`），扩展同一验证器至 12 个原能力、33 个新能力，共 45 项独立 URL/HTTP 方法契约。第四、五份迁移包含已处理会话的查询/导入、MCP 修改/启停、专家方案历史与基础状态，无语音转换工作。
+
+原进程 6010 终态 0，`/tmp/iqc-b-five-endpoint-permissions-retry-20261028.log.exit` 为 0，十组全部通过，每组五份实际 SQL 执行两次，核对精确关系、旧 ID/状态、跨应用/产品边界和运行数据计数不变。退出后专用 socket 已清除。首轮受限环境启动 mysqld signal 11、退出 1，未执行验证、不计通过；重试使用相同专用 datadir 并在正确验证工作树运行。
+
+本轮仅增加 SQL 证据。45 项尚不代表后端全部实际 MVC 注册已验证：旧 29 项 MVC 证据范围不变，新增 16 项 MVC 和当前权限前置仍待补齐。真实登录、网关/PDP 与完整 Flyway 路径仍未证明。
