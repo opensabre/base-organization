@@ -101,7 +101,7 @@ def validate(scenario, parent_status='ACTIVE', child_status=None, application='i
         sql((MIGRATIONS / 'baseline/B20260831_02__baseline.sql').read_text(), database)
         # Same pre-migration data sequence as the existing organization SQL validator.
         for migration in sorted(MIGRATIONS.glob('dml/*.sql')):
-            if migration not in TARGETS:
+            if migration.name < TARGETS[0].name:
                 sql(migration.read_text(), database)
         in_codes = ','.join(map(quoted, CODES))
         sql('DELETE rr FROM base_org_role_resource rr JOIN base_org_resource r ON r.id=rr.resource_id WHERE r.code IN (' + in_codes + ');'
@@ -169,17 +169,18 @@ def validate(scenario, parent_status='ACTIVE', child_status=None, application='i
         sql('DROP DATABASE ' + database)
 
 
-for scenario, status, child_status, application, product in [
-    ('fresh', 'PENDING', None, 'iqc-platform', 'iqc'),
-    ('active', 'ACTIVE', None, 'iqc-platform', 'iqc'),
-    ('pending', 'PENDING', None, 'iqc-platform', 'iqc'),
-    ('stale', 'STALE', None, 'iqc-platform', 'iqc'),
-    ('existing_pending', 'ACTIVE', 'PENDING', 'iqc-platform', 'iqc'),
-    ('existing_active', 'PENDING', 'ACTIVE', 'iqc-platform', 'iqc'),
-    ('existing_active_parent_active', 'ACTIVE', 'ACTIVE', 'iqc-platform', 'iqc'),
-    ('existing_stale', 'ACTIVE', 'STALE', 'iqc-platform', 'iqc'),
-    ('foreign_application', 'ACTIVE', None, 'other-app', 'iqc'),
-    ('foreign_product', 'ACTIVE', None, 'iqc-platform', 'other-product'),
-]:
-    validate(scenario, status, child_status, application, product)
-print('PASS all 10 endpoint permission migration scenarios; no Flyway/PDP/HTTP claim')
+if __name__ == "__main__":
+    for scenario, status, child_status, application, product in [
+        ('fresh', 'PENDING', None, 'iqc-platform', 'iqc'),
+        ('active', 'ACTIVE', None, 'iqc-platform', 'iqc'),
+        ('pending', 'PENDING', None, 'iqc-platform', 'iqc'),
+        ('stale', 'STALE', None, 'iqc-platform', 'iqc'),
+        ('existing_pending', 'ACTIVE', 'PENDING', 'iqc-platform', 'iqc'),
+        ('existing_active', 'PENDING', 'ACTIVE', 'iqc-platform', 'iqc'),
+        ('existing_active_parent_active', 'ACTIVE', 'ACTIVE', 'iqc-platform', 'iqc'),
+        ('existing_stale', 'ACTIVE', 'STALE', 'iqc-platform', 'iqc'),
+        ('foreign_application', 'ACTIVE', None, 'other-app', 'iqc'),
+        ('foreign_product', 'ACTIVE', None, 'iqc-platform', 'other-product'),
+    ]:
+        validate(scenario, status, child_status, application, product)
+    print('PASS all 10 endpoint permission migration scenarios; no Flyway/PDP/HTTP claim')
