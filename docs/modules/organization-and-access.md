@@ -92,3 +92,75 @@ CI 的 `IQC Label Permission Regression` 在显式标记的隔离 MySQL 容器�
 - 固化授权数据变更的审计和回滚规范；
 - 补齐菜单、按钮、资源的批量校验工具；
 - 为跨租户/跨组织授权明确边界与测试用例。
+
+### IQC Selector 独立资产（已编码，待部署）
+
+`V20261004_13__dml_add_iqc_selector_asset_permissions.sql` 沿用检测流水线菜单900160，为选择器资产目录、详情、新建、修订、启停、历史、发布、精确版本读取和版本预览分别登记9个资源/按钮（900204–900212）。资源按code激活，保留已注册ID和URL/方法；角色关联按实际resource.id及自然键幂等，关联ID沿用20字符稳定哈希。
+
+IQC_ADMIN、IQC_QUALITY_MANAGER获得全部九项；IQC_INSPECTOR、IQC_VIEWER仅获得目录、详情、历史、精确版本与预览。正式任务创建仍使用既有iqc:pipeline:task:create，数据范围由IQC核验。未创建用户/角色、不授权全局ADMIN。未运行SQL、权限测试、真实登录或部署。
+
+### IQC 周期调度当前授权查询（实现前取舍）
+
+现有 `UserService.getByUniqueId` / `RoleService.query` / `ResourceService.query` 提供普通交互身份与权限查询，其中角色/用户资源链路有 JetCache，且不存在调度专用、单事务且不输出密码的当前授权投影。Cron 触发不得把创建时角色永久继承，也不能以system代替负责人。
+
+新增 `GET /internal/iqc/scheduler-access/{userId}` 只复用现有用户、角色、用户角色、角色资源和用户群组表/Mapper，在只读REPEATABLE_READ事务直接读取当前行；不新增或复制身份/授权持久化，不改Framework。入口使用已有 `InternalTokenUserContext.currentClaims()` 核验已验签的 `service:iqc-platform`、issuer/source=`iqc-platform`、destination/audience=`base-organization`、首跳且无用户角色/权限声明；不接受外部用户、网关或请求头自行声明服务身份，不注册菜单/用户API资源。
+
+返回仅含用户ID/username、账号有效状态、可确定的单一有效group、当前角色与ACTIVE的IQC资源code、读取时间。缺失/停用/锁定/过期用户返回无权限投影；组织关系歧义不扩大到多group。查询失败/超限即失败关闭。结果是触发时授权证据，不是授权写入或永久角色快照。
+
+### IQC 周期调度资源与导航（已编码，待部署）
+
+`V20261004_14__dml_add_iqc_periodic_schedule_permissions.sql` 复用现有任务导航900019的父级，仅在不存在同产品、同href的MENU时新增周期调度入口900213（`/tasks/schedules`）。按钮和菜单角色授权按实际MENU ID关联，避免为已存在的同一入口再造MENU。九个独立资源/按钮900214–900222分别对应目录GET、详情GET、创建POST、修订PUT、发布POST、启停POST、版本历史GET、周期实例GET及预览POST；服务端基址为`/api/iqc/periodic-schedules`，资源码依次为`iqc:schedule:view/detail:view/create/update/publish/availability/versions:view/instances:view/preview`。
+
+IQC_ADMIN、IQC_QUALITY_MANAGER获得全部九项；IQC_INSPECTOR、IQC_VIEWER仅获得目录、详情、版本历史、实例与预览。资源更新保留已注册ID及URL/方法，关系使用现有自然键防重和20字符稳定哈希ID，不创建用户或角色，不授予全局ADMIN。
+
+API资源授权不替代IQC数据范围核验。周期触发必须使用当前授权查询投影，并要求负责人当前仍具备`iqc:schedule:publish`及正式流水线任务创建/执行等所需授权；不凭创建时角色快照持续执行，不以system放大范围。读取异常、缺失有效用户或撤权时失败关闭。此迁移已按周期调度接口清单完成资源与按钮映射；未执行SQL、测试、实际网关登录或部署，真实角色导航、资源鉴权及触发时撤权效果仍待运行验收。
+
+### IQC 事件/API触发接收（已编码，待部署）
+
+`V20261004_15__dml_add_iqc_trigger_receive_permission.sql` 为`POST /api/iqc/triggers`登记独立资源`iqc:trigger:receive`及按钮900223。复用现有任务导航900019的父级，不新增页面MENU或重复详情/取消/删除接口。资源按code保留已注册ID、URL和方法；角色关联复用自然键防重与20字符稳定哈希。仅IQC_ADMIN、IQC_QUALITY_MANAGER、IQC_INSPECTOR获得接收权限，IQC_VIEWER不获得；不创建用户/角色、不授予全局ADMIN。
+
+接收保存WAITING_INPUT任务，后续物化使用负责人当前有效授权，同时要求`iqc:pipeline:task:create`、`iqc:task:execute`、`iqc:trigger:receive`；携带会话内容还要求`iqc:conversation:upload`。创建时授权不替代物化时授权，查询失败或撤权失败关闭。详情、取消、删除沿用原任务资源及数据范围校验。迁移未执行SQL、测试、编译、登录验收或部署，运行角色与撤权效果待验收。
+
+
+### IQC 模型/Skill 独立端点授权（待验证/部署）
+
+V20261028_01 拆分模型更新/启停和 Skill 更新/启停/回滚/历史读取。原 model:manage、skill:manage 固定为创建接口，skill:view 固定为列表。原资源 ID、状态和授权关系保留；新端点只继承其原能力的状态，角色关系仅从 ACTIVE 原资源复制到 ACTIVE 新资源。不新建账号/角色，不向系统 ADMIN 或全部 IQC 角色泛授。已存在新资源的状态也不覆盖。
+
+在匹配的 IQC 版本启动注册前执行本迁移。新环境同样走 Flyway；缺失原资源时创建 PENDING 种子，不推断默认角色授权，须沿原组织管理流程激活并授权。若新代码已先注册出 PENDING 拆分资源，迁移不会擅自激活，必须逐项核对并显式审批。前端原 manage/view 操作组保持，服务端逐端点授权；Skill 的敏感读取也检查新码。
+
+当前仅提供源码迁移，未执行共享库。需独立验证新库/升级/重复执行/已注册ID保留/未激活与撤权/每个URL方法，以及真实网关五职责授权。此修复不等于所有旧 Controller 的同码多端点均已完成审计。
+
+
+### IQC 任务独立端点授权（待验证/部署）
+
+V20261028_02 将 task:view 保留给任务目录，详情和执行历史分别为 task:detail:view / task:executions:view；task:execute 保留给运行，恢复/暂停/优先级分别为 task:resume / task:pause / task:priority。沿 V20261028_01 的旧ID/状态和显式授权继承规则，不创建角色或账号，新环境缺失原资源保持 PENDING，已注册拆分资源状态保留。先迁移再启动匹配 IQC 注册；未在共享库执行，真实 SQL/HTTP/网关及撤权验收仍待。批次恢复的负责人和当前 GRANTS 不因拆分而移除。
+
+
+### IQC 结果独立端点授权（待验证/部署）
+
+V20261028_03 保留 result:view 给结果列表、result:export 给普通导出，详情/汇总/标签列表/标签分布/任务会话/层级/会话历史/反馈列表和标签导出各用独立资源码。对应 IQC Controller 的敏感前置同步新码，导出仍要求完整会话和PII；不授予敏感读取或扩大数据范围。状态、旧ID及显式关系继承规则与前两份拆分迁移一致。新环境同走Flyway，缺失原能力保持PENDING并通过原组织流程激活/授权；先迁移后启动匹配服务注册。未执行共享SQL，独立SQL/HTTP/真实网关验证待完成。
+
+
+### IQC 会话独立端点授权（待验证/部署）
+
+V20261028_04 保留 conversation:view 给列表、conversation:upload 给单TXT导入。预览详情/API统计和批TXT/ZIP/JSON/批JSON各用独立码，按旧有效资源的显式角色关系继承。已有ID/状态保留、缺失原资源保持PENDING，先迁移再匹配IQC注册。完整会话与PII的独立敏感授权不变，内嵌内容触发原upload复合检查不变，不包含语音解码或转写。未执行共享SQL，独立SQL/MVC/实际网关及来源数据授权仍待。
+
+
+### IQC MCP、专家历史与基础状态独立授权（待验证/部署）
+
+V20261028_05 保留mcp:manage创建、scheme:manage草稿列表及dashboard:view总览，分别拆出MCP更新/启停、scheme:versions:view专家历史与bootstrap:view基础状态。方案历史敏感前置同步新码；已有资源ID/状态、旧ACTIVE显式关系继承与PENDING新环境策略沿前四份迁移，不创建角色账号或敏感授权。先迁移后匹配IQC注册；未执行共享SQL，独立SQL/MVC/当前权限及真实网关验收仍待。
+
+
+### IQC 标签域独立端点授权（待验证/部署）
+
+V20261028_06 拆分标签分类/群组/详情/值/绑定/停用、集合详情/修订/成员/发布/停用及候选相似/拒绝/合并资源码。保留label:view树、label:manage标签创建、collection:view列表/manage创建、candidate:view列表/review批准。原label:approve保持独立，仅manage不获标签发布；集合发布仍继承原collection:manage，候选拒绝合并继承原candidate:review。六个原能力与十九个拆分能力按既有资源表迁移，保留ID/状态及ACTIVE显式关系，新环境缺失原能力保持PENDING，无默认角色、用户或敏感/all授权。先迁移后匹配IQC注册，独立SQL/MVC/真实网关仍待，未执行共享SQL。
+
+
+### IQC 规则/智能体配置独立授权（待验证/部署）
+
+V20261028_07 保留agent:view列表/approve批准与rule:view列表/manage创建/approve批准；拆出智能体版本/比较/效果/驳回、规则版本/提交/驳回、规则集操作及模板物化16个独立资源。配置敏感前置同步新码，approve派生只继承原approve，manage派生只继承原manage，模板物化仍由rule:manage派生而非template:view。旧资源ID/状态、新环境PENDING与ACTIVE显式关系继承沿原六迁移，不新增用户/角色/敏感/all授权。先迁移后匹配服务注册；独立SQL/全实际Controller注册及PDP/真实岗位仍待，未执行共享SQL。
+
+
+### IQC 拆分操作按钮权限（待验证/部署）
+
+V20261028_08 补齐前七份迁移的68个新操作码。IQC前端权限来自原 /menu/current 描述，不从API资源推断；沿原菜单/角色菜单表在既有IQC根下补BUTTON，已有同perm菜单直接复用，不创建页面/用户/角色。按钮授权只复制同时具备原菜单可见性及新ACTIVE API资源授权的角色；API-only且无旧菜单的角色不扩大可见性，PENDING/STALE不因本迁移显示按钮。旧菜单/关联保持，按角色菜单自然键去重。新环境缺失或后续激活的资源仍须按原组织流程分配菜单与API，不自动补权。前端页面须逐操作使用新码，不把此菜单迁移当所有页面已经接线；独立SQL/实际菜单树与组件/岗位验证仍待，未执行共享SQL。
