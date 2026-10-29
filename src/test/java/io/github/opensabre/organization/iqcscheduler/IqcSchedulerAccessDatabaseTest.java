@@ -24,6 +24,7 @@ class IqcSchedulerAccessDatabaseTest {
     @org.springframework.test.context.bean.override.mockito.MockitoBean
     io.github.opensabre.security.config.InternalTokenConfigurationRefresher remoteRefresh;
     @Autowired IqcSchedulerAccessService access;
+    @Autowired io.github.opensabre.organization.service.IUserService users;
     @Autowired JdbcTemplate jdbc;
     @Autowired org.springframework.web.context.WebApplicationContext web;
     @Autowired org.springframework.security.web.FilterChainProxy security;
@@ -40,6 +41,8 @@ class IqcSchedulerAccessDatabaseTest {
     }
 
     @AfterEach void clean() {
+        jdbc.update("DELETE FROM base_org_role_menu WHERE id IN ('iqc-db-rm','iqc-db-rm-foreign')");
+        jdbc.update("DELETE FROM base_org_menu WHERE id IN ('iqc-db-menu-root','iqc-db-menu-button','iqc-db-menu-foreign')");
         jdbc.update("DELETE FROM base_org_user_group WHERE user_id='iqc-db-user'");
         jdbc.update("DELETE FROM base_org_group WHERE id IN ('iqc-db-group-a','iqc-db-group-b')");
         jdbc.update("DELETE FROM base_org_role_resource WHERE id='iqc-db-rr'");
@@ -71,6 +74,82 @@ class IqcSchedulerAccessDatabaseTest {
                 .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk()).andReturn();
         assertThat(revoked.getResponse().getContentAsString()).doesNotContain("iqc:action:recover");
         assertThat(tokens.currentClaims()).isNull();
+    }
+
+    /** Real cache proxies must not confuse entity lookup and view lookup in either warmup order. */
+    @Test void lookupAndViewCacheRemainSeparateInBothWarmupOrders() {
+        for(String id:java.util.List.of("iqc-cache-first","iqc-view-first"))
+            jdbc.update("INSERT INTO base_org_user(id,username,password,name,created_by,updated_by) VALUES (?,?,'unused','Before','test','test')",id,id);
+        try {
+            assertThat(users.getByUniqueId("iqc-cache-first").getId()).isEqualTo("iqc-cache-first");
+            assertThat(users.get("iqc-cache-first").getId()).isEqualTo("iqc-cache-first");
+            assertThat(users.get("iqc-view-first").getId()).isEqualTo("iqc-view-first");
+            assertThat(users.getByUniqueId("iqc-view-first").getId()).isEqualTo("iqc-view-first");
+            var update=new io.github.opensabre.organization.entity.po.User();
+            update.setId("iqc-cache-first");update.setName("After");update.setRoleIds(java.util.Set.of());
+            users.update(update);
+            assertThat(users.get("iqc-cache-first").getName()).isEqualTo("After");
+            users.delete("iqc-view-first");
+            org.junit.jupiter.api.Assertions.assertThrows(io.github.opensabre.organization.exception.UserNotFoundException.class,
+                ()->users.get("iqc-view-first"));
+        } finally {
+            jdbc.update("DELETE FROM base_org_user WHERE id IN ('iqc-cache-first','iqc-view-first')");
+        }
+    }
+
+    /** Menu visibility and API grants are independent current database relations, never substitutes. */
+    @Test void currentMenuAndCurrentApiProjectionTrackIndependentRevocation() throws Exception {
+        var mvc=org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup(web).addFilters(security).build();
+        String signed=signing.issue(new io.github.opensabre.security.token.InternalTokenRequest(
+            "iqc-platform","iqc-db-user","iqc-db-user","base-organization",java.util.List.of(),java.util.List.of(),2,null,null,java.util.Map.of()));
+        String path="/internal/iqc/scheduler-access/current/iqc-db-user";
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/menu/current")
+            .param("productCode","iqc").header("Authorization","Bearer fixture.payload.fixture")
+            .header(io.github.opensabre.security.token.InternalTokenConstants.HEADER,signed))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isUnauthorized());
+        assertThat(tokens.currentClaims()).isNull();
+        var json=new tools.jackson.databind.ObjectMapper();
+        seedMenu("iqc-db-menu-root","-1","iqc","MENU",null);
+        seedMenu("iqc-db-menu-button","iqc-db-menu-root","iqc","BUTTON","iqc:action:recover");
+        seedMenu("iqc-db-menu-foreign","iqc-db-menu-root","other-product","BUTTON","iqc:foreign:fixture");
+        jdbc.update("INSERT INTO base_org_role_menu(id,role_id,menu_id,created_by,updated_by) VALUES ('iqc-db-rm','iqc-db-role','iqc-db-menu-button','test','test'),('iqc-db-rm-foreign','iqc-db-role','iqc-db-menu-foreign','test','test')");
+        var initial=currentMenu(mvc,signed,json);
+        assertThat(initial.toString()).contains("iqc:action:recover","iqc-db-menu-root").doesNotContain("iqc:foreign:fixture");
+        assertThat(initial.size()).isEqualTo(1);
+        assertThat(initial.get(0).path("children").size()).isEqualTo(1);
+        assertThat(currentGrantCodes(mvc,path,signed,json)).containsExactly("iqc:action:recover");
+
+        jdbc.update("DELETE FROM base_org_role_resource WHERE id='iqc-db-rr'");
+        assertThat(currentMenu(mvc,signed,json).toString()).contains("iqc:action:recover");
+        assertThat(currentGrantCodes(mvc,path,signed,json)).isEmpty();
+        jdbc.update("INSERT INTO base_org_role_resource(id,role_id,resource_id,created_by,updated_by) VALUES ('iqc-db-rr','iqc-db-role','iqc-db-resource','test','test')");
+        jdbc.update("DELETE FROM base_org_role_menu WHERE id='iqc-db-rm'");
+        assertThat(currentMenu(mvc,signed,json).size()).isZero();
+        assertThat(currentGrantCodes(mvc,path,signed,json)).containsExactly("iqc:action:recover");
+
+        jdbc.update("INSERT INTO base_org_role_menu(id,role_id,menu_id,created_by,updated_by) VALUES ('iqc-db-rm','iqc-db-role','iqc-db-menu-button','test','test')");
+        assertThat(currentMenu(mvc,signed,json).toString()).contains("iqc:action:recover");
+        jdbc.update("DELETE FROM base_org_user_role WHERE id='iqc-db-ur'");
+        assertThat(currentMenu(mvc,signed,json).size()).isZero();
+        assertThat(currentGrantCodes(mvc,path,signed,json)).isEmpty();
+        assertThat(tokens.currentClaims()).isNull();
+    }
+
+    private void seedMenu(String id,String parent,String product,String type,String permission){
+        jdbc.update("INSERT INTO base_org_menu(id,parent_id,product_code,type,name,description,order_num,created_by,updated_by) VALUES (?,?,?,?,?,?,0,'test','test')",
+            id,parent,product,type,"Fixture",permission==null?null:"{\"perm\":\""+permission+"\"}");
+    }
+
+    /** Reuse the same genuinely signed internal user token for both current-user read paths. */
+    private tools.jackson.databind.JsonNode currentMenu(org.springframework.test.web.servlet.MockMvc mvc,String signed,
+            tools.jackson.databind.ObjectMapper json) throws Exception {
+        var response=mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/menu/current")
+            .param("productCode","iqc")
+            .header(io.github.opensabre.security.token.InternalTokenConstants.HEADER,signed))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk()).andReturn();
+        var root=json.readTree(response.getResponse().getContentAsString());
+        var data=root.has("data")?root.path("data"):root;
+        assertThat(data.isArray()).isTrue();assertThat(tokens.currentClaims()).isNull();return data;
     }
 
     /** Exercise the production security/filter/controller/mapper chain for every split endpoint code. */
