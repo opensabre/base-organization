@@ -37,10 +37,10 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class UserService extends ServiceImpl<UserMapper, User> implements IUserService {
-    /**
-     * cache prefix key
-     */
-    private static final String CACHE_PREFIX_KEY = "user:";
+    // A username/mobile can equal an ID; entity and view caches must never share a key space.
+    // Both names change so previously cached values of the wrong type are never reused.
+    private static final String USER_VIEW_CACHE_PREFIX = "user-view:";
+    private static final String USER_LOOKUP_CACHE_PREFIX = "user-lookup:";
 
     @Resource
     private IUserRoleService userRoleService;
@@ -71,7 +71,7 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
 
     @Override
     @Transactional
-    @CacheInvalidate(name = CACHE_PREFIX_KEY, key = "#id")
+    @CacheInvalidate(name = USER_VIEW_CACHE_PREFIX, key = "#id")
     public boolean delete(String id) {
         //删除用户
         this.removeById(id);
@@ -83,7 +83,7 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
 
     @Override
     @Transactional
-    @CacheInvalidate(name = CACHE_PREFIX_KEY, key = "#user.id")
+    @CacheInvalidate(name = USER_VIEW_CACHE_PREFIX, key = "#user.id")
     public boolean update(User user) {
         //密码不为空，表示重新设置了密码，保存密码
         if (StringUtils.isNotBlank(user.getPassword()))
@@ -98,7 +98,7 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
     }
 
     @Override
-    @Cached(name = CACHE_PREFIX_KEY, key = "#id", cacheType = CacheType.BOTH)
+    @Cached(name = USER_VIEW_CACHE_PREFIX, key = "#id", cacheType = CacheType.BOTH)
     public UserVo get(String id) {
         //根据id查询用户
         User user = this.getById(id);
@@ -114,7 +114,7 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IUserS
     }
 
     @Override
-    @Cached(name = CACHE_PREFIX_KEY, key = "#uniqueId", cacheType = CacheType.BOTH)
+    @Cached(name = USER_LOOKUP_CACHE_PREFIX, key = "#uniqueId", cacheType = CacheType.BOTH)
     public User getByUniqueId(String uniqueId) {
         //根据用户名或手机号查询用户信息
         User user = this.getOne(new QueryWrapper<User>()
