@@ -1,0 +1,7 @@
+# Historical label regression migration ordering
+
+PR58 commit 5cffee33c23b5a4496213d11cf579ec012824fa0 exposed a deterministic regression in CI run 41073014727, job 124121730236. The fresh scenario passed; the registered-resource upgrade scenario failed with MySQL 1062 for `iqc:label:view` before its migration assertions. The initializer applied all later DML before inserting historical registration fixtures. V20261028_06 now creates the same resource codes, so this no longer represents the historical upgrade state.
+
+The existing script now initializes prerequisites through V20261011_01, retaining the six target migrations for the original two-pass assertions. After checking their original role boundaries and preservation of synthetic registered IDs/endpoints, it applies every subsequent DML in sorted order and verifies that users and user-role counts remain unchanged. No original assertion is removed; production SQL and Flyway checksums remain unchanged. The separate full Flyway job continues to verify complete migration ordering and a second no-op migrate.
+
+Validation before PR: `bash -n scripts/test-iqc-label-permissions.sh` and `git diff --check` pass. The original CI failure is the reproduction; corrected isolated MySQL CI results are pending. No shared database, deployment, framework modification, or local application test rerun is involved. This verifies historical migration compatibility, not full login/PDP or five-duty acceptance.
