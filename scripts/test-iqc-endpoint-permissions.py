@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate fixed IQC endpoint migrations only on a dedicated local MySQL server."""
+"""Validate fixed IQC endpoint migrations on a dedicated local or labelled CI MySQL."""
 import hashlib
 import os
 from pathlib import Path
@@ -47,14 +47,27 @@ assert len(TARGETS) == 7
 CONTRACT = {fields[0]: fields[1:] for fields in (line.split('\t') for line in
     (ROOT / 'src/test/resources/db/migration/iqc-endpoint-permission-contract.tsv').read_text().splitlines())}
 assert set(CONTRACT) == set(CODES)
-validation_dir = os.environ['MYSQL_TEST_ALLOWED_DATADIR'].rstrip('/')
-assert re.fullmatch(r'/private/tmp/iqc-mysql-validation\.[A-Za-z0-9_-]+', validation_dir)
-socket = os.environ['MYSQL_TEST_SOCKET']
-port = os.environ['MYSQL_TEST_PORT']
-assert socket == validation_dir + '/mysql.sock'
-assert port.isdigit() and 30000 <= int(port) <= 49999
-MYSQL = [os.environ.get('MYSQL_TEST_BINARY', 'mysql'), '--protocol=socket', '--socket=' + socket,
-         '-uroot', '--default-character-set=utf8mb4', '-N', '-B']
+test_mode = os.environ.get('MYSQL_TEST_MODE', 'local-socket')
+if test_mode == 'docker':
+    container = os.environ['MYSQL_TEST_CONTAINER']
+    label = subprocess.run(
+        ['docker', 'inspect', container, '--format', '{{index .Config.Labels "opensabre.test"}}'],
+        text=True, capture_output=True, check=True).stdout.strip()
+    if label != 'iqc-label-permissions':
+        raise RuntimeError('Refusing to test an unlabelled MySQL container.')
+    MYSQL = ['docker', 'exec', '-i', container, 'sh', '-c',
+             'exec mysql --default-character-set=utf8mb4 -N -B -uroot -p"$MYSQL_ROOT_PASSWORD" "$@"', 'sh']
+elif test_mode == 'local-socket':
+    validation_dir = os.environ['MYSQL_TEST_ALLOWED_DATADIR'].rstrip('/')
+    assert re.fullmatch(r'/private/tmp/iqc-mysql-validation\.[A-Za-z0-9_-]+', validation_dir)
+    socket = os.environ['MYSQL_TEST_SOCKET']
+    port = os.environ['MYSQL_TEST_PORT']
+    assert socket == validation_dir + '/mysql.sock'
+    assert port.isdigit() and 30000 <= int(port) <= 49999
+    MYSQL = [os.environ.get('MYSQL_TEST_BINARY', 'mysql'), '--protocol=socket', '--socket=' + socket,
+             '-uroot', '--default-character-set=utf8mb4', '-N', '-B']
+else:
+    raise RuntimeError('Unsupported MYSQL_TEST_MODE: ' + test_mode)
 
 
 def sql(body, database=None):
@@ -63,7 +76,8 @@ def sql(body, database=None):
     return result.stdout.strip()
 
 
-assert sql('SELECT CONCAT(@@datadir,"|",@@port,"|",@@bind_address)') == validation_dir + '/|' + port + '|127.0.0.1'
+if test_mode == 'local-socket':
+    assert sql('SELECT CONCAT(@@datadir,"|",@@port,"|",@@bind_address)') == validation_dir + '/|' + port + '|127.0.0.1'
 
 
 def quoted(value):

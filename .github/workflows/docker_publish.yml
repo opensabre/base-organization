@@ -37,6 +37,13 @@ jobs:
         env:
           MYSQL_TEST_CONTAINER: ${{ job.services.mysql.id }}
         run: bash scripts/test-iqc-label-permissions.sh
+      - name: Verify current endpoint and operation menu permissions
+        env:
+          MYSQL_TEST_MODE: docker
+          MYSQL_TEST_CONTAINER: ${{ job.services.mysql.id }}
+        run: |
+          python3 scripts/test-iqc-endpoint-permissions.py
+          python3 scripts/test-iqc-operation-menus.py
       - name: Upload validated migration resources
         uses: actions/upload-artifact@v7.0.1
         with:
