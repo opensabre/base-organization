@@ -60,6 +60,9 @@ for scenario in fresh upgrade; do
   mysql_test -e "CREATE DATABASE $test_database CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
   mysql_test "$test_database" < "$migration_root/baseline/B20260831_02__baseline.sql"
   while IFS= read -r migration; do
+    # Build the historical pre-recovery state before inserting registration fixtures.
+    # Later endpoint-split migrations also create these codes and must run afterwards.
+    [[ "$migration" > "$action_recovery_migration" ]] && continue
     [[ "$migration" == "$new_migration" || "$migration" == "$scheme_migration" || "$migration" == "$review_migration" || "$migration" == "$business_result_migration" || "$migration" == "$action_reconciliation_migration" || "$migration" == "$action_recovery_migration" ]] && continue
     mysql_test "$test_database" < "$migration"
   done < <(find "$migration_root/dml" -name '*.sql' -print | sort)
@@ -131,4 +134,10 @@ SQL
     [[ "$(mysql_test "$test_database" -e "SELECT id FROM base_org_resource WHERE code='iqc:action:recover';")" == 2100000000000000042 ]]
   fi
   echo "PASS $scenario: label/scheme/review/business-result/action-reconciliation/recovery resources, four-role boundaries, unchanged users, repeat run"
+  while IFS= read -r migration; do
+    [[ "$migration" > "$action_recovery_migration" ]] || continue
+    mysql_test "$test_database" < "$migration"
+  done < <(find "$migration_root/dml" -name '*.sql' -print | sort)
+  [[ "$(mysql_test "$test_database" -e 'SELECT (SELECT COUNT(*) FROM base_org_user), (SELECT COUNT(*) FROM base_org_user_role);')" == "$runtime_counts" ]]
+  echo "PASS $scenario: subsequent migrations applied without changing users or user roles"
 done
