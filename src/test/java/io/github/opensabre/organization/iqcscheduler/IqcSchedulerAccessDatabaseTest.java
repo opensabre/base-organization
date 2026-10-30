@@ -11,7 +11,8 @@ import org.springframework.aop.support.AopUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /** Actual mapper queries and transaction proxy; isolated fixture IDs, no outer test transaction. */
-@SpringBootTest(properties = {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
+    "server.address=127.0.0.1",
     "opensabre.security.internal-token.enabled=true",
     "opensabre.security.internal-token.required=true",
     "opensabre.security.internal-token.active-key-id=iqc-test",
@@ -23,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class IqcSchedulerAccessDatabaseTest {
     @org.springframework.test.context.bean.override.mockito.MockitoBean
     io.github.opensabre.security.config.InternalTokenConfigurationRefresher remoteRefresh;
+    @org.springframework.boot.test.web.server.LocalServerPort int port;
     @Autowired IqcSchedulerAccessService access;
     @Autowired io.github.opensabre.organization.service.IUserService users;
     @Autowired JdbcTemplate jdbc;
@@ -255,4 +257,58 @@ class IqcSchedulerAccessDatabaseTest {
         jdbc.update("UPDATE base_org_user SET enabled=true,account_non_expired=true,credentials_non_expired=true,account_non_locked=true,deleted='Y' WHERE id='iqc-db-user'");
         assertThat(access.resolve("iqc-db-user").accountValid()).isFalse();
     }
+    /** Real TCP requests must project current database grants rather than stale signed role claims. */
+    @Test void realHttpUsesDatabaseRolesAndRevokesGrantsDespiteAnUnchangedPrivilegedToken() throws Exception {
+        String signed=signing.issue(new io.github.opensabre.security.token.InternalTokenRequest(
+            "iqc-platform","iqc-db-user","iqc-db-user","base-organization",
+            java.util.List.of("IQC_ADMIN"),java.util.List.of("iqc:action:recover"),2,null,null,java.util.Map.of()));
+        for(String role:java.util.List.of("IQC_ADMIN","IQC_QUALITY_MANAGER","IQC_INSPECTOR","IQC_VIEWER")){
+            jdbc.update("UPDATE base_org_role SET code=? WHERE id='iqc-db-role'",role);
+            jdbc.update("DELETE FROM base_org_role_resource WHERE id='iqc-db-rr'");
+            boolean recovery=role.equals("IQC_ADMIN")||role.equals("IQC_QUALITY_MANAGER");
+            if(recovery)restoreRecoveryGrant();
+            var current=currentHttp(signed);
+            assertThat(current.path("roles").toString()).isEqualTo("[\""+role+"\"]");
+            assertThat(current.path("resourceCodes").toString()).isEqualTo(recovery?"[\"iqc:action:recover\"]":"[]");
+            jdbc.update("DELETE FROM base_org_role_resource WHERE id='iqc-db-rr'");
+            assertThat(currentHttp(signed).path("resourceCodes").size()).isZero();
+            if(recovery){restoreRecoveryGrant();assertThat(currentHttp(signed).path("resourceCodes").size()).isEqualTo(1);}
+        }
+        assertThat(tokens.currentClaims()).isNull();
+    }
+
+    /** A previous HTTP response and a valid unchanged token do not freeze group membership. */
+    @Test void realHttpTracksCurrentGroupAndUserRoleRevocation() throws Exception {
+        String signed=signing.issue(new io.github.opensabre.security.token.InternalTokenRequest(
+            "iqc-platform","iqc-db-user","iqc-db-user","base-organization",
+            java.util.List.of(),java.util.List.of(),2,null,null,java.util.Map.of()));
+        jdbc.update("INSERT INTO base_org_group(id,parent_id,name,created_by,updated_by) VALUES ('iqc-db-group-a','0','Fixture','test','test')");
+        jdbc.update("INSERT INTO base_org_user_group(id,user_id,group_id,created_by,updated_by) VALUES ('iqc-db-ug-a','iqc-db-user','iqc-db-group-a','test','test')");
+        assertThat(currentHttp(signed).path("groupId").asText()).isEqualTo("iqc-db-group-a");
+        jdbc.update("DELETE FROM base_org_user_group WHERE id='iqc-db-ug-a'");
+        assertThat(currentHttp(signed).path("groupId").isNull()).isTrue();
+        jdbc.update("DELETE FROM base_org_user_role WHERE id='iqc-db-ur'");
+        var revoked=currentHttp(signed);
+        assertThat(revoked.path("roles").size()).isZero();
+        assertThat(revoked.path("resourceCodes").size()).isZero();
+    }
+
+    /** Test-owned loopback server and H2 only; no gateway, shared database, or external identity calls. */
+    private tools.jackson.databind.JsonNode currentHttp(String signed) throws Exception {
+        var request=java.net.http.HttpRequest.newBuilder(java.net.URI.create(
+            "http://127.0.0.1:"+port+"/internal/iqc/scheduler-access/current/iqc-db-user"))
+            .timeout(java.time.Duration.ofSeconds(10))
+            .header(io.github.opensabre.security.token.InternalTokenConstants.HEADER,signed).GET().build();
+        try(var client=java.net.http.HttpClient.newHttpClient()){
+            var response=client.send(request,java.net.http.HttpResponse.BodyHandlers.ofString());
+            assertThat(response.statusCode()).isEqualTo(200);
+            var root=new tools.jackson.databind.ObjectMapper().readTree(response.body());
+            return root.has("data")?root.path("data"):root;
+        }
+    }
+
+    private void restoreRecoveryGrant(){
+        jdbc.update("INSERT INTO base_org_role_resource(id,role_id,resource_id,created_by,updated_by) VALUES ('iqc-db-rr','iqc-db-role','iqc-db-resource','test','test')");
+    }
+
 }
