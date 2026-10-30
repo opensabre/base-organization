@@ -1,0 +1,9 @@
+# Current endpoint and menu permission regression in CI
+
+The organization CI previously ran historical label/scheme/review/action resource checks and full Flyway migration ordering, but not the existing exact endpoint/menu permission assertions. The two current validators cover 91 endpoint contracts (10 scenarios) and 68 operation menu contracts (8 scenarios), including exact inherited grants, preserved IDs/status, two DML passes, foreign application/product isolation, and unchanged runtime account counts. Their synthetic role graphs are not real login/PDP acceptance.
+
+The endpoint validator now supports explicit `MYSQL_TEST_MODE=docker` using the existing CI MySQL container. It checks the same `opensabre.test=iqc-label-permissions` label as the historical shell validator before SQL. Credentials remain inside the container. The menu validator reuses this connection through its original runpy import. Default local-socket mode and its identity checks are preserved. No migration, role policy, assertion, application source, framework source, or new service is introduced.
+
+The existing label-permissions job invokes both Python scripts sequentially after its original historical checks. It reuses the same disposable MySQL service, random per-scenario schemas and finally cleanup; no shared database or extra infrastructure. Full Flyway/Maven/image conditions are unchanged.
+
+Before PR: both Python files parse, workflow YAML parses, git diff --check passes. Mocked subprocess checks confirm that an unlabelled container and unknown mode are rejected before SQL, a labelled container selects docker exec, and default local-socket identity verification is retained. These transport checks do not prove SQL behavior. Actual MySQL scenario and full CI results remain pending until the automatic PR workflow finishes.
