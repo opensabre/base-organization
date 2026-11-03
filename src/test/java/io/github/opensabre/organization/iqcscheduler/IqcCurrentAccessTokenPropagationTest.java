@@ -37,4 +37,32 @@ class IqcCurrentAccessTokenPropagationTest {
             assertThrows(RuntimeException.class,()->signing.verify(outbound+"tampered","base-organization"));
         }finally{organization.clear();iqc.clear();}
     }
+    /** Production gateway forwards a JWT; the first Servlet-to-service signature has hop one. */
+    @Test void externalJwtFirstServletHopUsesCurrentUserBoundary(){
+        var properties=new InternalTokenProperties();properties.setEnabled(true);
+        properties.setActiveKeyId("test");properties.setActiveKey("MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=");
+        properties.setAllowedIssuers(Set.of("iqc-platform"));
+        var json=new tools.jackson.databind.ObjectMapper();var signing=new DefaultInternalTokenService(json,properties);
+        var iqc=new InternalTokenUserContext(json);var organization=new InternalTokenUserContext(json);
+        var access=mock(IqcSchedulerAccessService.class);var controller=new IqcSchedulerAccessController(organization,access);
+        var projected=new IqcSchedulerAccessService.Access("iqc-scheduler-access-v1","user","alice",true,"group",Set.of(),Set.of("iqc:task:view"),Instant.now());
+        when(access.resolve("user")).thenReturn(projected);
+        var security=org.springframework.security.core.context.SecurityContextHolder.getContext();
+        var previous=security.getAuthentication();
+        try {
+            var jwt=org.springframework.security.oauth2.jwt.Jwt.withTokenValue("verified-external-fixture")
+                    .header("alg","RS256").subject("user").claim("preferred_username","alice").build();
+            security.setAuthentication(new org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken(jwt,List.of()));
+            var provider=new io.github.opensabre.security.principal.SpringSecurityInternalTokenPrincipalProvider();
+            var outbound=signing.issue(new InternalTokenRequestFactory(iqc,provider).create("iqc-platform","base-organization"));
+            var verified=signing.verify(outbound,"base-organization");
+            assertEquals(1,verified.hop());assertNull(verified.parentTokenId());
+            assertEquals("user",verified.subject());assertEquals("alice",verified.username());
+            organization.bind(verified);assertSame(projected,controller.current("user"));
+            assertThrows(SecurityException.class,()->controller.resolve("user"));
+            assertThrows(RuntimeException.class,()->signing.verify(outbound,"other-service"));
+            assertThrows(RuntimeException.class,()->signing.verify(outbound+"tampered","base-organization"));
+        } finally { organization.clear();iqc.clear();security.setAuthentication(previous); }
+    }
+
 }

@@ -22,14 +22,14 @@ public class IqcSchedulerAccessController {
             throw new SecurityException("IQC scheduler service identity required");
         return access.resolve(userId);
     }
-    /** Fresh projection for the verified current IQC user, reusing the original rows and transaction. */
+    /** Fresh projection accepts the first Servlet JWT-to-internal hop and subsequent verified user hops. */
     @GetMapping("/current/{userId}")
     @ResourcePermission(register=false)
     public IqcSchedulerAccessService.Access current(@PathVariable String userId) {
         var claims=tokens.currentClaims();
         if(claims==null || !"iqc-platform".equals(claims.issuer()) || !"iqc-platform".equals(claims.source())
                 || !"base-organization".equals(claims.audience()) || !"base-organization".equals(claims.destination())
-                || claims.hop()<2 || claims.subject()==null || claims.subject().startsWith("service:")
+                || claims.hop()<1 || claims.subject()==null || claims.subject().startsWith("service:")
                 || claims.username()==null || claims.username().isBlank()
                 || !(claims.subject().equals(userId) || claims.subject().equals(claims.username())))
             throw new SecurityException("IQC current user identity required");

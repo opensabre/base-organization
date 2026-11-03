@@ -31,8 +31,10 @@ class IqcSchedulerAccessControllerTest {
     }
     @Test void verifiedUserReusesOriginalProjectionForBothSupportedSubjectForms(){
         var result=projection("user","alice",true);when(access.resolve("user")).thenReturn(result);
-        identity("alice","alice",2);assertSame(result,controller.current("user"));
-        identity("user","alice",2);assertSame(result,controller.current("user"));
+        for(int hop:List.of(1,2)) {
+            identity("alice","alice",hop);assertSame(result,controller.current("user"));
+            identity("user","alice",hop);assertSame(result,controller.current("user"));
+        }
     }
     @Test void serviceIdentityCannotUseCurrentUserEndpoint(){
         identity("service:iqc-platform",null,1);
@@ -45,9 +47,13 @@ class IqcSchedulerAccessControllerTest {
     @Test void wrongOriginTargetHopOrSubjectRejectBeforeProjection(){
         var claims=identity("alice","alice",2);when(claims.issuer()).thenReturn("other");
         assertThrows(SecurityException.class,()->controller.current("user"));
+        claims=identity("alice","alice",1);when(claims.source()).thenReturn("other");
+        assertThrows(SecurityException.class,()->controller.current("user"));
+        claims=identity("alice","alice",1);when(claims.audience()).thenReturn("other");
+        assertThrows(SecurityException.class,()->controller.current("user"));
         claims=identity("alice","alice",2);when(claims.destination()).thenReturn("other");
         assertThrows(SecurityException.class,()->controller.current("user"));
-        identity("alice","alice",1);assertThrows(SecurityException.class,()->controller.current("user"));
+        identity("alice","alice",0);assertThrows(SecurityException.class,()->controller.current("user"));
         identity("foreign","alice",2);assertThrows(SecurityException.class,()->controller.current("user"));verifyNoInteractions(access);
     }
     @Test void foreignInvalidOrMismatchedAccountProjectionCannotBeReturned(){
