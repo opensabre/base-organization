@@ -26,7 +26,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: iqc-label-ci-only
         options: >-
           --label opensabre.test=iqc-label-permissions
-          --health-cmd "mysqladmin ping -h localhost -piqc-label-ci-only"
+          --health-cmd "mysql --protocol=TCP -h127.0.0.1 -uroot -piqc-label-ci-only --batch --skip-column-names -e 'SELECT 1'"
           --health-interval 5s
           --health-timeout 3s
           --health-retries 20
